@@ -149,6 +149,7 @@ function RootComponent() {
             </main>
             <Footer />
           </div>
+          <AITutorWidget />
           <Toaster position="top-right" richColors />
         </AuthProvider>
       </I18nProvider>
