@@ -35,47 +35,66 @@ export function Header() {
   const isActive = (to: string) => pathname === to || pathname.startsWith(to + "/");
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <span className="grid h-9 w-9 place-items-center rounded-xl gradient-brand text-brand-foreground shadow-glow">
-            <MessageSquareQuote className="h-5 w-5" />
+    <header className="sticky top-0 z-40 border-b border-border/40 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Link to="/" className="flex items-center gap-3 shrink-0 group">
+          <span className="grid h-11 w-11 place-items-center rounded-2xl gradient-brand text-brand-foreground shadow-glow transition-transform duration-300 group-hover:scale-105 group-hover:rotate-1">
+            <MessageSquareQuote className="h-6 w-6" />
           </span>
-          <span className="font-display text-lg font-bold tracking-tight hidden sm:inline">
-            Debate Club <span className="text-gradient-brand">UZ</span>
-          </span>
+          <div className="hidden sm:flex flex-col">
+            <span className="font-display text-xl font-bold tracking-tight leading-none">
+              Debate Club <span className="text-gradient-brand">UZ</span>
+            </span>
+            <span className="mt-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground font-semibold">
+              AI Debate Platform
+            </span>
+          </div>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-1 ml-4">
-          {NAV.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={cn(
-                "flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary",
-                isActive(item.to) && "text-foreground bg-secondary",
-                item.ai && "text-primary hover:text-primary",
-              )}
-            >
-              {item.ai && <Sparkles className="h-3 w-3" />}
-              {item.label ?? t(item.key)}
-            </Link>
-          ))}
+        <nav className="hidden lg:flex items-center gap-7 xl:gap-9">
+          {NAV.map((item) => {
+            const active = isActive(item.to);
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                className={cn(
+                  "relative flex items-center gap-1.5 text-sm font-medium transition-colors duration-200",
+                  item.ai
+                    ? "font-display text-foreground/90 hover:text-foreground nav-glow"
+                    : "text-muted-foreground hover:text-foreground",
+                  active && item.ai && "text-gradient-brand nav-glow-active",
+                  active && !item.ai && "text-foreground",
+                  active && "after:absolute after:-bottom-1.5 after:left-0 after:h-0.5 after:w-full after:rounded-full after:gradient-sunset",
+                )}
+              >
+                {item.ai && (
+                  <Sparkles
+                    className={cn(
+                      "h-3.5 w-3.5 transition-colors",
+                      active ? "text-sunset-magenta" : "text-sunset-orange",
+                    )}
+                  />
+                )}
+                {item.label ?? t(item.key)}
+              </Link>
+            );
+          })}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <LanguageSwitcher />
           {user ? (
             <>
-              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex font-medium">
                 <Link to="/profile">{t("nav.profile")}</Link>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => signOut()} className="hidden sm:inline-flex">
+              <Button variant="outline" size="sm" onClick={() => signOut()} className="hidden sm:inline-flex font-medium">
                 {t("nav.signout")}
               </Button>
             </>
           ) : (
-            <Button asChild size="sm" className="hidden sm:inline-flex">
+            <Button asChild size="sm" className="hidden sm:inline-flex gradient-sunset text-primary-foreground hover:opacity-90 font-medium">
               <Link to="/auth">{t("nav.signin")}</Link>
             </Button>
           )}
@@ -85,25 +104,33 @@ export function Header() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72">
-              <SheetTitle className="font-display">Debate Club UZ</SheetTitle>
-              <nav className="mt-6 flex flex-col gap-1">
-                {NAV.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    onClick={() => setOpen(false)}
-                    className={cn(
-                      "flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
-                      isActive(item.to) && "bg-secondary text-foreground",
-                      item.ai && "text-primary",
-                    )}
-                  >
-                    {item.ai && <Sparkles className="h-3.5 w-3.5" />}
-                    {item.label ?? t(item.key)}
-                  </Link>
-                ))}
-                <div className="mt-4 border-t pt-4 flex flex-col gap-2">
+            <SheetContent side="right" className="w-80 border-border/40">
+              <SheetTitle className="font-display text-xl">
+                Debate Club <span className="text-gradient-brand">UZ</span>
+              </SheetTitle>
+              <nav className="mt-8 flex flex-col gap-1">
+                {NAV.map((item) => {
+                  const active = isActive(item.to);
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        "flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
+                        item.ai
+                          ? "font-display text-foreground hover:bg-secondary"
+                          : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                        active && item.ai && "bg-secondary text-gradient-brand",
+                        active && !item.ai && "bg-secondary text-foreground",
+                      )}
+                    >
+                      {item.ai && <Sparkles className="h-4 w-4 text-sunset-magenta" />}
+                      {item.label ?? t(item.key)}
+                    </Link>
+                  );
+                })}
+                <div className="mt-6 border-t pt-6 flex flex-col gap-2">
                   {user ? (
                     <>
                       <Button asChild variant="outline" onClick={() => setOpen(false)}>
@@ -112,7 +139,7 @@ export function Header() {
                       <Button onClick={() => { signOut(); setOpen(false); }}>{t("nav.signout")}</Button>
                     </>
                   ) : (
-                    <Button asChild onClick={() => setOpen(false)}>
+                    <Button asChild onClick={() => setOpen(false)} className="gradient-sunset text-primary-foreground">
                       <Link to="/auth">{t("nav.signin")}</Link>
                     </Button>
                   )}

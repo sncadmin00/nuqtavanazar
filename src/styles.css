@@ -195,3 +195,14 @@
 @utility animate-marquee { animation: marquee 40s linear infinite; }
 @utility animate-caret { animation: type-caret 1s step-end infinite; }
 @utility animate-pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+
+@utility nav-glow {
+  transition: text-shadow 0.25s ease, color 0.2s ease;
+  &:hover {
+    text-shadow: 0 0 10px #ff6b35aa, 0 0 22px #e84393aa;
+  }
+}
+
+@utility nav-glow-active {
+  text-shadow: 0 0 10px #ff6b35aa, 0 0 22px #e84393aa;
+}
