@@ -36,16 +36,19 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/40 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-3 shrink-0 group">
-          <span className="grid h-11 w-11 place-items-center rounded-2xl gradient-brand text-brand-foreground shadow-glow transition-transform duration-300 group-hover:scale-105 group-hover:rotate-1">
-            <MessageSquareQuote className="h-6 w-6" />
+      <div className="pointer-events-none absolute inset-x-0 -bottom-px h-px gradient-sunset opacity-70" />
+      <div className="mx-auto flex h-16 sm:h-20 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
+        <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+          <span className="relative grid h-10 w-10 sm:h-11 sm:w-11 place-items-center rounded-2xl gradient-brand text-brand-foreground shadow-glow transition-transform duration-300 group-hover:scale-105 group-hover:rotate-1">
+            <MessageSquareQuote className="h-5 w-5 sm:h-6 sm:w-6" />
+            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-sunset-magenta ring-2 ring-background animate-pulse" />
           </span>
-          <div className="hidden sm:flex flex-col">
-            <span className="font-display text-xl font-bold tracking-tight leading-none">
-              Debate Club <span className="text-gradient-brand">UZ</span>
+          <div className="flex flex-col">
+            <span className="font-display text-base sm:text-xl font-bold tracking-tight leading-none">
+              Debate <span className="text-gradient-brand">UZ</span>
             </span>
-            <span className="mt-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground font-semibold">
+            <span className="mt-1 text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-muted-foreground font-semibold inline-flex items-center gap-1">
+              <Sparkles className="h-2.5 w-2.5 text-sunset-orange" />
               AI Debate Platform
             </span>
           </div>
