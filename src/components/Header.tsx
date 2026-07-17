@@ -10,19 +10,20 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Menu, MessageSquareQuote } from "lucide-react";
+import { Menu, MessageSquareQuote, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type NavItem = { to: string; key: string };
+type NavItem = { to: string; key: string; ai?: boolean; label?: string };
 
 const NAV: NavItem[] = [
+  { to: "/tutor", key: "nav.tutor", label: "AI-Тьютор", ai: true },
+  { to: "/judge", key: "nav.judge", label: "AI-Судья", ai: true },
+  { to: "/sparring", key: "nav.sparring", label: "AI-Спарринг", ai: true },
   { to: "/learn", key: "nav.learn" },
   { to: "/motions", key: "nav.motions" },
   { to: "/practice", key: "nav.practice" },
   { to: "/glossary", key: "nav.glossary" },
-  { to: "/judges", key: "nav.judges" },
   { to: "/events", key: "nav.events" },
-  { to: "/about", key: "nav.about" },
 ];
 
 export function Header() {

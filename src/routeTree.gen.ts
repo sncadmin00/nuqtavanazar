@@ -9,12 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TutorRouteImport } from './routes/tutor'
+import { Route as SparringRouteImport } from './routes/sparring'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as MotionsRouteImport } from './routes/motions'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as JudgesRouteImport } from './routes/judges'
+import { Route as JudgeRouteImport } from './routes/judge'
 import { Route as GlossaryRouteImport } from './routes/glossary'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -23,6 +26,16 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LearnIndexRouteImport } from './routes/learn.index'
 import { Route as LearnModuleIdRouteImport } from './routes/learn.$moduleId'
 
+const TutorRoute = TutorRouteImport.update({
+  id: '/tutor',
+  path: '/tutor',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SparringRoute = SparringRouteImport.update({
+  id: '/sparring',
+  path: '/sparring',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -51,6 +64,11 @@ const LearnRoute = LearnRouteImport.update({
 const JudgesRoute = JudgesRouteImport.update({
   id: '/judges',
   path: '/judges',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JudgeRoute = JudgeRouteImport.update({
+  id: '/judge',
+  path: '/judge',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GlossaryRoute = GlossaryRouteImport.update({
@@ -95,12 +113,15 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/events': typeof EventsRoute
   '/glossary': typeof GlossaryRoute
+  '/judge': typeof JudgeRoute
   '/judges': typeof JudgesRoute
   '/learn': typeof LearnRouteWithChildren
   '/motions': typeof MotionsRoute
   '/practice': typeof PracticeRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sparring': typeof SparringRoute
+  '/tutor': typeof TutorRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/learn/': typeof LearnIndexRoute
 }
@@ -110,11 +131,14 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/events': typeof EventsRoute
   '/glossary': typeof GlossaryRoute
+  '/judge': typeof JudgeRoute
   '/judges': typeof JudgesRoute
   '/motions': typeof MotionsRoute
   '/practice': typeof PracticeRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sparring': typeof SparringRoute
+  '/tutor': typeof TutorRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/learn': typeof LearnIndexRoute
 }
@@ -125,12 +149,15 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/events': typeof EventsRoute
   '/glossary': typeof GlossaryRoute
+  '/judge': typeof JudgeRoute
   '/judges': typeof JudgesRoute
   '/learn': typeof LearnRouteWithChildren
   '/motions': typeof MotionsRoute
   '/practice': typeof PracticeRoute
   '/profile': typeof ProfileRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sparring': typeof SparringRoute
+  '/tutor': typeof TutorRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/learn/': typeof LearnIndexRoute
 }
@@ -142,12 +169,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/events'
     | '/glossary'
+    | '/judge'
     | '/judges'
     | '/learn'
     | '/motions'
     | '/practice'
     | '/profile'
     | '/sitemap.xml'
+    | '/sparring'
+    | '/tutor'
     | '/learn/$moduleId'
     | '/learn/'
   fileRoutesByTo: FileRoutesByTo
@@ -157,11 +187,14 @@ export interface FileRouteTypes {
     | '/auth'
     | '/events'
     | '/glossary'
+    | '/judge'
     | '/judges'
     | '/motions'
     | '/practice'
     | '/profile'
     | '/sitemap.xml'
+    | '/sparring'
+    | '/tutor'
     | '/learn/$moduleId'
     | '/learn'
   id:
@@ -171,12 +204,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/events'
     | '/glossary'
+    | '/judge'
     | '/judges'
     | '/learn'
     | '/motions'
     | '/practice'
     | '/profile'
     | '/sitemap.xml'
+    | '/sparring'
+    | '/tutor'
     | '/learn/$moduleId'
     | '/learn/'
   fileRoutesById: FileRoutesById
@@ -187,16 +223,33 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   EventsRoute: typeof EventsRoute
   GlossaryRoute: typeof GlossaryRoute
+  JudgeRoute: typeof JudgeRoute
   JudgesRoute: typeof JudgesRoute
   LearnRoute: typeof LearnRouteWithChildren
   MotionsRoute: typeof MotionsRoute
   PracticeRoute: typeof PracticeRoute
   ProfileRoute: typeof ProfileRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SparringRoute: typeof SparringRoute
+  TutorRoute: typeof TutorRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tutor': {
+      id: '/tutor'
+      path: '/tutor'
+      fullPath: '/tutor'
+      preLoaderRoute: typeof TutorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sparring': {
+      id: '/sparring'
+      path: '/sparring'
+      fullPath: '/sparring'
+      preLoaderRoute: typeof SparringRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -237,6 +290,13 @@ declare module '@tanstack/react-router' {
       path: '/judges'
       fullPath: '/judges'
       preLoaderRoute: typeof JudgesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/judge': {
+      id: '/judge'
+      path: '/judge'
+      fullPath: '/judge'
+      preLoaderRoute: typeof JudgeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/glossary': {
@@ -309,12 +369,15 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   EventsRoute: EventsRoute,
   GlossaryRoute: GlossaryRoute,
+  JudgeRoute: JudgeRoute,
   JudgesRoute: JudgesRoute,
   LearnRoute: LearnRouteWithChildren,
   MotionsRoute: MotionsRoute,
   PracticeRoute: PracticeRoute,
   ProfileRoute: ProfileRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SparringRoute: SparringRoute,
+  TutorRoute: TutorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
