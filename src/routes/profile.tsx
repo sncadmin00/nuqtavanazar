@@ -65,6 +65,10 @@ function ProfilePage() {
     supabase.from("saved_cases").select("id, motion_text, side, thesis, conclusion, created_at")
       .eq("user_id", user.id).order("created_at", { ascending: false })
       .then(({ data }) => setCases((data as SavedCase[]) ?? []));
+    supabase.from("judge_evaluations")
+      .select("id, motion, format, overall_score, scores, strengths, improvements, created_at")
+      .eq("user_id", user.id).order("created_at", { ascending: false }).limit(20)
+      .then(({ data }) => setEvals((data as Evaluation[]) ?? []));
   }, [user]);
 
   const saveProfile = async () => {
