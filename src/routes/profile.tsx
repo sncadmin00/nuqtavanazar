@@ -47,6 +47,7 @@ function ProfilePage() {
   const [role, setRole] = useState("student");
   const [progress, setProgress] = useState<Set<string>>(new Set());
   const [cases, setCases] = useState<SavedCase[]>([]);
+  const [evals, setEvals] = useState<Evaluation[]>([]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
