@@ -141,6 +141,10 @@ function ProfilePage() {
         </div>
       </Card>
 
+      <JudgeStatsCard evals={evals} />
+
+
+
       <Card className="mt-6 p-6 border-border/60 shadow-card">
         <h2 className="font-display text-2xl font-bold">{t("profile.cases")}</h2>
         <div className="mt-4 space-y-3">
