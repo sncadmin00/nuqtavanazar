@@ -41,149 +41,149 @@ function HomePage() {
 
   return (
     <div className="relative overflow-hidden bg-background">
-      {/* ambient blobs */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[900px]">
-        <div className="absolute -top-40 -left-24 h-[520px] w-[520px] rounded-full bg-sunset-orange/50 blur-[120px] animate-blob" />
-        <div className="absolute top-20 right-[-120px] h-[560px] w-[560px] rounded-full bg-sunset-magenta/40 blur-[130px] animate-blob" style={{ animationDelay: "-4s" }} />
-        <div className="absolute top-[420px] left-1/3 h-[420px] w-[420px] rounded-full bg-sunset-violet/35 blur-[120px] animate-blob" style={{ animationDelay: "-8s" }} />
-      </div>
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-[0.5]" />
+      {/* HERO — editorial masthead */}
+      <section className="relative border-b border-foreground/15">
+        {/* subtle paper texture */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-noise opacity-[0.35] mix-blend-multiply" />
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-grid opacity-40" />
 
-      {/* HERO — broken grid */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 pt-10 pb-24 md:pt-16 md:pb-32">
-        <div className="grid grid-cols-12 gap-4 md:gap-6">
-          {/* LEFT — headline */}
-          <div className="col-span-12 lg:col-span-7 relative z-10">
-            <div className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-background/70 backdrop-blur px-3 py-1.5 text-xs font-medium">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full rounded-full bg-sunset-magenta opacity-75 animate-pulse-dot" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-sunset-orange" />
-              </span>
-              Live AI · Бухара → Узбекистан
-            </div>
-
-            <h1 className="mt-6 font-display font-bold leading-[0.95] tracking-tight text-[clamp(2.5rem,7vw,5.5rem)]">
-              Тренируй
-              <br />
-              дебаты с{" "}
-              <span className="text-gradient-sunset">AI-судьёй</span>
-              <br />
-              вместо теории.
-            </h1>
-
-            <p className="mt-6 max-w-xl text-lg text-foreground/70">
-              Не сайт с уроками — <b className="text-foreground">AI-тренажёр</b> для настоящих дебатов.
-              Спрашивай тьютора, получай ballot от судьи, спарингуй с AI по любой теме.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="rounded-full h-12 px-6 gradient-sunset shadow-glow border-0 text-white hover:opacity-95">
-                <Link to="/judge">
-                  <Gavel className="mr-1.5 h-4 w-4" />
-                  Оценить речь у AI-судьи
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-full h-12 px-6 border-foreground/20 bg-background/70 backdrop-blur">
-                <Link to="/tutor">
-                  <Bot className="mr-1.5 h-4 w-4" />
-                  Спросить AI-тьютора
-                </Link>
-              </Button>
-            </div>
-
-            {/* social proof strip */}
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-foreground/60">
-              <div className="flex -space-x-2">
-                {["#ff6b35", "#e84393", "#6c5ce7", "#f7931e"].map((c) => (
-                  <span key={c} className="h-7 w-7 rounded-full border-2 border-background" style={{ background: c }} />
-                ))}
-              </div>
-              <div className="flex items-center gap-1">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <Star key={i} className="h-3.5 w-3.5 fill-sunset-amber text-sunset-amber" />
-                ))}
-                <span className="ml-2 font-medium text-foreground">4.9</span> · дебатёры клуба
-              </div>
-              <div>3 языка · RU · UZ · EN</div>
-            </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          {/* masthead bar */}
+          <div className="flex items-center justify-between border-b border-foreground/15 py-3 text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-foreground/60">
+            <span>Vol. I · No. 01</span>
+            <span className="hidden sm:inline">Debate Club Uzbekistan · Est. Bukhara 2024</span>
+            <span className="tabular-nums">{new Date().toLocaleDateString("ru-RU", { day: "2-digit", month: "long", year: "numeric" })}</span>
           </div>
 
-          {/* RIGHT — live AI ballot mock, offset & tilted */}
-          <div className="col-span-12 lg:col-span-5 relative">
-            <div className="relative lg:absolute lg:-top-4 lg:right-0 lg:w-[420px] xl:w-[460px]">
-              {/* floating chat pill */}
-              <div className="absolute -left-6 -top-4 z-20 hidden md:flex items-center gap-2 rounded-full bg-white shadow-card border border-foreground/5 px-3 py-2 text-xs font-medium -rotate-3 animate-float-slow">
-                <Bot className="h-3.5 w-3.5 text-sunset-violet" />
-                <span className="text-foreground/70">Ты: </span>
-                <span>{typed}</span>
-                <span className="animate-caret text-sunset-orange">|</span>
+          <div className="grid grid-cols-12 gap-x-6 gap-y-10 py-14 md:py-20">
+            {/* LEFT — headline article */}
+            <div className="col-span-12 lg:col-span-8">
+              <div className="flex items-center gap-3 text-[11px] font-mono uppercase tracking-[0.18em] text-foreground/60">
+                <span className="h-px w-8 bg-foreground/40" />
+                <span>Дискурс · Риторика · AI</span>
               </div>
 
-              {/* floating score sticker */}
-              <div className="absolute -right-3 top-8 z-20 rounded-2xl gradient-sunset text-white shadow-glow px-3 py-2 rotate-6 animate-float-slow" style={{ animationDelay: "-2s" }}>
-                <div className="text-[10px] uppercase tracking-wider opacity-90">Ballot score</div>
-                <div className="font-display text-2xl font-bold leading-none">8.4<span className="text-sm opacity-70">/10</span></div>
-              </div>
+              <h1 className="mt-6 font-serif font-normal text-foreground leading-[0.98] tracking-[-0.02em] text-[clamp(3rem,8vw,6.5rem)]">
+                Искусство аргумента,
+                <br />
+                <em className="italic text-foreground/90">выверенное</em> машиной.
+              </h1>
 
-              {/* ballot card */}
-              <div className="relative rotate-1 lg:rotate-2 rounded-3xl border border-foreground/10 bg-white shadow-card overflow-hidden">
-                <div className="flex items-center justify-between border-b border-foreground/5 px-5 py-3">
-                  <div className="flex items-center gap-2">
-                    <span className="grid h-7 w-7 place-items-center rounded-lg gradient-sunset text-white">
-                      <Gavel className="h-3.5 w-3.5" />
-                    </span>
-                    <div className="text-xs font-semibold">AI-Судья · Ballot</div>
-                  </div>
-                  <div className="text-[10px] text-foreground/50 font-mono">#0421</div>
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 border-t border-foreground/15 pt-8">
+                <div className="md:col-span-3">
+                  <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/50">Ведущий автор</div>
+                  <div className="mt-1 text-sm font-medium">AI-Judge · GPT-класс</div>
+                  <div className="mt-4 text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/50">Форматы</div>
+                  <div className="mt-1 text-sm font-medium">Karl Popper · Parliamentary</div>
                 </div>
-                <div className="p-5">
-                  <div className="text-[11px] uppercase tracking-wider text-foreground/50">Motion</div>
-                  <div className="mt-1 font-display font-semibold text-[15px] leading-tight">
-                    THW ввести всеобщий базовый доход
+                <div className="md:col-span-9">
+                  <p className="text-lg md:text-xl leading-[1.55] text-foreground/80 font-normal">
+                    <span className="float-left mr-2 mt-1 font-serif text-[3.5rem] leading-[0.8] text-foreground">К</span>
+                    лассическая школа дебатов встречает алгоритмический разбор.
+                    Задавайте вопрос — тьютор аргументирует. Пишите речь — судья
+                    выставляет ballot по пяти критериям и объясняет каждый балл.
+                    Спарингуйте — и получайте контраргументы уровня университетского раунда.
+                  </p>
+                  <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+                    <Link
+                      to="/judge"
+                      className="group inline-flex items-center gap-2 border-b border-foreground pb-1 text-sm font-medium tracking-wide hover:gap-3 transition-all"
+                    >
+                      <Gavel className="h-4 w-4" />
+                      Получить ballot AI-судьи
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                    <Link
+                      to="/tutor"
+                      className="group inline-flex items-center gap-2 text-sm font-medium text-foreground/70 hover:text-foreground"
+                    >
+                      <Bot className="h-4 w-4" />
+                      Читать с AI-тьютором
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </Link>
                   </div>
+                </div>
+              </div>
+            </div>
 
-                  <div className="mt-4 space-y-3">
+            {/* RIGHT — ballot as journal column */}
+            <aside className="col-span-12 lg:col-span-4">
+              <div className="lg:border-l lg:border-foreground/15 lg:pl-6">
+                <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/60 pb-3 border-b border-foreground/20">
+                  <span>Ballot № 0421</span>
+                  <span>Case Study</span>
+                </div>
+
+                <div className="mt-5">
+                  <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/50">Motion</div>
+                  <h3 className="mt-1 font-serif text-2xl leading-tight">
+                    <em className="italic">This House Would</em> ввести всеобщий базовый доход.
+                  </h3>
+                </div>
+
+                <table className="mt-6 w-full text-sm">
+                  <tbody className="divide-y divide-foreground/10">
                     {[
                       { k: "Структура", v: 88 },
                       { k: "Аргументация", v: 82 },
                       { k: "Доказательность", v: 76 },
                       { k: "Опровержение", v: 91 },
                       { k: "Убедительность", v: 84 },
-                    ].map((r, idx) => (
-                      <div key={r.k}>
-                        <div className="flex justify-between text-[11px] text-foreground/60">
-                          <span>{r.k}</span>
-                          <span className="font-mono font-semibold text-foreground">{r.v}</span>
-                        </div>
-                        <div className="mt-1 h-1.5 w-full rounded-full bg-secondary overflow-hidden">
-                          <div
-                            className="h-full rounded-full gradient-sunset"
-                            style={{ width: `${r.v}%`, transitionDelay: `${idx * 80}ms` }}
-                          />
-                        </div>
-                      </div>
+                    ].map((r) => (
+                      <tr key={r.k}>
+                        <td className="py-2.5 pr-3 text-foreground/75">{r.k}</td>
+                        <td className="py-2.5 w-full">
+                          <div className="h-px w-full bg-foreground/10 relative">
+                            <span className="absolute inset-y-0 left-0 bg-foreground" style={{ width: `${r.v}%`, height: "1px" }} />
+                          </div>
+                        </td>
+                        <td className="py-2.5 pl-3 font-mono tabular-nums text-right">{r.v}</td>
+                      </tr>
                     ))}
-                  </div>
+                    <tr>
+                      <td className="pt-4 pr-3 font-medium">Итог</td>
+                      <td className="pt-4" />
+                      <td className="pt-4 pl-3 font-serif text-2xl text-right leading-none">
+                        8.4<span className="text-sm text-foreground/50">/10</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                  <div className="mt-4 rounded-2xl bg-secondary/60 p-3 text-[12px] leading-snug text-foreground/75">
-                    <div className="mb-1 font-semibold text-foreground">Комментарий судьи</div>
-                    Сильная структура AREA и чистое опровержение по второму аргументу. Добавь эмпирические источники и уточни механизм финансирования.
-                  </div>
+                <blockquote className="mt-6 border-l-2 border-foreground pl-4 font-serif italic text-[15px] leading-snug text-foreground/80">
+                  «Сильная структура AREA, чистое опровержение по второму аргументу.
+                  Уточните механизм финансирования.»
+                  <footer className="mt-2 not-italic font-sans text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/50">
+                    — AI-Судья, комментарий
+                  </footer>
+                </blockquote>
+
+                <div className="mt-6 pt-4 border-t border-foreground/15 flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/60">
+                  <Bot className="h-3 w-3" />
+                  <span className="truncate">Тьютор: {typed}<span className="animate-caret">|</span></span>
                 </div>
               </div>
+            </aside>
+          </div>
 
-              {/* mini sparring bubble */}
-              <div className="absolute -bottom-6 -left-4 z-20 max-w-[220px] rounded-2xl bg-ink text-background shadow-card px-3 py-2 -rotate-2 hidden md:block">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider opacity-70">
-                  <Swords className="h-3 w-3 text-sunset-magenta" /> AI-оппонент
-                </div>
-                <div className="text-[12px] mt-0.5">Ваш второй аргумент опровергается тем, что…</div>
+          {/* footer strip of hero */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-4 border-t border-foreground/15 py-6 text-sm">
+            {[
+              { k: "Формат", v: "KP · BP · Asian" },
+              { k: "Языки", v: "RU · UZ · EN" },
+              { k: "База тем", v: "200+ motions" },
+              { k: "Оценка", v: "5 критериев" },
+            ].map((s) => (
+              <div key={s.k}>
+                <div className="text-[10px] font-mono uppercase tracking-[0.2em] text-foreground/50">{s.k}</div>
+                <div className="mt-0.5 font-serif text-xl">{s.v}</div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
+
+
 
       {/* MARQUEE */}
       <section aria-hidden className="border-y border-foreground/10 bg-ink text-background py-4 overflow-hidden">
