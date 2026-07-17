@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PracticeRouteImport } from './routes/practice'
 import { Route as MotionsRouteImport } from './routes/motions'
 import { Route as LearnRouteImport } from './routes/learn'
@@ -21,6 +23,16 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LearnIndexRouteImport } from './routes/learn.index'
 import { Route as LearnModuleIdRouteImport } from './routes/learn.$moduleId'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PracticeRoute = PracticeRouteImport.update({
   id: '/practice',
   path: '/practice',
@@ -87,6 +99,8 @@ export interface FileRoutesByFullPath {
   '/learn': typeof LearnRouteWithChildren
   '/motions': typeof MotionsRoute
   '/practice': typeof PracticeRoute
+  '/profile': typeof ProfileRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/learn/': typeof LearnIndexRoute
 }
@@ -99,6 +113,8 @@ export interface FileRoutesByTo {
   '/judges': typeof JudgesRoute
   '/motions': typeof MotionsRoute
   '/practice': typeof PracticeRoute
+  '/profile': typeof ProfileRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/learn': typeof LearnIndexRoute
 }
@@ -113,6 +129,8 @@ export interface FileRoutesById {
   '/learn': typeof LearnRouteWithChildren
   '/motions': typeof MotionsRoute
   '/practice': typeof PracticeRoute
+  '/profile': typeof ProfileRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/learn/': typeof LearnIndexRoute
 }
@@ -128,6 +146,8 @@ export interface FileRouteTypes {
     | '/learn'
     | '/motions'
     | '/practice'
+    | '/profile'
+    | '/sitemap.xml'
     | '/learn/$moduleId'
     | '/learn/'
   fileRoutesByTo: FileRoutesByTo
@@ -140,6 +160,8 @@ export interface FileRouteTypes {
     | '/judges'
     | '/motions'
     | '/practice'
+    | '/profile'
+    | '/sitemap.xml'
     | '/learn/$moduleId'
     | '/learn'
   id:
@@ -153,6 +175,8 @@ export interface FileRouteTypes {
     | '/learn'
     | '/motions'
     | '/practice'
+    | '/profile'
+    | '/sitemap.xml'
     | '/learn/$moduleId'
     | '/learn/'
   fileRoutesById: FileRoutesById
@@ -167,10 +191,26 @@ export interface RootRouteChildren {
   LearnRoute: typeof LearnRouteWithChildren
   MotionsRoute: typeof MotionsRoute
   PracticeRoute: typeof PracticeRoute
+  ProfileRoute: typeof ProfileRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/practice': {
       id: '/practice'
       path: '/practice'
@@ -273,6 +313,8 @@ const rootRouteChildren: RootRouteChildren = {
   LearnRoute: LearnRouteWithChildren,
   MotionsRoute: MotionsRoute,
   PracticeRoute: PracticeRoute,
+  ProfileRoute: ProfileRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
