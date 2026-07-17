@@ -83,7 +83,7 @@ function LessonPage() {
       <p className="mt-4 text-lg text-muted-foreground">{lesson.summary}</p>
 
       <div className="prose-content mt-10 space-y-6">
-        {lesson.blocks.map((b, i) => (
+        {lesson.blocks.map((b: LessonBlock, i: number) => (
           <Block key={i} block={b} />
         ))}
       </div>

@@ -9,38 +9,119 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MotionsRouteImport } from './routes/motions'
+import { Route as LearnRouteImport } from './routes/learn'
+import { Route as GlossaryRouteImport } from './routes/glossary'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LearnIndexRouteImport } from './routes/learn.index'
+import { Route as LearnModuleIdRouteImport } from './routes/learn.$moduleId'
 
+const MotionsRoute = MotionsRouteImport.update({
+  id: '/motions',
+  path: '/motions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GlossaryRoute = GlossaryRouteImport.update({
+  id: '/glossary',
+  path: '/glossary',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnIndexRoute = LearnIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LearnRoute,
+} as any)
+const LearnModuleIdRoute = LearnModuleIdRouteImport.update({
+  id: '/$moduleId',
+  path: '/$moduleId',
+  getParentRoute: () => LearnRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/glossary': typeof GlossaryRoute
+  '/learn': typeof LearnRouteWithChildren
+  '/motions': typeof MotionsRoute
+  '/learn/$moduleId': typeof LearnModuleIdRoute
+  '/learn/': typeof LearnIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/glossary': typeof GlossaryRoute
+  '/motions': typeof MotionsRoute
+  '/learn/$moduleId': typeof LearnModuleIdRoute
+  '/learn': typeof LearnIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/glossary': typeof GlossaryRoute
+  '/learn': typeof LearnRouteWithChildren
+  '/motions': typeof MotionsRoute
+  '/learn/$moduleId': typeof LearnModuleIdRoute
+  '/learn/': typeof LearnIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/glossary'
+    | '/learn'
+    | '/motions'
+    | '/learn/$moduleId'
+    | '/learn/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/glossary' | '/motions' | '/learn/$moduleId' | '/learn'
+  id:
+    | '__root__'
+    | '/'
+    | '/glossary'
+    | '/learn'
+    | '/motions'
+    | '/learn/$moduleId'
+    | '/learn/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GlossaryRoute: typeof GlossaryRoute
+  LearnRoute: typeof LearnRouteWithChildren
+  MotionsRoute: typeof MotionsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/motions': {
+      id: '/motions'
+      path: '/motions'
+      fullPath: '/motions'
+      preLoaderRoute: typeof MotionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/glossary': {
+      id: '/glossary'
+      path: '/glossary'
+      fullPath: '/glossary'
+      preLoaderRoute: typeof GlossaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +129,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/learn/': {
+      id: '/learn/'
+      path: '/'
+      fullPath: '/learn/'
+      preLoaderRoute: typeof LearnIndexRouteImport
+      parentRoute: typeof LearnRoute
+    }
+    '/learn/$moduleId': {
+      id: '/learn/$moduleId'
+      path: '/$moduleId'
+      fullPath: '/learn/$moduleId'
+      preLoaderRoute: typeof LearnModuleIdRouteImport
+      parentRoute: typeof LearnRoute
+    }
   }
 }
 
+interface LearnRouteChildren {
+  LearnModuleIdRoute: typeof LearnModuleIdRoute
+  LearnIndexRoute: typeof LearnIndexRoute
+}
+
+const LearnRouteChildren: LearnRouteChildren = {
+  LearnModuleIdRoute: LearnModuleIdRoute,
+  LearnIndexRoute: LearnIndexRoute,
+}
+
+const LearnRouteWithChildren = LearnRoute._addFileChildren(LearnRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GlossaryRoute: GlossaryRoute,
+  LearnRoute: LearnRouteWithChildren,
+  MotionsRoute: MotionsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
