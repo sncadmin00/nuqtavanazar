@@ -14,7 +14,144 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          format: string | null
+          id: string
+          location: string | null
+          starts_at: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          format?: string | null
+          id?: string
+          location?: string | null
+          starts_at: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          format?: string | null
+          id?: string
+          location?: string | null
+          starts_at?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      lesson_progress: {
+        Row: {
+          completed_at: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      motions: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          format: string
+          id: string
+          language: string
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          format: string
+          id?: string
+          language?: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          format?: string
+          id?: string
+          language?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          city: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          role: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          role?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          role?: string | null
+        }
+        Relationships: []
+      }
+      saved_cases: {
+        Row: {
+          arguments: Json | null
+          conclusion: string | null
+          created_at: string
+          id: string
+          motion_text: string
+          side: string | null
+          thesis: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          arguments?: Json | null
+          conclusion?: string | null
+          created_at?: string
+          id?: string
+          motion_text: string
+          side?: string | null
+          thesis?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          arguments?: Json | null
+          conclusion?: string | null
+          created_at?: string
+          id?: string
+          motion_text?: string
+          side?: string | null
+          thesis?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
