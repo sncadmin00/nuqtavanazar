@@ -89,6 +89,10 @@ function MotionsPage() {
         )}
       </div>
 
+      <AIMotionGenerator />
+
+
+
       <div className="mt-8 flex flex-wrap items-end gap-3">
         <div className="w-40">
           <Label className="text-xs text-muted-foreground">{t("motions.filter.format")}</Label>
