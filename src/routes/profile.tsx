@@ -27,6 +27,12 @@ type SavedCase = {
   thesis: string | null; conclusion: string | null; created_at: string;
 };
 
+type Evaluation = {
+  id: string; motion: string; format: string; overall_score: number;
+  scores: Record<string, number>; strengths: string[]; improvements: string[];
+  created_at: string;
+};
+
 function ProfilePage() {
   const { t } = useI18n();
   const { user, loading } = useAuth();
