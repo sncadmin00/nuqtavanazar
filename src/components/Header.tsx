@@ -94,11 +94,13 @@ export function Header() {
                     to={item.to}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
+                      "flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
                       isActive(item.to) && "bg-secondary text-foreground",
+                      item.ai && "text-primary",
                     )}
                   >
-                    {t(item.key)}
+                    {item.ai && <Sparkles className="h-3.5 w-3.5" />}
+                    {item.label ?? t(item.key)}
                   </Link>
                 ))}
                 <div className="mt-4 border-t pt-4 flex flex-col gap-2">
