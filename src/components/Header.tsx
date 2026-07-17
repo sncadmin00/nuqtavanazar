@@ -52,11 +52,13 @@ export function Header() {
               key={item.to}
               to={item.to}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary",
+                "flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary",
                 isActive(item.to) && "text-foreground bg-secondary",
+                item.ai && "text-primary hover:text-primary",
               )}
             >
-              {t(item.key)}
+              {item.ai && <Sparkles className="h-3 w-3" />}
+              {item.label ?? t(item.key)}
             </Link>
           ))}
         </nav>
