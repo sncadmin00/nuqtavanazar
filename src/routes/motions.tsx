@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
+import { generateMotion } from "@/lib/ai.functions";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +17,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Plus, Sparkles } from "lucide-react";
+import { Plus, Sparkles, Loader2, Shuffle } from "lucide-react";
 
 export const Route = createFileRoute("/motions")({
   head: () => ({
@@ -86,6 +88,10 @@ function MotionsPage() {
           <Badge variant="secondary" className="rounded-full">{t("motions.loginToAdd")}</Badge>
         )}
       </div>
+
+      <AIMotionGenerator />
+
+
 
       <div className="mt-8 flex flex-wrap items-end gap-3">
         <div className="w-40">
@@ -199,3 +205,101 @@ function AddMotionDialog({ onClose }: { onClose: () => void }) {
     </DialogContent>
   );
 }
+
+const CAT_OPTIONS = ["politics","economics","ethics","technology","society","education","environment","culture"];
+
+function AIMotionGenerator() {
+  const [category, setCategory] = useState("politics");
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{
+    motion: string; category: string; rationale: string; pro_hint: string; con_hint: string;
+  } | null>(null);
+  const gen = useServerFn(generateMotion);
+  const { user } = useAuth();
+
+  const run = async () => {
+    setLoading(true);
+    try {
+      const r = await gen({ data: { category, difficulty } });
+      setResult(r);
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveToBank = async () => {
+    if (!result || !user) return;
+    const { error } = await supabase.from("motions").insert({
+      title: result.motion, category: result.category, format: "both", created_by: user.id, language: "ru",
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Тема добавлена в банк");
+  };
+
+  return (
+    <Card className="mt-8 p-6 border-primary/30 bg-gradient-to-br from-primary/5 to-transparent shadow-card">
+      <div className="flex items-center gap-2">
+        <span className="grid h-9 w-9 place-items-center rounded-xl gradient-brand text-brand-foreground">
+          <Sparkles className="h-4 w-4" />
+        </span>
+        <div>
+          <h2 className="font-display text-lg font-bold">AI-Генератор тем</h2>
+          <p className="text-xs text-muted-foreground">Свежая тема с пояснением и подсказками для обеих сторон</p>
+        </div>
+      </div>
+      <div className="mt-4 flex flex-wrap items-end gap-3">
+        <div className="w-44">
+          <Label className="text-xs">Категория</Label>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {CAT_OPTIONS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-40">
+          <Label className="text-xs">Сложность</Label>
+          <Select value={difficulty} onValueChange={(v) => setDifficulty(v as typeof difficulty)}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="easy">Простая</SelectItem>
+              <SelectItem value="medium">Средняя</SelectItem>
+              <SelectItem value="hard">Сложная</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button onClick={run} disabled={loading}>
+          {loading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Shuffle className="mr-1 h-4 w-4" />}
+          Сгенерировать
+        </Button>
+      </div>
+
+      {result && (
+        <div className="mt-5 rounded-xl border bg-card p-4">
+          <Badge variant="secondary" className="rounded-full">{result.category}</Badge>
+          <p className="mt-2 font-display text-xl font-bold">{result.motion}</p>
+          <p className="mt-3 text-sm text-muted-foreground">{result.rationale}</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="rounded-lg bg-green-500/10 p-3 text-sm">
+              <div className="text-xs font-semibold uppercase text-green-700 dark:text-green-400">Pro (за)</div>
+              <p className="mt-1">{result.pro_hint}</p>
+            </div>
+            <div className="rounded-lg bg-red-500/10 p-3 text-sm">
+              <div className="text-xs font-semibold uppercase text-red-700 dark:text-red-400">Con (против)</div>
+              <p className="mt-1">{result.con_hint}</p>
+            </div>
+          </div>
+          {user && (
+            <Button variant="outline" size="sm" className="mt-4" onClick={saveToBank}>
+              <Plus className="mr-1 h-3 w-3" /> Добавить в банк тем
+            </Button>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+

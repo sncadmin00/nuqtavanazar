@@ -44,6 +44,51 @@ export type Database = {
         }
         Relationships: []
       }
+      judge_evaluations: {
+        Row: {
+          created_at: string
+          feedback: string
+          format: string
+          id: string
+          improvements: string[]
+          motion: string
+          overall_score: number
+          scores: Json
+          side: string | null
+          speech: string
+          strengths: string[]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feedback: string
+          format: string
+          id?: string
+          improvements?: string[]
+          motion: string
+          overall_score: number
+          scores: Json
+          side?: string | null
+          speech: string
+          strengths?: string[]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feedback?: string
+          format?: string
+          id?: string
+          improvements?: string[]
+          motion?: string
+          overall_score?: number
+          scores?: Json
+          side?: string | null
+          speech?: string
+          strengths?: string[]
+          user_id?: string
+        }
+        Relationships: []
+      }
       lesson_progress: {
         Row: {
           completed_at: string

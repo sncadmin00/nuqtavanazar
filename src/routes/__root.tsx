@@ -16,6 +16,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { AITutorWidget } from "@/components/AITutorWidget";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -148,6 +149,7 @@ function RootComponent() {
             </main>
             <Footer />
           </div>
+          <AITutorWidget />
           <Toaster position="top-right" richColors />
         </AuthProvider>
       </I18nProvider>

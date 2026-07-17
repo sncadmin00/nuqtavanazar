@@ -10,19 +10,20 @@ import {
   SheetTrigger,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Menu, MessageSquareQuote } from "lucide-react";
+import { Menu, MessageSquareQuote, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type NavItem = { to: string; key: string };
+type NavItem = { to: string; key: string; ai?: boolean; label?: string };
 
 const NAV: NavItem[] = [
+  { to: "/tutor", key: "nav.tutor", label: "AI-Тьютор", ai: true },
+  { to: "/judge", key: "nav.judge", label: "AI-Судья", ai: true },
+  { to: "/sparring", key: "nav.sparring", label: "AI-Спарринг", ai: true },
   { to: "/learn", key: "nav.learn" },
   { to: "/motions", key: "nav.motions" },
   { to: "/practice", key: "nav.practice" },
   { to: "/glossary", key: "nav.glossary" },
-  { to: "/judges", key: "nav.judges" },
   { to: "/events", key: "nav.events" },
-  { to: "/about", key: "nav.about" },
 ];
 
 export function Header() {
@@ -51,11 +52,13 @@ export function Header() {
               key={item.to}
               to={item.to}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary",
+                "flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-secondary",
                 isActive(item.to) && "text-foreground bg-secondary",
+                item.ai && "text-primary hover:text-primary",
               )}
             >
-              {t(item.key)}
+              {item.ai && <Sparkles className="h-3 w-3" />}
+              {item.label ?? t(item.key)}
             </Link>
           ))}
         </nav>
@@ -91,11 +94,13 @@ export function Header() {
                     to={item.to}
                     onClick={() => setOpen(false)}
                     className={cn(
-                      "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
+                      "flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground",
                       isActive(item.to) && "bg-secondary text-foreground",
+                      item.ai && "text-primary",
                     )}
                   >
-                    {t(item.key)}
+                    {item.ai && <Sparkles className="h-3.5 w-3.5" />}
+                    {item.label ?? t(item.key)}
                   </Link>
                 ))}
                 <div className="mt-4 border-t pt-4 flex flex-col gap-2">
