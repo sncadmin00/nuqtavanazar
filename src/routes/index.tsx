@@ -1,17 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
-  ArrowRight, ArrowUpRight, Bot, Gavel, Shuffle, Sparkles,
-  Swords, Zap, Trophy, Flame, Mic, ChevronRight, Star,
+  ArrowRight, ArrowUpRight, Bot, Gavel, Shuffle, Swords,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
 });
+
 
 const TUTOR_LINES = [
   "Как построить сильный аргумент по AREA?",
