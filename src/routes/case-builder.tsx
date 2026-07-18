@@ -16,7 +16,7 @@ export const Route = createFileRoute("/case-builder")({
   head: () => ({
     meta: [
       { title: "Собрать кейс — Мезон" },
-      { name: "description", content: "Пошаговый конструктор кейса Мезон: идея → критерий → аргумент. Без AI, только вы и формула." },
+      { name: "description", content: "Пошаговый конструктор кейса Мезон: идея → критерий → аргумент." },
     ],
   }),
   component: CaseBuilder,
@@ -66,25 +66,21 @@ function ArgumentIcon() {
 const STEPS = [
   {
     label: "Идея",
-    caption: "Выбери сторону",
+    question: "Почему?",
+    placeholder: "Твоя идея…",
     icon: IdeaIcon,
-    example: "Соцсети приносят обществу больше вреда, чем пользы.",
-    placeholder: "Мой тезис…",
   },
   {
     label: "Критерий",
-    caption: "Что перевешивает?",
+    question: "Что перевешивает?",
+    placeholder: "Твой критерий…",
     icon: CriteriaIcon,
-    example: "Психологическое здоровье подростков важнее удобства коммуникации.",
-    placeholder: "Мой критерий…",
   },
   {
     label: "Аргумент",
-    caption: "Что это доказывает?",
+    question: "Что это доказывает?",
+    placeholder: "Твой аргумент…",
     icon: ArgumentIcon,
-    example:
-      "Исследования показывают рост тревожности у подростков с активными соцсетями — значит, по критерию психологического здоровья моя сторона сильнее.",
-    placeholder: "Мой аргумент…",
   },
 ];
 
@@ -96,7 +92,8 @@ function CaseBuilder() {
   const [phase, setPhase] = useState<Phase>("building");
   const [step, setStep] = useState<Step>(0);
   const [side, setSide] = useState<Side>(search.side ?? "affirmation");
-  const [values, setValues] = useState<string[]>([search.topic ?? "", "", ""]);
+  const [topic, setTopic] = useState<string>(search.topic ?? "");
+  const [values, setValues] = useState<string[]>(["", "", ""]);
   const [completedSides, setCompletedSides] = useState<
     Array<{ side: Side; values: string[] }>
   >([]);
@@ -110,7 +107,7 @@ function CaseBuilder() {
   };
 
   const current = STEPS[step];
-  const canNext = values[step].trim().length > 0;
+  const canNext = values[step].trim().length > 0 && topic.trim().length > 0;
 
   const setValue = (v: string) => {
     const next = [...values];
@@ -121,7 +118,6 @@ function CaseBuilder() {
   const finishCurrentSide = () => {
     const all = [...completedSides, { side, values: [...values] }];
     setCompletedSides(all);
-    // If both sides are done, jump to reflection; else offer the other side.
     if (all.length >= 2) {
       setPhase("reflection");
     } else {
@@ -152,6 +148,7 @@ function CaseBuilder() {
   const resetAll = () => {
     setStep(0);
     setSide("affirmation");
+    setTopic("");
     setValues(["", "", ""]);
     setCompletedSides([]);
     setOpinion("");
@@ -162,17 +159,15 @@ function CaseBuilder() {
   const handleSaveReflection = async () => {
     setSaving(true);
     try {
-      const topic = completedSides[0]?.values[0] ?? values[0] ?? "";
       const rec: CaseReflection = {
         id: crypto.randomUUID(),
         createdAt: Date.now(),
-        topic,
+        topic: topic.trim(),
         sides: completedSides,
         opinion: opinion.trim(),
         changed,
       };
       await saveReflection(rec);
-      // A "cycle" for streaks = both sides + saved reflection.
       if (completedSides.length >= 2) recordCycleCompletion();
       toast("Сохранено в архив");
       setPhase("saved");
@@ -332,9 +327,10 @@ function CaseBuilder() {
 
   // ---------- BUILDING ----------
   const isSecondSide = completedSides.length === 1;
+  const topicMissing = topic.trim().length === 0;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6">
+    <div className="mx-auto max-w-2xl px-4 py-6 space-y-4">
       <Link
         to="/training"
         className="inline-flex items-center gap-1 text-[12.5px] text-muted-foreground hover:text-foreground"
@@ -342,14 +338,33 @@ function CaseBuilder() {
         <ArrowLeft className="h-3.5 w-3.5" /> К тренировке
       </Link>
 
+      {/* Topic plaque — shown on every step */}
+      <div className="rounded-[18px] bg-[color:var(--color-ink)] p-4 text-white">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-white/50">Тема</div>
+        {topicMissing ? (
+          <input
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.currentTarget.blur();
+            }}
+            placeholder="Впиши тему мотива…"
+            className="mt-2 w-full bg-transparent text-[16px] font-semibold leading-snug placeholder:text-white/40 outline-none"
+            autoFocus
+          />
+        ) : (
+          <p className="mt-2 text-[16px] font-semibold leading-snug">«{topic}»</p>
+        )}
+      </div>
+
       {isSecondSide && (
-        <div className="mt-3 rounded-[12px] hairline bg-accent/40 p-3 text-[12.5px] text-foreground/80">
+        <div className="rounded-[12px] hairline bg-accent/40 p-3 text-[12.5px] text-foreground/80">
           Собираем <b>{SIDE_LABEL[side]}</b> — вторая сторона той же темы.
         </div>
       )}
 
       {/* progress dots */}
-      <div className="mt-3 flex items-center gap-2">
+      <div className="flex items-center gap-2">
         {STEPS.map((s, i) => (
           <div key={s.label} className="flex flex-1 items-center gap-2">
             <div
@@ -376,19 +391,19 @@ function CaseBuilder() {
         ))}
       </div>
 
-      <div className="mt-4 rounded-[18px] hairline bg-white p-5">
-        <div className="formula-motif !text-foreground/60">Шаг {step + 1} · {current.label}</div>
-
-        <div className="mt-4 flex items-center gap-4">
-          <div className="h-16 w-16 shrink-0">
+      <div className="rounded-[18px] hairline bg-white p-5">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 shrink-0">
             <current.icon />
           </div>
-          <p className="text-[15px] font-semibold leading-snug text-foreground">{current.caption}</p>
-        </div>
-
-        <div className="mt-5 rounded-[12px] bg-accent/40 p-3">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Пример</div>
-          <p className="mt-1 text-[13px] leading-snug text-foreground/85">«{current.example}»</p>
+          <div>
+            <div className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Шаг {step + 1} · {current.label}
+            </div>
+            <p className="text-[17px] font-semibold leading-snug text-foreground">
+              {current.question}
+            </p>
+          </div>
         </div>
 
         {step === 0 && (
@@ -396,7 +411,7 @@ function CaseBuilder() {
             <div className="grid grid-cols-2 gap-2">
               {(["affirmation", "negation"] as Side[]).map((s) => {
                 const active = side === s;
-                const disabled = isSecondSide; // side is fixed on the second pass
+                const disabled = isSecondSide;
                 return (
                   <button
                     key={s}
@@ -415,11 +430,6 @@ function CaseBuilder() {
                 );
               })}
             </div>
-            <p className="mt-2 text-[11.5px] leading-snug text-muted-foreground">
-              {isSecondSide
-                ? "Сторона зафиксирована — сейчас собираем противоположную."
-                : "Сторона нужна явно — конструктор без ИИ сам её не определит."}
-            </p>
           </div>
         )}
 
@@ -428,11 +438,12 @@ function CaseBuilder() {
           onChange={(e) => setValue(e.target.value)}
           placeholder={current.placeholder}
           rows={4}
-          className="mt-4 w-full resize-none rounded-[12px] hairline bg-white p-3 text-[14px] leading-snug outline-none focus:border-[color:var(--color-ink)]"
+          disabled={topicMissing}
+          className="mt-5 w-full resize-none rounded-[12px] hairline bg-white p-3 text-[14px] leading-snug outline-none focus:border-[color:var(--color-ink)] disabled:opacity-50"
         />
       </div>
 
-      <div className="mt-4 flex gap-2">
+      <div className="flex gap-2">
         <button
           onClick={goBack}
           disabled={step === 0}
@@ -457,11 +468,10 @@ function CaseBuilder() {
         </button>
       </div>
 
-      {/* Optional: proceed to recording after building (kept discoverable) */}
       {step === 2 && canNext && (
         <button
           onClick={() => navigate({ to: "/training" })}
-          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full hairline bg-white px-4 py-2.5 text-[12.5px] font-semibold text-foreground/80 hover:text-foreground"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full hairline bg-white px-4 py-2.5 text-[12.5px] font-semibold text-foreground/80 hover:text-foreground"
         >
           <Mic className="h-3.5 w-3.5" /> Записать эту сторону вслух
         </button>
