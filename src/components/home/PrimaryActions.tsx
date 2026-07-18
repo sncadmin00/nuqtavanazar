@@ -1,0 +1,24 @@
+import { Link } from "@tanstack/react-router";
+import { Swords, Dices } from "lucide-react";
+import { toast } from "sonner";
+
+export function PrimaryActions() {
+  return (
+    <div className="flex gap-2.5">
+      <button
+        onClick={() => toast("Live-поиск скоро откроется", { description: "Матчинг соперника заработает в День дебатов." })}
+        className="flex flex-[55] items-center justify-center gap-2 rounded-[14px] bg-primary py-3.5 text-[14px] font-semibold text-primary-foreground shadow-sm active:scale-[0.99]"
+      >
+        <Swords className="h-[18px] w-[18px]" />
+        Найти соперника
+      </button>
+      <Link
+        to="/training"
+        className="flex flex-[45] items-center justify-center gap-2 rounded-[14px] bg-white hairline py-3.5 text-[14px] font-semibold text-foreground active:scale-[0.99]"
+      >
+        <Dices className="h-[18px] w-[18px]" />
+        Тренировка
+      </Link>
+    </div>
+  );
+}
