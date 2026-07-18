@@ -141,15 +141,11 @@ function TrainingPage() {
   const rollDice = async () => {
     setDice({ status: "loading" });
     try {
-      const [motion, assignment] = await Promise.all([
-        generateMotion({ data: { category: "любая", difficulty: "medium" } }),
-        getSideAssignment(),
-      ]);
+      const motion = await generateMotion({ data: { category: "любая", difficulty: "medium" } });
       setDice({
         status: "ready",
         motion: motion.motion,
         rationale: motion.rationale,
-        assignment,
       });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Не удалось получить тему";
@@ -158,11 +154,11 @@ function TrainingPage() {
     }
   };
 
-  const goBuildWithAssignment = () => {
+  const goBuildFromDice = () => {
     if (dice.status !== "ready") return;
     navigate({
       to: "/case-builder",
-      search: { side: dice.assignment.side, topic: dice.motion },
+      search: { topic: dice.motion },
     });
   };
 
