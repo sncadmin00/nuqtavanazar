@@ -33,15 +33,15 @@ const ru: Dict = {
   "home.hero.ctaPrimary": "Начать обучение",
   "home.hero.ctaSecondary": "Присоединиться к клубу",
 
-  "home.formats.title": "Два формата — под разный уровень",
-  "home.formats.kp.title": "Karl Popper",
-  "home.formats.kp.audience": "Для школьников",
+  "home.formats.title": "Три формата — одна формула",
+  "home.formats.kp.title": "1×1 · дуэль",
+  "home.formats.kp.audience": "Быстрый живой раунд",
   "home.formats.kp.desc":
-    "Командный формат «3 на 3» с акцентом на исследовании темы, командной работе и мастерстве опровержения.",
-  "home.formats.ap.title": "Parliamentary / Asian",
-  "home.formats.ap.audience": "Для студентов",
+    "Два спикера, только звук. Раунд по схеме 3 → 3 → 2 → 2 → 1 → 1 минут вокруг общего критерия.",
+  "home.formats.ap.title": "2×2 · команды",
+  "home.formats.ap.audience": "Командная игра",
   "home.formats.ap.desc":
-    "Классический университетский формат, вдохновлённый британским парламентом. Развивает риторику, аналитику и импровизацию.",
+    "Две команды по два спикера. Единый критерий на команду, распределение ролей: конструктор и сжиматель.",
   "home.formats.learnMore": "Узнать больше",
 
   "home.mission.title": "Наша миссия",
