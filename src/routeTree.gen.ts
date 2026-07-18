@@ -15,6 +15,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DebateDayRouteImport } from './routes/debate-day'
+import { Route as CaseBuilderRouteImport } from './routes/case-builder'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -52,6 +53,11 @@ const DebateDayRoute = DebateDayRouteImport.update({
   path: '/debate-day',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CaseBuilderRoute = CaseBuilderRouteImport.update({
+  id: '/case-builder',
+  path: '/case-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
   '/learn': typeof LearnRouteWithChildren
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
   '/profile': typeof ProfileRouteWithChildren
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
   '/learn': typeof LearnRouteWithChildren
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/case-builder'
     | '/debate-day'
     | '/events'
     | '/learn'
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/case-builder'
     | '/debate-day'
     | '/events'
     | '/profile'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/case-builder'
     | '/debate-day'
     | '/events'
     | '/learn'
@@ -173,6 +185,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  CaseBuilderRoute: typeof CaseBuilderRoute
   DebateDayRoute: typeof DebateDayRoute
   EventsRoute: typeof EventsRoute
   LearnRoute: typeof LearnRouteWithChildren
@@ -223,6 +236,13 @@ declare module '@tanstack/react-router' {
       path: '/debate-day'
       fullPath: '/debate-day'
       preLoaderRoute: typeof DebateDayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/case-builder': {
+      id: '/case-builder'
+      path: '/case-builder'
+      fullPath: '/case-builder'
+      preLoaderRoute: typeof CaseBuilderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -297,6 +317,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  CaseBuilderRoute: CaseBuilderRoute,
   DebateDayRoute: DebateDayRoute,
   EventsRoute: EventsRoute,
   LearnRoute: LearnRouteWithChildren,
