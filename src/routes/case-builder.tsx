@@ -75,6 +75,19 @@ function ProofIcon() {
   );
 }
 
+function ConclusionIcon() {
+  return (
+    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
+      <rect width="80" height="80" rx="16" fill="#1A1A2E" />
+      <path d="M24 28h32" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M24 40h24" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M24 52h18" stroke="#E8562D" strokeWidth="4" strokeLinecap="round" />
+      <path d="M56 52l6-6" stroke="#E8562D" strokeWidth="4" strokeLinecap="round" />
+      <path d="M56 46l6 6" stroke="#E8562D" strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const STEPS = [
   {
     label: "Позиция",
@@ -99,6 +112,12 @@ const STEPS = [
     question: "Факты?",
     placeholder: "Твои факты…",
     icon: ProofIcon,
+  },
+  {
+    label: "Вывод",
+    question: "Вывод?",
+    placeholder: "Твой вывод…",
+    icon: ConclusionIcon,
   },
 ];
 
