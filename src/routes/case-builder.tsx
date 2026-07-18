@@ -164,6 +164,8 @@ function CaseBuilder() {
         changed,
       };
       await saveReflection(rec);
+      // A "cycle" for streaks = both sides + saved reflection.
+      if (completedSides.length >= 2) recordCycleCompletion();
       toast("Сохранено в архив");
       setPhase("saved");
     } catch {
