@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks, Mic2, ArrowRight, Waves } from "lucide-react";
-import { LESSONS } from "@/lib/lessons";
+import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks, Waves, Check, X } from "lucide-react";
 
 export const Route = createFileRoute("/training")({
   head: () => ({
@@ -43,11 +42,100 @@ function saveProgress(p: Progress) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
 }
 
-const TIPS: { title: string; body: string }[] = [
-  { title: "Пауза сильнее «эээ»", body: "Пауза звучит увереннее, чем «эээ». Молчи, а не тяни звук." },
-  { title: "Медленнее, чем кажется", body: "Говори медленнее, чем кажется нужным — нервный темп читается как неуверенность." },
-  { title: "Досказывай до конца", body: "Заверши мысль коротко, но до конца — не обрывай на середине." },
-  { title: "Спина держит голос", body: "Прямая спина меняет звучание голоса, даже если тебя не видно." },
+type Tip = { caption: string; render: () => React.ReactElement };
+
+const BreathingVisual = () => (
+  <div className="relative grid place-items-center py-3">
+    <div className="relative h-32 w-32">
+      <div className="absolute inset-0 rounded-full border border-white/25" />
+      <div
+        className="absolute inset-4 rounded-full bg-primary/70"
+        style={{ animation: "mezon-breathe 8s ease-in-out infinite" }}
+      />
+    </div>
+    <style>{`@keyframes mezon-breathe { 0%,100% { transform: scale(0.55); opacity: .55 } 50% { transform: scale(1); opacity: 1 } }`}</style>
+  </div>
+);
+
+const Bubble = ({ children, tone }: { children: React.ReactNode; tone: "bad" | "good" }) => (
+  <div
+    className={
+      "relative rounded-2xl px-4 py-3 text-[18px] font-semibold " +
+      (tone === "bad"
+        ? "bg-red-500/15 text-red-200 line-through decoration-red-300/70"
+        : "bg-emerald-500/15 text-emerald-200")
+    }
+  >
+    {children}
+    <span
+      className={
+        "absolute -bottom-1.5 left-4 h-3 w-3 rotate-45 " +
+        (tone === "bad" ? "bg-red-500/15" : "bg-emerald-500/15")
+      }
+    />
+  </div>
+);
+
+const PauseVisual = () => (
+  <div className="flex items-end justify-center gap-4 py-4">
+    <Bubble tone="bad">ЭЭЭ</Bubble>
+    <Bubble tone="good">· · ·</Bubble>
+  </div>
+);
+
+const HandsVisual = () => (
+  <div className="flex items-center justify-center gap-6 py-4 text-white">
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative grid h-16 w-16 place-items-center rounded-2xl bg-red-500/15">
+        <span className="text-[26px]">✊</span>
+        <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-red-500 text-white">
+          <X className="h-3 w-3" />
+        </span>
+      </div>
+    </div>
+    <div className="text-white/40">→</div>
+    <div className="flex flex-col items-center gap-2">
+      <div className="relative grid h-16 w-16 place-items-center rounded-2xl bg-emerald-500/15">
+        <span className="text-[26px]">🖐️</span>
+        <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-emerald-500 text-white">
+          <Check className="h-3 w-3" />
+        </span>
+      </div>
+    </div>
+  </div>
+);
+
+const FocusVisual = () => (
+  <div className="grid grid-cols-2 gap-4 py-4">
+    <div className="grid place-items-center rounded-2xl bg-emerald-500/10 py-4">
+      <div className="relative grid h-16 w-16 place-items-center">
+        <div className="absolute inset-0 rounded-full border border-emerald-300/50" />
+        <div className="absolute inset-3 rounded-full border border-emerald-300/30" />
+        <div className="h-2.5 w-2.5 rounded-full bg-emerald-300" />
+      </div>
+    </div>
+    <div className="relative grid place-items-center rounded-2xl bg-red-500/10 py-4">
+      <div className="relative h-16 w-16">
+        {[
+          { t: 8, l: 20 }, { t: 55, l: 10 }, { t: 30, l: 48 },
+          { t: 70, l: 60 }, { t: 12, l: 70 }, { t: 45, l: 30 },
+        ].map((p, i) => (
+          <span
+            key={i}
+            className="absolute h-1.5 w-1.5 rounded-full bg-red-300/80"
+            style={{ top: `${p.t}%`, left: `${p.l}%` }}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const TIPS: Tip[] = [
+  { caption: "4 секунды вдох — 4 секунды выдох", render: BreathingVisual },
+  { caption: "Тишина — не ошибка", render: PauseVisual },
+  { caption: "Руки свободны, не сжаты", render: HandsVisual },
+  { caption: "Одна точка в голове — не блуждающий фокус", render: FocusVisual },
 ];
 
 function TrainingPage() {
@@ -213,27 +301,29 @@ function TrainingPage() {
           </span>
         </button>
       ) : (
-        <div className="rounded-[16px] hairline bg-white p-4">
+        <div className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
           <div className="flex items-center justify-between">
-            <div className="formula-motif !text-foreground/70">Перед стартом</div>
+            <div className="formula-motif !text-white/50">Перед стартом</div>
             <button
               onClick={() => setShowTips(false)}
-              className="text-[11px] text-muted-foreground hover:text-foreground"
+              className="text-[11px] text-white/60 hover:text-white"
             >
               Закрыть
             </button>
           </div>
 
-          <div className="mt-3 rounded-[12px] bg-accent/40 p-4">
-            <div className="text-[13px] font-semibold">{TIPS[tipIdx].title}</div>
-            <p className="mt-1 text-[13px] leading-snug text-foreground/85">{TIPS[tipIdx].body}</p>
+          <div className="mt-3 rounded-[14px] bg-white/5 px-4 pt-2 pb-4">
+            {TIPS[tipIdx].render()}
+            <div className="mt-1 text-center text-[13.5px] font-semibold text-white">
+              {TIPS[tipIdx].caption}
+            </div>
           </div>
 
-          <div className="mt-3 flex items-center justify-between">
+          <div className="mt-4 flex items-center justify-between">
             <button
               onClick={() => setTipIdx((i) => Math.max(0, i - 1))}
               disabled={tipIdx === 0}
-              className="grid h-8 w-8 place-items-center rounded-full hairline disabled:opacity-40"
+              className="grid h-8 w-8 place-items-center rounded-full border border-white/20 disabled:opacity-30"
               aria-label="Назад"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -245,7 +335,7 @@ function TrainingPage() {
                   onClick={() => setTipIdx(i)}
                   className={
                     "h-1.5 rounded-full transition " +
-                    (i === tipIdx ? "w-5 bg-[color:var(--color-ink)]" : "w-1.5 bg-foreground/25")
+                    (i === tipIdx ? "w-5 bg-white" : "w-1.5 bg-white/30")
                   }
                   aria-label={`Подсказка ${i + 1}`}
                 />
@@ -254,7 +344,7 @@ function TrainingPage() {
             <button
               onClick={() => setTipIdx((i) => Math.min(TIPS.length - 1, i + 1))}
               disabled={tipIdx === TIPS.length - 1}
-              className="grid h-8 w-8 place-items-center rounded-full hairline disabled:opacity-40"
+              className="grid h-8 w-8 place-items-center rounded-full border border-white/20 disabled:opacity-30"
               aria-label="Дальше"
             >
               <ChevronRight className="h-4 w-4" />
@@ -263,41 +353,13 @@ function TrainingPage() {
 
           <button
             onClick={startAfterTips}
-            className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:var(--color-ink)] px-4 py-2.5 text-[13.5px] font-semibold text-white active:scale-[0.99]"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-[13.5px] font-semibold text-white active:scale-[0.99]"
           >
             <Mic className="h-4 w-4" /> Записать {level} секунд
           </button>
         </div>
       )}
 
-      {/* Speaking technique bridge */}
-      <div className="rounded-[16px] hairline bg-white p-4">
-        <div className="flex items-center gap-2">
-          <Mic2 className="h-3.5 w-3.5 text-primary" />
-          <div className="formula-motif !text-foreground/70">Ораторская техника</div>
-          <span className="ml-auto rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-            Новое
-          </span>
-        </div>
-        <p className="mt-2 text-[12.5px] leading-snug text-muted-foreground">
-          Голос — единственный инструмент. Короткие статьи о дыхании, паузах и темпе для аудио-раундов.
-        </p>
-        <ul className="mt-3 divide-y divide-border/60">
-          {LESSONS.filter((l) => l.category === "speaking").map((l) => (
-            <li key={l.id}>
-              <Link
-                to="/learn/$moduleId"
-                params={{ moduleId: l.id }}
-                className="flex items-center gap-3 py-2.5 text-[13px] active:scale-[0.99]"
-              >
-                <span className="flex-1 truncate text-foreground/90">{l.title}</span>
-                <span className="text-[11px] text-muted-foreground">{l.minutes} мин</span>
-                <ArrowRight className="h-3.5 w-3.5 text-primary" />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
 
       <div className="rounded-[16px] hairline bg-white p-4">
         <div className="flex items-center gap-2">
