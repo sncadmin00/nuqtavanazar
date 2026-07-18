@@ -3,8 +3,16 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, CheckCircle2, Flag, Mic, Save } from "lucide-react";
 import { saveReflection, type CaseReflection } from "@/lib/freeTalk";
+import { recordCycleCompletion } from "@/lib/streak";
 
 export const Route = createFileRoute("/case-builder")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    side:
+      s.side === "affirmation" || s.side === "negation"
+        ? (s.side as "affirmation" | "negation")
+        : undefined,
+    topic: typeof s.topic === "string" ? s.topic : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Собрать кейс — Мезон" },
@@ -84,10 +92,11 @@ type Phase = "building" | "offer" | "reflection" | "saved";
 
 function CaseBuilder() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const [phase, setPhase] = useState<Phase>("building");
   const [step, setStep] = useState<Step>(0);
-  const [side, setSide] = useState<Side>("affirmation");
-  const [values, setValues] = useState<string[]>(["", "", ""]);
+  const [side, setSide] = useState<Side>(search.side ?? "affirmation");
+  const [values, setValues] = useState<string[]>([search.topic ?? "", "", ""]);
   const [completedSides, setCompletedSides] = useState<
     Array<{ side: Side; values: string[] }>
   >([]);
@@ -163,6 +172,8 @@ function CaseBuilder() {
         changed,
       };
       await saveReflection(rec);
+      // A "cycle" for streaks = both sides + saved reflection.
+      if (completedSides.length >= 2) recordCycleCompletion();
       toast("Сохранено в архив");
       setPhase("saved");
     } catch {

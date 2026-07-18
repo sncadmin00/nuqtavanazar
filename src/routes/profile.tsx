@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Settings, LogOut } from "lucide-react";
+import { Settings, LogOut, Flame } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchTopRatings } from "@/lib/debate-data";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { getStreak, type StreakInfo } from "@/lib/streak";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -37,9 +38,11 @@ function ProfilePage() {
   const [me, setMe] = useState<Rating | null>(null);
   const [top, setTop] = useState<Awaited<ReturnType<typeof fetchTopRatings>>>([]);
   const [tab, setTab] = useState<"mastery" | "knock" | "moderator">("mastery");
+  const [streak, setStreak] = useState<StreakInfo>({ current: 0, longest: 0, weekDays: Array(7).fill(false) });
 
   useEffect(() => {
     fetchTopRatings(20).then(setTop);
+    setStreak(getStreak());
   }, []);
 
   useEffect(() => {
@@ -122,6 +125,25 @@ function ProfilePage() {
         <Stat label="Тук" value={me?.knock ?? 0} />
         <Stat label="Модератор" value={me?.moderator ? me.moderator : null} />
       </div>
+
+      {/* Training streak */}
+      <section className="flex items-center gap-3 rounded-[16px] hairline bg-white p-4">
+        <span className={"grid h-11 w-11 place-items-center rounded-full " + (streak.current > 0 ? "bg-primary/15" : "bg-muted")}>
+          <Flame className={"h-5 w-5 " + (streak.current > 0 ? "text-primary" : "text-muted-foreground")} />
+        </span>
+        <div className="flex-1 min-w-0">
+          <div className="text-[13.5px] font-semibold leading-tight">
+            {streak.current > 0 ? `Серия тренировок: ${streak.current}` : "Серия пока не начата"}
+          </div>
+          <div className="mt-0.5 text-[11.5px] text-muted-foreground">
+            Лучшая серия: {streak.longest} · На этой неделе: {streak.weekDays.filter(Boolean).length}/7
+          </div>
+        </div>
+        <Link to="/training" className="text-[12.5px] font-semibold text-primary">
+          Тренировка →
+        </Link>
+      </section>
+
 
       {/* Tabs */}
       <div className="flex gap-1 rounded-full hairline bg-white p-1">

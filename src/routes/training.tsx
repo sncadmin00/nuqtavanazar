@@ -1,7 +1,23 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks, Waves, Check, X } from "lucide-react";
+import {
+  Dices,
+  Mic,
+  Sparkles,
+  Lock,
+  ChevronLeft,
+  ChevronRight,
+  ListChecks,
+  Waves,
+  Check,
+  X,
+  Flame,
+  Loader2,
+} from "lucide-react";
+import { getStreak, type StreakInfo } from "@/lib/streak";
+import { getSideAssignment, type SideAssignment } from "@/lib/dice-intel";
+import { generateMotion } from "@/lib/ai.functions";
 
 export const Route = createFileRoute("/training")({
   head: () => ({
@@ -138,15 +154,73 @@ const TIPS: Tip[] = [
   { caption: "Одна точка в голове — не блуждающий фокус", render: FocusVisual },
 ];
 
+const WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+
+function dayWord(n: number): string {
+  const mod100 = n % 100;
+  const mod10 = n % 10;
+  if (mod100 >= 11 && mod100 <= 14) return "дней";
+  if (mod10 === 1) return "день";
+  if (mod10 >= 2 && mod10 <= 4) return "дня";
+  return "дней";
+}
+
+type DiceState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | {
+      status: "ready";
+      motion: string;
+      rationale: string;
+      pro_hint: string;
+      con_hint: string;
+      assignment: SideAssignment;
+    }
+  | { status: "error"; message: string };
+
 function TrainingPage() {
+  const navigate = useNavigate();
   const [progress, setProgress] = useState<Progress>(defaultProgress);
   const [level, setLevel] = useState<Level>(30);
   const [showTips, setShowTips] = useState(false);
   const [tipIdx, setTipIdx] = useState(0);
+  const [streak, setStreak] = useState<StreakInfo>({ current: 0, longest: 0, weekDays: Array(7).fill(false) });
+  const [dice, setDice] = useState<DiceState>({ status: "idle" });
 
   useEffect(() => {
     setProgress(loadProgress());
+    setStreak(getStreak());
   }, []);
+
+  const rollDice = async () => {
+    setDice({ status: "loading" });
+    try {
+      const [motion, assignment] = await Promise.all([
+        generateMotion({ data: { category: "любая", difficulty: "medium" } }),
+        getSideAssignment(),
+      ]);
+      setDice({
+        status: "ready",
+        motion: motion.motion,
+        rationale: motion.rationale,
+        pro_hint: motion.pro_hint,
+        con_hint: motion.con_hint,
+        assignment,
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Не удалось получить тему";
+      setDice({ status: "error", message: msg });
+      toast(msg);
+    }
+  };
+
+  const goBuildWithAssignment = () => {
+    if (dice.status !== "ready") return;
+    navigate({
+      to: "/case-builder",
+      search: { side: dice.assignment.side, topic: dice.motion },
+    });
+  };
 
   const chooseLevel = (l: Level) => {
     if (progress.unlocked[l]) {
@@ -186,13 +260,54 @@ function TrainingPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-4 space-y-4">
       <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
-        <div className="formula-motif !text-white/50">Тренировка</div>
-        <h1 className="mt-1 text-[22px] font-semibold leading-tight">
-          Проговорите обе стороны — одну идею, два взгляда
-        </h1>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="formula-motif !text-white/50">Тренировка</div>
+            <h1 className="mt-1 text-[22px] font-semibold leading-tight">
+              Проговорите обе стороны — одну идею, два взгляда
+            </h1>
+          </div>
+          <div
+            className={
+              "shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-semibold " +
+              (streak.current > 0
+                ? "bg-primary/20 text-primary-foreground text-white"
+                : "bg-white/10 text-white/70")
+            }
+            title={streak.current > 0 ? `Лучшая серия: ${streak.longest}` : "Серия начнётся с первого пройденного цикла"}
+          >
+            <Flame className={"h-4 w-4 " + (streak.current > 0 ? "text-primary" : "text-white/50")} />
+            {streak.current > 0 ? `${streak.current} ${dayWord(streak.current)} подряд` : "Серии пока нет"}
+          </div>
+        </div>
+
         <p className="mt-2 text-[13.5px] leading-relaxed text-white/70">
           Приватно. Никто не слышит. Голос — единственный инструмент, дыхание — единственная опора.
         </p>
+
+        {/* Week bar */}
+        <div className="mt-4">
+          <div className="flex items-center justify-between text-[10.5px] uppercase tracking-wider text-white/50">
+            <span>Эта неделя</span>
+            <span>{streak.weekDays.filter(Boolean).length}/7</span>
+          </div>
+          <div className="mt-1.5 grid grid-cols-7 gap-1.5">
+            {streak.weekDays.map((done, i) => (
+              <div key={i} className="flex flex-col items-center gap-1">
+                <div
+                  className={
+                    "h-2 w-full rounded-full " +
+                    (done ? "bg-primary" : "bg-white/15")
+                  }
+                />
+                <span className="text-[10px] text-white/50">{WEEKDAYS[i]}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 text-[11px] leading-snug text-white/50">
+            Цикл засчитывается, когда собраны обе стороны и сохранена рефлексия.
+          </p>
+        </div>
       </section>
 
       {/* Level selector */}
@@ -237,15 +352,22 @@ function TrainingPage() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 
         <button
-          onClick={() => toast("Генератор тем скоро запустится")}
-          className="flex items-start gap-3 rounded-[16px] hairline bg-white p-4 text-left active:scale-[0.99]"
+          onClick={rollDice}
+          disabled={dice.status === "loading"}
+          className="flex items-start gap-3 rounded-[16px] hairline bg-white p-4 text-left active:scale-[0.99] disabled:opacity-70"
         >
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent">
-            <Dices className="h-5 w-5 text-foreground" />
+            {dice.status === "loading" ? (
+              <Loader2 className="h-5 w-5 animate-spin text-foreground" />
+            ) : (
+              <Dices className="h-5 w-5 text-foreground" />
+            )}
           </span>
           <span className="flex-1">
-            <span className="block text-[14px] font-semibold">Кубик — случайная тема</span>
-            <span className="mt-0.5 block text-[12px] text-muted-foreground">Одна кнопка, готовая формулировка</span>
+            <span className="block text-[14px] font-semibold">Умный кубик</span>
+            <span className="mt-0.5 block text-[12px] text-muted-foreground">
+              Тема + сторона, специально не та, к которой ты склоняешься
+            </span>
           </span>
         </button>
 
@@ -282,6 +404,62 @@ function TrainingPage() {
           </span>
         </Link>
       </div>
+
+      {/* Smart dice result */}
+      {dice.status === "ready" && (
+        <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
+          <div className="flex items-center justify-between">
+            <div className="formula-motif !text-white/50">Кубик выбрал</div>
+            <button
+              onClick={rollDice}
+              className="text-[11px] text-white/60 underline underline-offset-2 hover:text-white"
+            >
+              Ещё раз
+            </button>
+          </div>
+          <p className="mt-2 text-[16px] font-semibold leading-snug">«{dice.motion}»</p>
+          <p className="mt-2 text-[12.5px] leading-relaxed text-white/70">{dice.rationale}</p>
+
+          <div
+            className={
+              "mt-4 rounded-[12px] p-3 text-[12.5px] leading-snug " +
+              (dice.assignment.reason
+                ? "bg-primary/20 text-white"
+                : "bg-white/5 text-white/80")
+            }
+          >
+            <div className="text-[10.5px] font-semibold uppercase tracking-wider text-white/60">
+              Твоя сторона
+            </div>
+            <div className="mt-1 text-[14px] font-semibold">
+              {dice.assignment.side === "affirmation" ? "Утверждение" : "Отрицание"}
+            </div>
+            <p className="mt-1.5 text-white/80">
+              {dice.assignment.reason ??
+                `Ещё нет прошлых рефлексий (${dice.assignment.samples}/3) — сторона выпала случайно. Собирай кейсы, и кубик начнёт назначать противоположную твоей.`}
+            </p>
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-2 text-[12px]">
+            <div className="rounded-[10px] bg-white/5 p-2.5">
+              <div className="text-[10px] uppercase tracking-wider text-white/50">За</div>
+              <div className="mt-0.5 text-white/85">{dice.pro_hint}</div>
+            </div>
+            <div className="rounded-[10px] bg-white/5 p-2.5">
+              <div className="text-[10px] uppercase tracking-wider text-white/50">Против</div>
+              <div className="mt-0.5 text-white/85">{dice.con_hint}</div>
+            </div>
+          </div>
+
+          <button
+            onClick={goBuildWithAssignment}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-[13.5px] font-semibold text-white active:scale-[0.99]"
+          >
+            Собрать эту сторону <ListChecks className="h-4 w-4" />
+          </button>
+        </section>
+      )}
+
 
 
       {/* Record button + tips */}
