@@ -185,9 +185,9 @@ const uz: Dict = {
   "home.hero.ctaPrimary": "Oʻqishni boshlash",
   "home.hero.ctaSecondary": "Klubga qoʻshilish",
 
-  "home.formats.title": "Ikki format — turli darajalar uchun",
-  "home.formats.kp.audience": "Maktab oʻquvchilari uchun",
-  "home.formats.ap.audience": "Talabalar uchun",
+  "home.formats.title": "Uch format — bitta formula",
+  "home.formats.kp.audience": "Tez jonli raund",
+  "home.formats.ap.audience": "Jamoaviy oʻyin",
   "home.formats.learnMore": "Batafsil",
 
   "home.mission.title": "Missiyamiz",
@@ -221,9 +221,9 @@ const en: Dict = {
   "home.hero.ctaPrimary": "Start learning",
   "home.hero.ctaSecondary": "Join the club",
 
-  "home.formats.title": "Two formats — for different levels",
-  "home.formats.kp.audience": "For high-school students",
-  "home.formats.ap.audience": "For university students",
+  "home.formats.title": "Three formats — one formula",
+  "home.formats.kp.audience": "Fast live duel",
+  "home.formats.ap.audience": "Team play",
   "home.formats.learnMore": "Learn more",
 
   "home.mission.title": "Our mission",
