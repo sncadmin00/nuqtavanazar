@@ -396,6 +396,62 @@ function TrainingPage() {
         </Link>
       </div>
 
+      {/* Smart dice result */}
+      {dice.status === "ready" && (
+        <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
+          <div className="flex items-center justify-between">
+            <div className="formula-motif !text-white/50">Кубик выбрал</div>
+            <button
+              onClick={rollDice}
+              className="text-[11px] text-white/60 underline underline-offset-2 hover:text-white"
+            >
+              Ещё раз
+            </button>
+          </div>
+          <p className="mt-2 text-[16px] font-semibold leading-snug">«{dice.motion}»</p>
+          <p className="mt-2 text-[12.5px] leading-relaxed text-white/70">{dice.rationale}</p>
+
+          <div
+            className={
+              "mt-4 rounded-[12px] p-3 text-[12.5px] leading-snug " +
+              (dice.assignment.reason
+                ? "bg-primary/20 text-white"
+                : "bg-white/5 text-white/80")
+            }
+          >
+            <div className="text-[10.5px] font-semibold uppercase tracking-wider text-white/60">
+              Твоя сторона
+            </div>
+            <div className="mt-1 text-[14px] font-semibold">
+              {dice.assignment.side === "affirmation" ? "Утверждение" : "Отрицание"}
+            </div>
+            <p className="mt-1.5 text-white/80">
+              {dice.assignment.reason ??
+                `Ещё нет прошлых рефлексий (${dice.assignment.samples}/3) — сторона выпала случайно. Собирай кейсы, и кубик начнёт назначать противоположную твоей.`}
+            </p>
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-2 text-[12px]">
+            <div className="rounded-[10px] bg-white/5 p-2.5">
+              <div className="text-[10px] uppercase tracking-wider text-white/50">За</div>
+              <div className="mt-0.5 text-white/85">{dice.pro_hint}</div>
+            </div>
+            <div className="rounded-[10px] bg-white/5 p-2.5">
+              <div className="text-[10px] uppercase tracking-wider text-white/50">Против</div>
+              <div className="mt-0.5 text-white/85">{dice.con_hint}</div>
+            </div>
+          </div>
+
+          <button
+            onClick={goBuildWithAssignment}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-[13.5px] font-semibold text-white active:scale-[0.99]"
+          >
+            Собрать эту сторону <ListChecks className="h-4 w-4" />
+          </button>
+        </section>
+      )}
+
+
 
       {/* Record button + tips */}
       {!showTips ? (
