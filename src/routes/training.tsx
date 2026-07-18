@@ -173,7 +173,28 @@ function TrainingPage() {
             <span className="mt-0.5 block text-[12px] text-muted-foreground">Идея → критерий → аргумент, 3 шага</span>
           </span>
         </Link>
+
+        <Link
+          to="/free-talk"
+          className="flex items-start gap-3 rounded-[16px] hairline bg-white p-4 text-left active:scale-[0.99] sm:col-span-2 lg:col-span-1"
+        >
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent">
+            <Waves className="h-5 w-5 text-foreground" />
+          </span>
+          <span className="flex-1">
+            <span className="flex items-center gap-2">
+              <span className="text-[14px] font-semibold">Свободные мысли</span>
+              <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                Приватно
+              </span>
+            </span>
+            <span className="mt-0.5 block text-[12px] text-muted-foreground">
+              Без темы, без таймера, без оценки — никто не слушает
+            </span>
+          </span>
+        </Link>
       </div>
+
 
       {/* Record button + tips */}
       {!showTips ? (
