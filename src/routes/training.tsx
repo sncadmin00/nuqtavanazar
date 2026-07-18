@@ -154,15 +154,64 @@ const TIPS: Tip[] = [
   { caption: "Одна точка в голове — не блуждающий фокус", render: FocusVisual },
 ];
 
+const WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+
+type DiceState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | {
+      status: "ready";
+      motion: string;
+      rationale: string;
+      pro_hint: string;
+      con_hint: string;
+      assignment: SideAssignment;
+    }
+  | { status: "error"; message: string };
+
 function TrainingPage() {
+  const navigate = useNavigate();
   const [progress, setProgress] = useState<Progress>(defaultProgress);
   const [level, setLevel] = useState<Level>(30);
   const [showTips, setShowTips] = useState(false);
   const [tipIdx, setTipIdx] = useState(0);
+  const [streak, setStreak] = useState<StreakInfo>({ current: 0, longest: 0, weekDays: Array(7).fill(false) });
+  const [dice, setDice] = useState<DiceState>({ status: "idle" });
 
   useEffect(() => {
     setProgress(loadProgress());
+    setStreak(getStreak());
   }, []);
+
+  const rollDice = async () => {
+    setDice({ status: "loading" });
+    try {
+      const [motion, assignment] = await Promise.all([
+        generateMotion({ data: { category: "любая", difficulty: "medium" } }),
+        getSideAssignment(),
+      ]);
+      setDice({
+        status: "ready",
+        motion: motion.motion,
+        rationale: motion.rationale,
+        pro_hint: motion.pro_hint,
+        con_hint: motion.con_hint,
+        assignment,
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Не удалось получить тему";
+      setDice({ status: "error", message: msg });
+      toast(msg);
+    }
+  };
+
+  const goBuildWithAssignment = () => {
+    if (dice.status !== "ready") return;
+    navigate({
+      to: "/case-builder",
+      search: { side: dice.assignment.side, topic: dice.motion },
+    });
+  };
 
   const chooseLevel = (l: Level) => {
     if (progress.unlocked[l]) {
