@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks } from "lucide-react";
+import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks, Mic2, ArrowRight } from "lucide-react";
+import { LESSONS } from "@/lib/lessons";
 
 export const Route = createFileRoute("/training")({
   head: () => ({
@@ -246,6 +247,35 @@ function TrainingPage() {
           </button>
         </div>
       )}
+
+      {/* Speaking technique bridge */}
+      <div className="rounded-[16px] hairline bg-white p-4">
+        <div className="flex items-center gap-2">
+          <Mic2 className="h-3.5 w-3.5 text-primary" />
+          <div className="formula-motif !text-foreground/70">Ораторская техника</div>
+          <span className="ml-auto rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+            Новое
+          </span>
+        </div>
+        <p className="mt-2 text-[12.5px] leading-snug text-muted-foreground">
+          Голос — единственный инструмент. Короткие статьи о дыхании, паузах и темпе для аудио-раундов.
+        </p>
+        <ul className="mt-3 divide-y divide-border/60">
+          {LESSONS.filter((l) => l.category === "speaking").map((l) => (
+            <li key={l.id}>
+              <Link
+                to="/learn/$moduleId"
+                params={{ moduleId: l.id }}
+                className="flex items-center gap-3 py-2.5 text-[13px] active:scale-[0.99]"
+              >
+                <span className="flex-1 truncate text-foreground/90">{l.title}</span>
+                <span className="text-[11px] text-muted-foreground">{l.minutes} мин</span>
+                <ArrowRight className="h-3.5 w-3.5 text-primary" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="rounded-[16px] hairline bg-white p-4">
         <div className="flex items-center gap-2">
