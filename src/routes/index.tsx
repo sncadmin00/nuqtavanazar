@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { Flame } from "lucide-react";
 import { CountdownHero } from "@/components/home/CountdownHero";
 import { LastWeekBanner } from "@/components/home/LastWeekBanner";
 import { PrimaryActions } from "@/components/home/PrimaryActions";
 import { MyRatingCard } from "@/components/home/MyRatingCard";
 import { LiveNow } from "@/components/home/LiveNow";
+import { WeekStrip } from "@/components/WeekStrip";
+import { getStreak, type StreakInfo } from "@/lib/streak";
 import { fetchCurrentWeek, fetchPreviousWeek, type DebateWeek } from "@/lib/debate-data";
 
 export const Route = createFileRoute("/")({
