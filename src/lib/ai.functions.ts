@@ -40,15 +40,15 @@ async function callGateway(
 
 // ============= AI TUTOR =============
 
-const TUTOR_SYSTEM = `Ты — опытный тьютор дебатного клуба Debate Club Uzbekistan. Ты помогаешь школьникам и студентам осваивать дебаты.
+const TUTOR_SYSTEM = `Ты — тьютор платформы Мезон. Помогаешь школьникам, студентам и взрослым осваивать структурированные дебаты.
 
 Твой стиль:
 - Отвечай на русском (если пользователь пишет на узбекском/английском — отвечай на том же языке).
-- Объясняй просто, приводи конкретные примеры из реальных дебатов.
-- Знаешь форматы Karl Popper и Asian Parliamentary, структуру AREA (Assertion-Reasoning-Evidence-Analysis), критерии судейства, логические ошибки.
+- Объясняй просто, приводи конкретные примеры.
+- Всё объясняешь через формулу Мезон: идея → критерий → аргумент. Знаешь три формата — 1×1, 2×2, круглый стол — и критерии судейства.
 - Если пользователь пассивно читает — задай ему проверочный вопрос.
 - Ответы краткие (3-6 абзацев максимум), с bullet-points где уместно.
-- Никогда не говори "как большая языковая модель".`;
+- Никогда не говори «как большая языковая модель».`;
 
 export const askTutor = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => {
@@ -79,19 +79,22 @@ const JUDGE_CRITERIA_KP = [
 
 export const judgeSpeech = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => {
-    const i = input as { motion: string; format: "karl_popper" | "parliamentary"; side?: string; speech: string };
+    const i = input as { motion: string; format: "duel" | "team" | "roundtable"; side?: string; speech: string };
     if (!i.motion || !i.speech) throw new Error("motion и speech обязательны");
     if (i.speech.length < 50) throw new Error("Речь слишком короткая (минимум 50 символов)");
     if (i.speech.length > 8000) throw new Error("Речь слишком длинная (максимум 8000 символов)");
+    const format: "duel" | "team" | "roundtable" =
+      i.format === "team" ? "team" : i.format === "roundtable" ? "roundtable" : "duel";
     return {
       motion: i.motion,
-      format: i.format === "parliamentary" ? "parliamentary" as const : "karl_popper" as const,
+      format,
       side: i.side ?? "",
       speech: i.speech,
     };
   })
   .handler(async ({ data }) => {
-    const formatName = data.format === "karl_popper" ? "Karl Popper" : "Asian Parliamentary";
+    const formatName =
+      data.format === "team" ? "Мезон 2×2" : data.format === "roundtable" ? "Мезон · круглый стол" : "Мезон 1×1";
     const prompt = `Ты — опытный судья дебатов формата ${formatName}. Оцени речь дебатёра как настоящий ballot.
 
 ТЕМА (motion): "${data.motion}"

@@ -19,8 +19,10 @@ export const Route = createFileRoute("/learn/")({
 
 const trackLabels: Record<string, string> = {
   basics: "Основы",
-  karl_popper: "Формат Мезон · соло",
-  parliamentary: "Формат Мезон · команды",
+  solo: "Соло",
+  duel: "1×1",
+  team: "2×2",
+  roundtable: "Круглый стол",
   judging: "Судейство",
 };
 

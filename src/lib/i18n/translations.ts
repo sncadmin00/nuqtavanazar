@@ -33,15 +33,15 @@ const ru: Dict = {
   "home.hero.ctaPrimary": "Начать обучение",
   "home.hero.ctaSecondary": "Присоединиться к клубу",
 
-  "home.formats.title": "Два формата — под разный уровень",
-  "home.formats.kp.title": "Karl Popper",
-  "home.formats.kp.audience": "Для школьников",
+  "home.formats.title": "Три формата — одна формула",
+  "home.formats.kp.title": "1×1 · дуэль",
+  "home.formats.kp.audience": "Быстрый живой раунд",
   "home.formats.kp.desc":
-    "Командный формат «3 на 3» с акцентом на исследовании темы, командной работе и мастерстве опровержения.",
-  "home.formats.ap.title": "Parliamentary / Asian",
-  "home.formats.ap.audience": "Для студентов",
+    "Два спикера, только звук. Раунд по схеме 3 → 3 → 2 → 2 → 1 → 1 минут вокруг общего критерия.",
+  "home.formats.ap.title": "2×2 · команды",
+  "home.formats.ap.audience": "Командная игра",
   "home.formats.ap.desc":
-    "Классический университетский формат, вдохновлённый британским парламентом. Развивает риторику, аналитику и импровизацию.",
+    "Две команды по два спикера. Единый критерий на команду, распределение ролей: конструктор и сжиматель.",
   "home.formats.learnMore": "Узнать больше",
 
   "home.mission.title": "Наша миссия",
@@ -154,9 +154,11 @@ const ru: Dict = {
   "category.culture": "Культура",
   "category.other": "Другое",
 
-  "format.karl_popper": "Karl Popper",
-  "format.parliamentary": "Parliamentary",
-  "format.both": "Оба формата",
+  "format.solo": "Соло",
+  "format.duel": "1×1",
+  "format.team": "2×2",
+  "format.roundtable": "Круглый стол",
+  "format.both": "Все форматы",
 };
 
 const uz: Dict = {
@@ -183,9 +185,9 @@ const uz: Dict = {
   "home.hero.ctaPrimary": "Oʻqishni boshlash",
   "home.hero.ctaSecondary": "Klubga qoʻshilish",
 
-  "home.formats.title": "Ikki format — turli darajalar uchun",
-  "home.formats.kp.audience": "Maktab oʻquvchilari uchun",
-  "home.formats.ap.audience": "Talabalar uchun",
+  "home.formats.title": "Uch format — bitta formula",
+  "home.formats.kp.audience": "Tez jonli raund",
+  "home.formats.ap.audience": "Jamoaviy oʻyin",
   "home.formats.learnMore": "Batafsil",
 
   "home.mission.title": "Missiyamiz",
@@ -219,9 +221,9 @@ const en: Dict = {
   "home.hero.ctaPrimary": "Start learning",
   "home.hero.ctaSecondary": "Join the club",
 
-  "home.formats.title": "Two formats — for different levels",
-  "home.formats.kp.audience": "For high-school students",
-  "home.formats.ap.audience": "For university students",
+  "home.formats.title": "Three formats — one formula",
+  "home.formats.kp.audience": "Fast live duel",
+  "home.formats.ap.audience": "Team play",
   "home.formats.learnMore": "Learn more",
 
   "home.mission.title": "Our mission",
