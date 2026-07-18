@@ -63,11 +63,59 @@ function Row({ rec, onDelete }: { rec: FreeTalkRecord; onDelete: (id: string) =>
   );
 }
 
+const CHANGED_LABEL: Record<NonNullable<CaseReflection["changed"]>, string> = {
+  strong: "Мнение изменилось сильно",
+  little: "Изменилось немного",
+  no: "Не изменилось",
+};
+
+function ReflectionRow({
+  rec,
+  onDelete,
+}: {
+  rec: CaseReflection;
+  onDelete: (id: string) => void;
+}) {
+  return (
+    <li className="py-3">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-[13px] font-semibold">{formatDate(rec.createdAt)}</div>
+          <div className="mt-0.5 text-[11.5px] text-muted-foreground">
+            {rec.sides.length === 2 ? "Обе стороны" : "Одна сторона"}
+            {rec.changed ? ` · ${CHANGED_LABEL[rec.changed]}` : ""}
+          </div>
+        </div>
+        <button
+          onClick={() => {
+            if (!window.confirm("Удалить эту рефлексию?")) return;
+            onDelete(rec.id);
+          }}
+          className="grid h-8 w-8 place-items-center rounded-full hairline text-muted-foreground hover:text-foreground"
+          aria-label="Удалить"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+      {rec.topic && (
+        <p className="mt-2 text-[12.5px] italic text-foreground/70">«{rec.topic}»</p>
+      )}
+      {rec.opinion && (
+        <p className="mt-2 whitespace-pre-wrap text-[13px] leading-snug text-foreground/90">
+          {rec.opinion}
+        </p>
+      )}
+    </li>
+  );
+}
+
 function ArchivePage() {
   const [items, setItems] = useState<FreeTalkRecord[] | null>(null);
+  const [reflections, setReflections] = useState<CaseReflection[] | null>(null);
 
   const refresh = () => {
     listRecordings().then(setItems).catch(() => setItems([]));
+    listReflections().then(setReflections).catch(() => setReflections([]));
   };
 
   useEffect(() => {
@@ -77,6 +125,12 @@ function ArchivePage() {
   const handleDelete = async (id: string) => {
     await deleteRecording(id);
     toast("Запись удалена");
+    refresh();
+  };
+
+  const handleDeleteReflection = async (id: string) => {
+    await deleteReflection(id);
+    toast("Рефлексия удалена");
     refresh();
   };
 
@@ -91,9 +145,9 @@ function ArchivePage() {
 
       <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
         <div className="formula-motif !text-white/50">Мой архив</div>
-        <h1 className="mt-1 text-[22px] font-semibold leading-tight">Только ты слышишь эти записи</h1>
+        <h1 className="mt-1 text-[22px] font-semibold leading-tight">Только ты видишь это</h1>
         <p className="mt-2 text-[13.5px] leading-relaxed text-white/70">
-          Не анализируются, не оцениваются. Хранятся у тебя в браузере.
+          Записи и личные рефлексии. Не анализируются, не оцениваются — хранятся у тебя в браузере.
         </p>
       </section>
 
@@ -105,6 +159,10 @@ function ArchivePage() {
       </div>
 
       <div className="rounded-[16px] hairline bg-white p-4">
+        <div className="mb-2 flex items-center gap-2">
+          <Mic className="h-4 w-4 text-muted-foreground" />
+          <div className="formula-motif !text-foreground/60">Записи</div>
+        </div>
         {items === null ? (
           <p className="py-6 text-center text-[13px] text-muted-foreground">Загружаю…</p>
         ) : items.length === 0 ? (
@@ -121,6 +179,32 @@ function ArchivePage() {
           <ul className="divide-y divide-border/60">
             {items.map((rec) => (
               <Row key={rec.id} rec={rec} onDelete={handleDelete} />
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <div className="rounded-[16px] hairline bg-white p-4">
+        <div className="mb-2 flex items-center gap-2">
+          <NotebookPen className="h-4 w-4 text-muted-foreground" />
+          <div className="formula-motif !text-foreground/60">Личные рефлексии</div>
+        </div>
+        {reflections === null ? (
+          <p className="py-6 text-center text-[13px] text-muted-foreground">Загружаю…</p>
+        ) : reflections.length === 0 ? (
+          <div className="py-6 text-center">
+            <p className="text-[13px] text-muted-foreground">Пока нет рефлексий.</p>
+            <Link
+              to="/case-builder"
+              className="mt-3 inline-flex items-center gap-2 rounded-full bg-[color:var(--color-ink)] px-4 py-2 text-[13px] font-semibold text-white"
+            >
+              Собрать кейс
+            </Link>
+          </div>
+        ) : (
+          <ul className="divide-y divide-border/60">
+            {reflections.map((rec) => (
+              <ReflectionRow key={rec.id} rec={rec} onDelete={handleDeleteReflection} />
             ))}
           </ul>
         )}
