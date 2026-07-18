@@ -80,12 +80,20 @@ const STEPS = [
   },
 ];
 
+type Phase = "building" | "offer" | "reflection" | "saved";
+
 function CaseBuilder() {
   const navigate = useNavigate();
+  const [phase, setPhase] = useState<Phase>("building");
   const [step, setStep] = useState<Step>(0);
   const [side, setSide] = useState<Side>("affirmation");
   const [values, setValues] = useState<string[]>(["", "", ""]);
-  const [done, setDone] = useState(false);
+  const [completedSides, setCompletedSides] = useState<
+    Array<{ side: Side; values: string[] }>
+  >([]);
+  const [opinion, setOpinion] = useState("");
+  const [changed, setChanged] = useState<CaseReflection["changed"]>(null);
+  const [saving, setSaving] = useState(false);
 
   const SIDE_LABEL: Record<Side, string> = {
     affirmation: "Утверждение",
@@ -101,11 +109,22 @@ function CaseBuilder() {
     setValues(next);
   };
 
+  const finishCurrentSide = () => {
+    const all = [...completedSides, { side, values: [...values] }];
+    setCompletedSides(all);
+    // If both sides are done, jump to reflection; else offer the other side.
+    if (all.length >= 2) {
+      setPhase("reflection");
+    } else {
+      setPhase("offer");
+    }
+  };
+
   const goNext = () => {
     if (step < 2) {
       setStep((step + 1) as Step);
     } else {
-      setDone(true);
+      finishCurrentSide();
     }
   };
 
@@ -113,51 +132,184 @@ function CaseBuilder() {
     if (step > 0) setStep((step - 1) as Step);
   };
 
-  if (done) {
+  const startSecondSide = () => {
+    const done = completedSides[0];
+    setSide(done.side === "affirmation" ? "negation" : "affirmation");
+    setValues(["", "", ""]);
+    setStep(0);
+    setPhase("building");
+  };
+
+  const resetAll = () => {
+    setStep(0);
+    setSide("affirmation");
+    setValues(["", "", ""]);
+    setCompletedSides([]);
+    setOpinion("");
+    setChanged(null);
+    setPhase("building");
+  };
+
+  const handleSaveReflection = async () => {
+    setSaving(true);
+    try {
+      const topic = completedSides[0]?.values[0] ?? values[0] ?? "";
+      const rec: CaseReflection = {
+        id: crypto.randomUUID(),
+        createdAt: Date.now(),
+        topic,
+        sides: completedSides,
+        opinion: opinion.trim(),
+        changed,
+      };
+      await saveReflection(rec);
+      toast("Сохранено в архив");
+      setPhase("saved");
+    } catch {
+      toast("Не удалось сохранить");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // ---------- OFFER: second side ----------
+  if (phase === "offer") {
+    const doneSide = completedSides[0].side;
+    const nextSide = doneSide === "affirmation" ? "negation" : "affirmation";
     return (
       <div className="mx-auto max-w-2xl px-4 py-6">
         <div className="rounded-[18px] bg-[color:var(--color-ink)] p-6 text-white">
-          <div className="grid h-10 w-10 place-items-center rounded-full bg-white/10">
-            <CheckCircle2 className="h-5 w-5" />
-          </div>
-          <h1 className="mt-3 text-[22px] font-semibold leading-tight">
-            Кейс собран. Теперь проговори его вслух.
-          </h1>
-          <p className="mt-2 text-[13.5px] leading-relaxed text-white/70">
-            Голос — единственный инструмент в живом раунде. Пройдите тренировку по своему кейсу.
-          </p>
-        </div>
-
-        <div className="mt-4 rounded-[14px] hairline bg-white p-4">
-          <div className="formula-motif !text-foreground/60">Сторона</div>
-          <p className="mt-1 text-[13.5px] leading-snug text-foreground/90">
-            {SIDE_LABEL[side]}
-          </p>
-        </div>
-
-        <div className="mt-4 space-y-2">
-          {STEPS.map((s, i) => (
-            <div key={s.label} className="rounded-[14px] hairline bg-white p-4">
-              <div className="formula-motif !text-foreground/60">{s.label}</div>
-              <p className="mt-1 text-[13.5px] leading-snug text-foreground/90">{values[i]}</p>
+          <div className="flex items-center gap-3">
+            <div className="grid h-10 w-10 place-items-center rounded-full bg-primary text-white">
+              <CheckCircle2 className="h-5 w-5" />
             </div>
-          ))}
+            <div className="h-px w-6 bg-white/25" />
+            <div className="grid h-10 w-10 place-items-center rounded-full border border-dashed border-white/40 text-white/60">
+              <Flag className="h-4 w-4" />
+            </div>
+          </div>
+
+          <div className="formula-motif mt-4 !text-white/50">Готово · {SIDE_LABEL[doneSide]}</div>
+          <h1 className="mt-1 text-[22px] font-semibold leading-tight">
+            {SIDE_LABEL[doneSide]} готово
+          </h1>
+          <p className="mt-2 text-[14px] leading-relaxed text-white/85">
+            Попробуешь собрать и {SIDE_LABEL[nextSide]} по той же теме?
+          </p>
+          <p className="mt-2 text-[12.5px] leading-relaxed text-white/60">
+            Это заставит посмотреть на вопрос с другой стороны — в этом весь смысл тренировки.
+          </p>
         </div>
 
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-4 flex flex-col gap-2">
           <button
-            onClick={() => navigate({ to: "/training" })}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[color:var(--color-ink)] px-4 py-3 text-[14px] font-semibold text-white active:scale-[0.99]"
+            onClick={startSecondSide}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-[14px] font-semibold text-white active:scale-[0.99]"
           >
-            <Mic className="h-4 w-4" /> Перейти к записи
+            Собрать вторую сторону
           </button>
           <button
-            onClick={() => {
-              setStep(0);
-              setSide("affirmation");
-              setValues(["", "", ""]);
-              setDone(false);
-            }}
+            onClick={() => setPhase("reflection")}
+            className="inline-flex items-center justify-center rounded-full px-4 py-3 text-[13.5px] font-semibold text-foreground/70 hover:text-foreground"
+          >
+            Пропустить
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------- REFLECTION ----------
+  if (phase === "reflection") {
+    const bothDone = completedSides.length >= 2;
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-6 space-y-4">
+        <div className="rounded-[18px] bg-[color:var(--color-ink)] p-6 text-white">
+          <div className="formula-motif !text-white/50">Личное · не оценивается</div>
+          <h1 className="mt-1 text-[22px] font-semibold leading-tight">
+            {bothDone ? "Обе стороны собраны" : "Сторона собрана"}
+          </h1>
+          <p className="mt-2 text-[13.5px] leading-relaxed text-white/70">
+            Теперь — только для тебя. Никто не увидит и не проанализирует.
+          </p>
+        </div>
+
+        <div className="rounded-[16px] hairline bg-white p-4">
+          <div className="formula-motif !text-foreground/60">А что думаешь ты?</div>
+          <p className="mt-1 text-[12.5px] leading-snug text-muted-foreground">
+            Не кейс для баттла — просто твоё личное мнение, никто не оценивает.
+          </p>
+          <textarea
+            value={opinion}
+            onChange={(e) => setOpinion(e.target.value)}
+            placeholder="Своими словами…"
+            rows={5}
+            className="mt-3 w-full resize-none rounded-[12px] hairline bg-white p-3 text-[14px] leading-snug outline-none focus:border-[color:var(--color-ink)]"
+          />
+        </div>
+
+        <div className="rounded-[16px] hairline bg-white p-4">
+          <div className="formula-motif !text-foreground/60">Мнение изменилось после этого?</div>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {(
+              [
+                { key: "strong", label: "Да, сильно" },
+                { key: "little", label: "Немного" },
+                { key: "no", label: "Нет" },
+              ] as const
+            ).map((opt) => {
+              const active = changed === opt.key;
+              return (
+                <button
+                  key={opt.key}
+                  onClick={() => setChanged(opt.key)}
+                  className={
+                    "rounded-full px-2 py-2 text-[12.5px] font-semibold transition " +
+                    (active
+                      ? "bg-[color:var(--color-ink)] text-white"
+                      : "bg-accent text-foreground hover:bg-accent/80")
+                  }
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <button
+          onClick={handleSaveReflection}
+          disabled={saving}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-[14px] font-semibold text-white disabled:opacity-50 active:scale-[0.99]"
+        >
+          <Save className="h-4 w-4" /> {saving ? "Сохраняю…" : "Сохранить в архив"}
+        </button>
+      </div>
+    );
+  }
+
+  // ---------- SAVED ----------
+  if (phase === "saved") {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-6">
+        <div className="rounded-[18px] bg-[color:var(--color-ink)] p-6 text-white">
+          <div className="grid h-10 w-10 place-items-center rounded-full bg-primary">
+            <CheckCircle2 className="h-5 w-5" />
+          </div>
+          <h1 className="mt-3 text-[22px] font-semibold leading-tight">Сохранено</h1>
+          <p className="mt-2 text-[13.5px] leading-relaxed text-white/70">
+            Твоя рефлексия лежит в приватном архиве — только у тебя в браузере.
+          </p>
+        </div>
+        <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+          <button
+            onClick={() => navigate({ to: "/archive" })}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[color:var(--color-ink)] px-4 py-3 text-[14px] font-semibold text-white active:scale-[0.99]"
+          >
+            Открыть архив
+          </button>
+          <button
+            onClick={resetAll}
             className="inline-flex flex-1 items-center justify-center rounded-full hairline bg-white px-4 py-3 text-[14px] font-semibold text-foreground active:scale-[0.99]"
           >
             Собрать ещё один
@@ -167,6 +319,9 @@ function CaseBuilder() {
     );
   }
 
+  // ---------- BUILDING ----------
+  const isSecondSide = completedSides.length === 1;
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       <Link
@@ -175,6 +330,12 @@ function CaseBuilder() {
       >
         <ArrowLeft className="h-3.5 w-3.5" /> К тренировке
       </Link>
+
+      {isSecondSide && (
+        <div className="mt-3 rounded-[12px] hairline bg-accent/40 p-3 text-[12.5px] text-foreground/80">
+          Собираем <b>{SIDE_LABEL[side]}</b> — вторая сторона той же темы.
+        </div>
+      )}
 
       {/* progress dots */}
       <div className="mt-3 flex items-center gap-2">
@@ -224,15 +385,18 @@ function CaseBuilder() {
             <div className="grid grid-cols-2 gap-2">
               {(["affirmation", "negation"] as Side[]).map((s) => {
                 const active = side === s;
+                const disabled = isSecondSide; // side is fixed on the second pass
                 return (
                   <button
                     key={s}
-                    onClick={() => setSide(s)}
+                    onClick={() => !disabled && setSide(s)}
+                    disabled={disabled}
                     className={
                       "rounded-full px-3 py-2 text-[13px] font-semibold transition " +
                       (active
                         ? "bg-[color:var(--color-ink)] text-white"
-                        : "bg-accent text-foreground hover:bg-accent/80")
+                        : "bg-accent text-foreground hover:bg-accent/80") +
+                      (disabled ? " opacity-70 cursor-not-allowed" : "")
                     }
                   >
                     {SIDE_LABEL[s]}
@@ -241,7 +405,9 @@ function CaseBuilder() {
               })}
             </div>
             <p className="mt-2 text-[11.5px] leading-snug text-muted-foreground">
-              Сторона нужна явно — конструктор без ИИ сам её не определит.
+              {isSecondSide
+                ? "Сторона зафиксирована — сейчас собираем противоположную."
+                : "Сторона нужна явно — конструктор без ИИ сам её не определит."}
             </p>
           </div>
         )}
@@ -279,6 +445,16 @@ function CaseBuilder() {
           )}
         </button>
       </div>
+
+      {/* Optional: proceed to recording after building (kept discoverable) */}
+      {step === 2 && canNext && (
+        <button
+          onClick={() => navigate({ to: "/training" })}
+          className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full hairline bg-white px-4 py-2.5 text-[12.5px] font-semibold text-foreground/80 hover:text-foreground"
+        >
+          <Mic className="h-3.5 w-3.5" /> Записать эту сторону вслух
+        </button>
+      )}
     </div>
   );
 }
