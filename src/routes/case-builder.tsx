@@ -66,19 +66,19 @@ function ArgumentIcon() {
 const STEPS = [
   {
     label: "Идея",
-    question: "Почему?",
+    question: "Что?",
     placeholder: "Твоя идея…",
     icon: IdeaIcon,
   },
   {
     label: "Критерий",
-    question: "По какому принципу судить этот спор?",
+    question: "Почему?",
     placeholder: "Твой критерий…",
     icon: CriteriaIcon,
   },
   {
     label: "Аргумент",
-    question: "Что это доказывает?",
+    question: "Факт?",
     placeholder: "Твой аргумент…",
     icon: ArgumentIcon,
   },
@@ -403,11 +403,6 @@ function CaseBuilder() {
             <p className="text-[17px] font-semibold leading-snug text-foreground">
               {current.question}
             </p>
-            {step === 1 && (
-              <p className="mt-1 text-[12.5px] leading-snug text-muted-foreground">
-                Критерий — правило, по которому сравниваются обе стороны.
-              </p>
-            )}
           </div>
         </div>
 
