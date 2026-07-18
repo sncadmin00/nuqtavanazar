@@ -132,6 +132,7 @@ function TrainingPage() {
   const [dice, setDice] = useState<DiceState>({ status: "idle" });
   const [showTips, setShowTips] = useState(false);
   const [tipIdx, setTipIdx] = useState(0);
+  const [caseStarted, setCaseStarted] = useState(false);
 
   useEffect(() => {
     setProgress(loadProgress());
