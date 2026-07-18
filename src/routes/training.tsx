@@ -342,9 +342,7 @@ function TrainingPage() {
                     <Link
                       to="/case-builder"
                       search={
-                        dice.status === "ready"
-                          ? { side: dice.assignment.side, topic: dice.motion }
-                          : undefined
+                        dice.status === "ready" ? { topic: dice.motion } : undefined
                       }
                       onClick={() => setCaseStarted(true)}
                       className="group inline-flex items-center gap-2"
