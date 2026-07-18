@@ -199,9 +199,7 @@ export const generateMotion = createServerFn({ method: "POST" })
 {
   "motion": "Эта палата ...",
   "category": "politics|economics|ethics|technology|society|education|environment|culture",
-  "rationale": "Почему эта тема интересна и что она проверяет у дебатёров (2-3 предложения на русском)",
-  "pro_hint": "Одно направление аргументации за",
-  "con_hint": "Одно направление аргументации против"
+  "rationale": "Почему эта тема интересна и что она проверяет у дебатёров (2-3 предложения на русском)"
 }`;
     const raw = await callGateway([{ role: "user", content: prompt }], {
       jsonMode: true,
@@ -213,8 +211,6 @@ export const generateMotion = createServerFn({ method: "POST" })
         motion: string;
         category: string;
         rationale: string;
-        pro_hint: string;
-        con_hint: string;
       };
     } catch {
       throw new Error("Не удалось разобрать сгенерированную тему. Попробуйте ещё раз.");
