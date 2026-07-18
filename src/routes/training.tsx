@@ -301,27 +301,29 @@ function TrainingPage() {
           </span>
         </button>
       ) : (
-        <div className="rounded-[16px] hairline bg-white p-4">
+        <div className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
           <div className="flex items-center justify-between">
-            <div className="formula-motif !text-foreground/70">Перед стартом</div>
+            <div className="formula-motif !text-white/50">Перед стартом</div>
             <button
               onClick={() => setShowTips(false)}
-              className="text-[11px] text-muted-foreground hover:text-foreground"
+              className="text-[11px] text-white/60 hover:text-white"
             >
               Закрыть
             </button>
           </div>
 
-          <div className="mt-3 rounded-[12px] bg-accent/40 p-4">
-            <div className="text-[13px] font-semibold">{TIPS[tipIdx].title}</div>
-            <p className="mt-1 text-[13px] leading-snug text-foreground/85">{TIPS[tipIdx].body}</p>
+          <div className="mt-3 rounded-[14px] bg-white/5 px-4 pt-2 pb-4">
+            {TIPS[tipIdx].render()}
+            <div className="mt-1 text-center text-[13.5px] font-semibold text-white">
+              {TIPS[tipIdx].caption}
+            </div>
           </div>
 
-          <div className="mt-3 flex items-center justify-between">
+          <div className="mt-4 flex items-center justify-between">
             <button
               onClick={() => setTipIdx((i) => Math.max(0, i - 1))}
               disabled={tipIdx === 0}
-              className="grid h-8 w-8 place-items-center rounded-full hairline disabled:opacity-40"
+              className="grid h-8 w-8 place-items-center rounded-full border border-white/20 disabled:opacity-30"
               aria-label="Назад"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -333,7 +335,7 @@ function TrainingPage() {
                   onClick={() => setTipIdx(i)}
                   className={
                     "h-1.5 rounded-full transition " +
-                    (i === tipIdx ? "w-5 bg-[color:var(--color-ink)]" : "w-1.5 bg-foreground/25")
+                    (i === tipIdx ? "w-5 bg-white" : "w-1.5 bg-white/30")
                   }
                   aria-label={`Подсказка ${i + 1}`}
                 />
@@ -342,7 +344,7 @@ function TrainingPage() {
             <button
               onClick={() => setTipIdx((i) => Math.min(TIPS.length - 1, i + 1))}
               disabled={tipIdx === TIPS.length - 1}
-              className="grid h-8 w-8 place-items-center rounded-full hairline disabled:opacity-40"
+              className="grid h-8 w-8 place-items-center rounded-full border border-white/20 disabled:opacity-30"
               aria-label="Дальше"
             >
               <ChevronRight className="h-4 w-4" />
@@ -351,41 +353,13 @@ function TrainingPage() {
 
           <button
             onClick={startAfterTips}
-            className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[color:var(--color-ink)] px-4 py-2.5 text-[13.5px] font-semibold text-white active:scale-[0.99]"
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-[13.5px] font-semibold text-white active:scale-[0.99]"
           >
             <Mic className="h-4 w-4" /> Записать {level} секунд
           </button>
         </div>
       )}
 
-      {/* Speaking technique bridge */}
-      <div className="rounded-[16px] hairline bg-white p-4">
-        <div className="flex items-center gap-2">
-          <Mic2 className="h-3.5 w-3.5 text-primary" />
-          <div className="formula-motif !text-foreground/70">Ораторская техника</div>
-          <span className="ml-auto rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-            Новое
-          </span>
-        </div>
-        <p className="mt-2 text-[12.5px] leading-snug text-muted-foreground">
-          Голос — единственный инструмент. Короткие статьи о дыхании, паузах и темпе для аудио-раундов.
-        </p>
-        <ul className="mt-3 divide-y divide-border/60">
-          {LESSONS.filter((l) => l.category === "speaking").map((l) => (
-            <li key={l.id}>
-              <Link
-                to="/learn/$moduleId"
-                params={{ moduleId: l.id }}
-                className="flex items-center gap-3 py-2.5 text-[13px] active:scale-[0.99]"
-              >
-                <span className="flex-1 truncate text-foreground/90">{l.title}</span>
-                <span className="text-[11px] text-muted-foreground">{l.minutes} мин</span>
-                <ArrowRight className="h-3.5 w-3.5 text-primary" />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
 
       <div className="rounded-[16px] hairline bg-white p-4">
         <div className="flex items-center gap-2">
