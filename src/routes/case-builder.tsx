@@ -493,7 +493,7 @@ function CaseBuilder() {
           disabled={!canNext}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[color:var(--color-ink)] px-4 py-2.5 text-[13.5px] font-semibold text-white disabled:opacity-40 active:scale-[0.99]"
         >
-          {step === 3 ? (
+          {step === 4 ? (
             <>
               Готово <CheckCircle2 className="h-4 w-4" />
             </>
