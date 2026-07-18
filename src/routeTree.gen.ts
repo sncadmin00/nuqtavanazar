@@ -13,10 +13,12 @@ import { Route as TrainingRouteImport } from './routes/training'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LearnRouteImport } from './routes/learn'
+import { Route as FreeTalkRouteImport } from './routes/free-talk'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DebateDayRouteImport } from './routes/debate-day'
 import { Route as CaseBuilderRouteImport } from './routes/case-builder'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LearnIndexRouteImport } from './routes/learn.index'
@@ -43,6 +45,11 @@ const LearnRoute = LearnRouteImport.update({
   path: '/learn',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FreeTalkRoute = FreeTalkRouteImport.update({
+  id: '/free-talk',
+  path: '/free-talk',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
@@ -61,6 +68,11 @@ const CaseBuilderRoute = CaseBuilderRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchiveRoute = ArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -92,10 +104,12 @@ const LearnModuleIdRoute = LearnModuleIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
+  '/free-talk': typeof FreeTalkRoute
   '/learn': typeof LearnRouteWithChildren
   '/profile': typeof ProfileRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -107,10 +121,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
+  '/free-talk': typeof FreeTalkRoute
   '/profile': typeof ProfileRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/training': typeof TrainingRoute
@@ -122,10 +138,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
+  '/free-talk': typeof FreeTalkRoute
   '/learn': typeof LearnRouteWithChildren
   '/profile': typeof ProfileRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -139,10 +157,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/archive'
     | '/auth'
     | '/case-builder'
     | '/debate-day'
     | '/events'
+    | '/free-talk'
     | '/learn'
     | '/profile'
     | '/sitemap.xml'
@@ -154,10 +174,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/archive'
     | '/auth'
     | '/case-builder'
     | '/debate-day'
     | '/events'
+    | '/free-talk'
     | '/profile'
     | '/sitemap.xml'
     | '/training'
@@ -168,10 +190,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/archive'
     | '/auth'
     | '/case-builder'
     | '/debate-day'
     | '/events'
+    | '/free-talk'
     | '/learn'
     | '/profile'
     | '/sitemap.xml'
@@ -184,10 +208,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  ArchiveRoute: typeof ArchiveRoute
   AuthRoute: typeof AuthRoute
   CaseBuilderRoute: typeof CaseBuilderRoute
   DebateDayRoute: typeof DebateDayRoute
   EventsRoute: typeof EventsRoute
+  FreeTalkRoute: typeof FreeTalkRoute
   LearnRoute: typeof LearnRouteWithChildren
   ProfileRoute: typeof ProfileRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -224,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/free-talk': {
+      id: '/free-talk'
+      path: '/free-talk'
+      fullPath: '/free-talk'
+      preLoaderRoute: typeof FreeTalkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/events': {
       id: '/events'
       path: '/events'
@@ -250,6 +283,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/archive': {
+      id: '/archive'
+      path: '/archive'
+      fullPath: '/archive'
+      preLoaderRoute: typeof ArchiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -316,10 +356,12 @@ const ProfileRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  ArchiveRoute: ArchiveRoute,
   AuthRoute: AuthRoute,
   CaseBuilderRoute: CaseBuilderRoute,
   DebateDayRoute: DebateDayRoute,
   EventsRoute: EventsRoute,
+  FreeTalkRoute: FreeTalkRoute,
   LearnRoute: LearnRouteWithChildren,
   ProfileRoute: ProfileRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
