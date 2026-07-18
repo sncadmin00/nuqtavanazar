@@ -3,6 +3,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, CheckCircle2, Flag, Mic, Save } from "lucide-react";
 import { saveReflection, type CaseReflection } from "@/lib/freeTalk";
+import { recordCycleCompletion } from "@/lib/streak";
 
 export const Route = createFileRoute("/case-builder")({
   head: () => ({
