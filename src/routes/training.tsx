@@ -172,8 +172,6 @@ type DiceState =
       status: "ready";
       motion: string;
       rationale: string;
-      pro_hint: string;
-      con_hint: string;
       assignment: SideAssignment;
     }
   | { status: "error"; message: string };
@@ -203,8 +201,6 @@ function TrainingPage() {
         status: "ready",
         motion: motion.motion,
         rationale: motion.rationale,
-        pro_hint: motion.pro_hint,
-        con_hint: motion.con_hint,
         assignment,
       });
     } catch (e) {
@@ -438,17 +434,6 @@ function TrainingPage() {
               {dice.assignment.reason ??
                 `Ещё нет прошлых рефлексий (${dice.assignment.samples}/3) — сторона выпала случайно. Собирай кейсы, и кубик начнёт назначать противоположную твоей.`}
             </p>
-          </div>
-
-          <div className="mt-3 grid grid-cols-2 gap-2 text-[12px]">
-            <div className="rounded-[10px] bg-white/5 p-2.5">
-              <div className="text-[10px] uppercase tracking-wider text-white/50">За</div>
-              <div className="mt-0.5 text-white/85">{dice.pro_hint}</div>
-            </div>
-            <div className="rounded-[10px] bg-white/5 p-2.5">
-              <div className="text-[10px] uppercase tracking-wider text-white/50">Против</div>
-              <div className="mt-0.5 text-white/85">{dice.con_hint}</div>
-            </div>
           </div>
 
           <button
