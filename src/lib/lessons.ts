@@ -7,7 +7,8 @@ export type LessonBlock =
   | { type: "callout"; title: string; text: string }
   | { type: "table"; head: string[]; rows: string[][] };
 
-export type Track = "basics" | "solo" | "duel" | "team" | "roundtable" | "judging";
+export type Track = "basics" | "solo" | "duel" | "team" | "roundtable" | "judging" | "speaking";
+export type LessonCategory = "case" | "speaking";
 
 export type Lesson = {
   id: string;
@@ -17,6 +18,8 @@ export type Lesson = {
   minutes: number;
   level: "beginner" | "intermediate" | "advanced";
   track: Track;
+  category: LessonCategory;
+  isNew?: boolean;
   blocks: LessonBlock[];
 };
 
