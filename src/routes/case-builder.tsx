@@ -14,25 +14,63 @@ export const Route = createFileRoute("/case-builder")({
 
 type Step = 0 | 1 | 2;
 
+function IdeaIcon() {
+  return (
+    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
+      <rect width="80" height="80" rx="16" fill="#1A1A2E" />
+      <path d="M16 56h48" stroke="#E8562D" strokeWidth="4" strokeLinecap="round" />
+      <path d="M40 56V28" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M40 28l18-6v24l-18 6V28z" fill="#E8562D" />
+      <circle cx="40" cy="22" r="3" fill="#F7F3EC" />
+    </svg>
+  );
+}
+
+function CriteriaIcon() {
+  return (
+    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
+      <rect width="80" height="80" rx="16" fill="#1A1A2E" />
+      <path d="M40 18v10" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M22 36h36" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M24 36l-6 22" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M56 36l6 22" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M14 62h52" stroke="#E8562D" strokeWidth="4" strokeLinecap="round" />
+      <circle cx="24" cy="62" r="5" fill="#E8562D" />
+      <circle cx="56" cy="62" r="5" fill="#F7F3EC" />
+    </svg>
+  );
+}
+
+function ArgumentIcon() {
+  return (
+    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
+      <rect width="80" height="80" rx="16" fill="#1A1A2E" />
+      <circle cx="24" cy="40" r="10" stroke="#F7F3EC" strokeWidth="4" />
+      <circle cx="56" cy="40" r="10" stroke="#E8562D" strokeWidth="4" />
+      <path d="M34 40h12" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const STEPS = [
   {
     label: "Идея",
-    question: "Какую позицию ты защищаешь?",
-    hint: "Одно предложение. Без «на мой взгляд» и «мне кажется» — прямо и утвердительно.",
+    caption: "Выбери сторону",
+    icon: IdeaIcon,
     example: "Соцсети приносят обществу больше вреда, чем пользы.",
     placeholder: "Мой тезис…",
   },
   {
     label: "Критерий",
-    question: "По какому принципу судить этот спор?",
-    hint: "Критерий — это весы, на которых сравниваются обе стороны. Не «что», а «по чему» мы сравниваем.",
+    caption: "Что перевешивает?",
+    icon: CriteriaIcon,
     example: "Психологическое здоровье подростков важнее удобства коммуникации.",
     placeholder: "Мой критерий…",
   },
   {
     label: "Аргумент",
-    question: "Чем ты это подтвердишь?",
-    hint: "Формула: факт или пример → почему это доказывает тезис относительно критерия.",
+    caption: "Что это доказывает?",
+    icon: ArgumentIcon,
     example:
       "Исследования показывают рост тревожности у подростков с активными соцсетями — значит, по критерию психологического здоровья моя сторона сильнее.",
     placeholder: "Мой аргумент…",
@@ -151,10 +189,15 @@ function CaseBuilder() {
 
       <div className="mt-4 rounded-[18px] hairline bg-white p-5">
         <div className="formula-motif !text-foreground/60">Шаг {step + 1} · {current.label}</div>
-        <h1 className="mt-1 text-[20px] font-semibold leading-snug">{current.question}</h1>
-        <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{current.hint}</p>
 
-        <div className="mt-4 rounded-[12px] bg-accent/40 p-3">
+        <div className="mt-4 flex items-center gap-4">
+          <div className="h-16 w-16 shrink-0">
+            <current.icon />
+          </div>
+          <p className="text-[15px] font-semibold leading-snug text-foreground">{current.caption}</p>
+        </div>
+
+        <div className="mt-5 rounded-[12px] bg-accent/40 p-3">
           <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Пример</div>
           <p className="mt-1 text-[13px] leading-snug text-foreground/85">«{current.example}»</p>
         </div>
