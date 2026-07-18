@@ -217,6 +217,33 @@ function CaseBuilder() {
           <p className="mt-1 text-[13px] leading-snug text-foreground/85">«{current.example}»</p>
         </div>
 
+        {step === 0 && (
+          <div className="mt-5">
+            <div className="grid grid-cols-2 gap-2">
+              {(["affirmation", "negation"] as Side[]).map((s) => {
+                const active = side === s;
+                return (
+                  <button
+                    key={s}
+                    onClick={() => setSide(s)}
+                    className={
+                      "rounded-full px-3 py-2 text-[13px] font-semibold transition " +
+                      (active
+                        ? "bg-[color:var(--color-ink)] text-white"
+                        : "bg-accent text-foreground hover:bg-accent/80")
+                    }
+                  >
+                    {SIDE_LABEL[s]}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-[11.5px] leading-snug text-muted-foreground">
+              Сторона нужна явно — конструктор без ИИ сам её не определит.
+            </p>
+          </div>
+        )}
+
         <textarea
           value={values[step]}
           onChange={(e) => setValue(e.target.value)}
