@@ -163,7 +163,7 @@ function CaseBuilder() {
   };
 
   const goNext = () => {
-    if (step < 3) {
+    if (step < 4) {
       setStep((step + 1) as Step);
     } else {
       finishCurrentSide();
