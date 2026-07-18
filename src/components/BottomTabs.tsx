@@ -2,13 +2,14 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, BookOpen, CalendarDays, Dumbbell, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const TABS = [
+type Tab = { to: string; label: string; icon: typeof Home; exact?: boolean };
+const TABS: Tab[] = [
   { to: "/", label: "Главная", icon: Home, exact: true },
   { to: "/learn", label: "Обучение", icon: BookOpen },
   { to: "/debate-day", label: "День дебатов", icon: CalendarDays },
   { to: "/training", label: "Тренировка", icon: Dumbbell },
   { to: "/profile", label: "Профиль", icon: User },
-] as const;
+];
 
 export function BottomTabs() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });

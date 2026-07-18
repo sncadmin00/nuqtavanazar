@@ -9,16 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrainingRouteImport } from './routes/training'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as EventsRouteImport } from './routes/events'
+import { Route as DebateDayRouteImport } from './routes/debate-day'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LearnIndexRouteImport } from './routes/learn.index'
+import { Route as ProfileUserIdRouteImport } from './routes/profile.$userId'
 import { Route as LearnModuleIdRouteImport } from './routes/learn.$moduleId'
 
+const TrainingRoute = TrainingRouteImport.update({
+  id: '/training',
+  path: '/training',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -37,6 +45,11 @@ const LearnRoute = LearnRouteImport.update({
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DebateDayRoute = DebateDayRouteImport.update({
+  id: '/debate-day',
+  path: '/debate-day',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -59,6 +72,11 @@ const LearnIndexRoute = LearnIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LearnRoute,
 } as any)
+const ProfileUserIdRoute = ProfileUserIdRouteImport.update({
+  id: '/$userId',
+  path: '/$userId',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const LearnModuleIdRoute = LearnModuleIdRouteImport.update({
   id: '/$moduleId',
   path: '/$moduleId',
@@ -69,21 +87,27 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
   '/learn': typeof LearnRouteWithChildren
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/training': typeof TrainingRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
+  '/profile/$userId': typeof ProfileUserIdRoute
   '/learn/': typeof LearnIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/training': typeof TrainingRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
+  '/profile/$userId': typeof ProfileUserIdRoute
   '/learn': typeof LearnIndexRoute
 }
 export interface FileRoutesById {
@@ -91,11 +115,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
   '/learn': typeof LearnRouteWithChildren
-  '/profile': typeof ProfileRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/training': typeof TrainingRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
+  '/profile/$userId': typeof ProfileUserIdRoute
   '/learn/': typeof LearnIndexRoute
 }
 export interface FileRouteTypes {
@@ -104,32 +131,41 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/debate-day'
     | '/events'
     | '/learn'
     | '/profile'
     | '/sitemap.xml'
+    | '/training'
     | '/learn/$moduleId'
+    | '/profile/$userId'
     | '/learn/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/auth'
+    | '/debate-day'
     | '/events'
     | '/profile'
     | '/sitemap.xml'
+    | '/training'
     | '/learn/$moduleId'
+    | '/profile/$userId'
     | '/learn'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/auth'
+    | '/debate-day'
     | '/events'
     | '/learn'
     | '/profile'
     | '/sitemap.xml'
+    | '/training'
     | '/learn/$moduleId'
+    | '/profile/$userId'
     | '/learn/'
   fileRoutesById: FileRoutesById
 }
@@ -137,14 +173,23 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  DebateDayRoute: typeof DebateDayRoute
   EventsRoute: typeof EventsRoute
   LearnRoute: typeof LearnRouteWithChildren
-  ProfileRoute: typeof ProfileRoute
+  ProfileRoute: typeof ProfileRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TrainingRoute: typeof TrainingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/training': {
+      id: '/training'
+      path: '/training'
+      fullPath: '/training'
+      preLoaderRoute: typeof TrainingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -171,6 +216,13 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/debate-day': {
+      id: '/debate-day'
+      path: '/debate-day'
+      fullPath: '/debate-day'
+      preLoaderRoute: typeof DebateDayRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -201,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnIndexRouteImport
       parentRoute: typeof LearnRoute
     }
+    '/profile/$userId': {
+      id: '/profile/$userId'
+      path: '/$userId'
+      fullPath: '/profile/$userId'
+      preLoaderRoute: typeof ProfileUserIdRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/learn/$moduleId': {
       id: '/learn/$moduleId'
       path: '/$moduleId'
@@ -223,14 +282,27 @@ const LearnRouteChildren: LearnRouteChildren = {
 
 const LearnRouteWithChildren = LearnRoute._addFileChildren(LearnRouteChildren)
 
+interface ProfileRouteChildren {
+  ProfileUserIdRoute: typeof ProfileUserIdRoute
+}
+
+const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileUserIdRoute: ProfileUserIdRoute,
+}
+
+const ProfileRouteWithChildren =
+  ProfileRoute._addFileChildren(ProfileRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  DebateDayRoute: DebateDayRoute,
   EventsRoute: EventsRoute,
   LearnRoute: LearnRouteWithChildren,
-  ProfileRoute: ProfileRoute,
+  ProfileRoute: ProfileRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TrainingRoute: TrainingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
