@@ -13,6 +13,7 @@ export const Route = createFileRoute("/case-builder")({
 });
 
 type Step = 0 | 1 | 2;
+type Side = "affirmation" | "negation";
 
 function IdeaIcon() {
   return (
@@ -80,8 +81,14 @@ const STEPS = [
 function CaseBuilder() {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>(0);
+  const [side, setSide] = useState<Side>("affirmation");
   const [values, setValues] = useState<string[]>(["", "", ""]);
   const [done, setDone] = useState(false);
+
+  const SIDE_LABEL: Record<Side, string> = {
+    affirmation: "Утверждение",
+    negation: "Отрицание",
+  };
 
   const current = STEPS[step];
   const canNext = values[step].trim().length > 0;
@@ -138,6 +145,7 @@ function CaseBuilder() {
           <button
             onClick={() => {
               setStep(0);
+              setSide("affirmation");
               setValues(["", "", ""]);
               setDone(false);
             }}
