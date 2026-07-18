@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks } from "lucide-react";
+import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks, Mic2, ArrowRight } from "lucide-react";
+import { LESSONS } from "@/lib/lessons";
 
 export const Route = createFileRoute("/training")({
   head: () => ({
