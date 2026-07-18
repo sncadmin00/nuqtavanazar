@@ -189,10 +189,15 @@ function CaseBuilder() {
 
       <div className="mt-4 rounded-[18px] hairline bg-white p-5">
         <div className="formula-motif !text-foreground/60">Шаг {step + 1} · {current.label}</div>
-        <h1 className="mt-1 text-[20px] font-semibold leading-snug">{current.question}</h1>
-        <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">{current.hint}</p>
 
-        <div className="mt-4 rounded-[12px] bg-accent/40 p-3">
+        <div className="mt-4 flex items-center gap-4">
+          <div className="h-16 w-16 shrink-0">
+            <current.icon />
+          </div>
+          <p className="text-[15px] font-semibold leading-snug text-foreground">{current.caption}</p>
+        </div>
+
+        <div className="mt-5 rounded-[12px] bg-accent/40 p-3">
           <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Пример</div>
           <p className="mt-1 text-[13px] leading-snug text-foreground/85">«{current.example}»</p>
         </div>
