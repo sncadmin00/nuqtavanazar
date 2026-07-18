@@ -72,7 +72,7 @@ const STEPS = [
   },
   {
     label: "Критерий",
-    question: "Что перевешивает?",
+    question: "По какому принципу судить этот спор?",
     placeholder: "Твой критерий…",
     icon: CriteriaIcon,
   },
@@ -403,6 +403,11 @@ function CaseBuilder() {
             <p className="text-[17px] font-semibold leading-snug text-foreground">
               {current.question}
             </p>
+            {step === 1 && (
+              <p className="mt-1 text-[12.5px] leading-snug text-muted-foreground">
+                Критерий — правило, по которому сравниваются обе стороны.
+              </p>
+            )}
           </div>
         </div>
 
