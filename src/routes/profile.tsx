@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Settings, LogOut } from "lucide-react";
+import { Settings, LogOut, Flame } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchTopRatings } from "@/lib/debate-data";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { getStreak, type StreakInfo } from "@/lib/streak";
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
