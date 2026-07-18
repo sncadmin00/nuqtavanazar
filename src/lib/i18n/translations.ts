@@ -154,9 +154,11 @@ const ru: Dict = {
   "category.culture": "Культура",
   "category.other": "Другое",
 
-  "format.karl_popper": "Karl Popper",
-  "format.parliamentary": "Parliamentary",
-  "format.both": "Оба формата",
+  "format.solo": "Соло",
+  "format.duel": "1×1",
+  "format.team": "2×2",
+  "format.roundtable": "Круглый стол",
+  "format.both": "Все форматы",
 };
 
 const uz: Dict = {
