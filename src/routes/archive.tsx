@@ -1,14 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, ShieldCheck, Trash2, Mic } from "lucide-react";
-import { deleteRecording, listRecordings, type FreeTalkRecord } from "@/lib/freeTalk";
+import { ArrowLeft, ShieldCheck, Trash2, Mic, NotebookPen } from "lucide-react";
+import {
+  deleteRecording,
+  listRecordings,
+  deleteReflection,
+  listReflections,
+  type FreeTalkRecord,
+  type CaseReflection,
+} from "@/lib/freeTalk";
 
 export const Route = createFileRoute("/archive")({
   head: () => ({
     meta: [
       { title: "Мой архив — Мезон" },
-      { name: "description", content: "Приватный архив свободных записей. Только для тебя, без анализа." },
+      { name: "description", content: "Приватный архив свободных записей и личных рефлексий. Только для тебя, без анализа." },
     ],
   }),
   component: ArchivePage,
