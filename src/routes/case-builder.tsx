@@ -63,11 +63,23 @@ function ArgumentIcon() {
   );
 }
 
+function ProofIcon() {
+  return (
+    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
+      <rect width="80" height="80" rx="16" fill="#1A1A2E" />
+      <rect x="20" y="18" width="40" height="48" rx="4" stroke="#F7F3EC" strokeWidth="4" />
+      <path d="M28 32h24" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M28 42h24" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M28 52h14" stroke="#E8562D" strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const STEPS = [
   {
-    label: "Идея",
+    label: "Позиция",
     question: "Что?",
-    placeholder: "Твоя идея…",
+    placeholder: "Твоя позиция…",
     icon: IdeaIcon,
   },
   {
@@ -78,9 +90,15 @@ const STEPS = [
   },
   {
     label: "Аргумент",
-    question: "Факт?",
+    question: "Как?",
     placeholder: "Твой аргумент…",
     icon: ArgumentIcon,
+  },
+  {
+    label: "Доказательство",
+    question: "Факты?",
+    placeholder: "Твои факты…",
+    icon: ProofIcon,
   },
 ];
 
