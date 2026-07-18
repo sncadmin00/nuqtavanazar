@@ -69,15 +69,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Debate Club UZ — структурированные дебаты для Узбекистана" },
+      { title: "Мезон — инфраструктура структурированного спора" },
       {
         name: "description",
         content:
-          "Debate Club UZ — платформа судимых дебатов: живые баттлы 1×1 и 2×2, круглые столы, недельный ритм «День дебатов». Идея → критерий → аргумент.",
+          "Мезон — платформа живых судимых дебатов Узбекистана: 1×1, 2×2 и круглый стол по формуле «идея → критерий → аргумент». Недельный ритм «День дебатов».",
       },
-      { name: "author", content: "Debate Club UZ" },
-      { property: "og:title", content: "Debate Club UZ" },
-      { property: "og:description", content: "Структурированные живые дебаты для школьников, студентов и взрослых Узбекистана." },
+      { name: "author", content: "Мезон" },
+      { property: "og:title", content: "Мезон" },
+      { property: "og:description", content: "Живые структурированные дебаты для школьников, студентов и взрослых Узбекистана." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#f7f3ec" },

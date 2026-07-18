@@ -19,7 +19,7 @@ export const Route = createFileRoute("/learn/$moduleId")({
     const title = loaderData?.lesson.title ?? "Урок";
     return {
       meta: [
-        { title: `${title} | Debate Club UZ` },
+        { title: `${title} | Мезон` },
         { name: "description", content: loaderData?.lesson.summary ?? "Урок по дебатам" },
         { property: "og:title", content: title },
         { property: "og:description", content: loaderData?.lesson.summary ?? "" },

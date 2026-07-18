@@ -13,7 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Вход и регистрация | Debate Club UZ" },
+      { title: "Вход и регистрация | Мезон" },
       { name: "description", content: "Войдите или создайте аккаунт, чтобы сохранять кейсы и отслеживать прогресс." },
     ],
   }),
