@@ -42,7 +42,7 @@ function saveProgress(p: Progress) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
 }
 
-type Tip = { caption: string; render: () => JSX.Element };
+type Tip = { caption: string; render: () => React.ReactElement };
 
 const BreathingVisual = () => (
   <div className="relative grid place-items-center py-3">
