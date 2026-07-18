@@ -6,6 +6,13 @@ import { saveReflection, type CaseReflection } from "@/lib/freeTalk";
 import { recordCycleCompletion } from "@/lib/streak";
 
 export const Route = createFileRoute("/case-builder")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    side:
+      s.side === "affirmation" || s.side === "negation"
+        ? (s.side as "affirmation" | "negation")
+        : undefined,
+    topic: typeof s.topic === "string" ? s.topic : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Собрать кейс — Мезон" },
