@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
-  Dices,
+  Dice5,
   Mic,
   Sparkles,
   Lock,
@@ -360,7 +360,7 @@ function TrainingPage() {
             {dice.status === "loading" ? (
               <Loader2 className="h-5 w-5 animate-spin text-foreground" />
             ) : (
-              <Dices className="h-5 w-5 text-foreground" />
+              <Dice5 className="h-5 w-5 text-foreground" />
             )}
           </span>
           <span className="flex-1">

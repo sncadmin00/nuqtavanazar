@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Swords, Dices } from "lucide-react";
+import { Swords, Dice5 } from "lucide-react";
 import { toast } from "sonner";
 
 export function PrimaryActions() {
@@ -16,7 +16,7 @@ export function PrimaryActions() {
         to="/training"
         className="flex flex-[45] items-center justify-center gap-2 rounded-[14px] bg-white hairline py-3.5 text-[14px] font-semibold text-foreground active:scale-[0.99]"
       >
-        <Dices className="h-[18px] w-[18px]" />
+        <Dice5 className="h-[18px] w-[18px]" />
         Тренировка
       </Link>
     </div>
