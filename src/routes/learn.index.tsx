@@ -8,10 +8,10 @@ import { ArrowRight, Clock } from "lucide-react";
 export const Route = createFileRoute("/learn/")({
   head: () => ({
     meta: [
-      { title: "Обучение дебатам — модули Karl Popper и Parliamentary | Debate Club UZ" },
-      { name: "description", content: "Структурированные уроки: основы дебатов, форматы Karl Popper и Parliamentary, критерии судейства." },
-      { property: "og:title", content: "Обучение — Debate Club UZ" },
-      { property: "og:description", content: "Структурированные уроки по дебатам для школьников и студентов." },
+      { title: "Обучение дебатам — формат Мезон | Мезон" },
+      { name: "description", content: "Структурированные уроки по формуле «идея → критерий → аргумент»: основы дебатов, формат Мезон, критерии судейства." },
+      { property: "og:title", content: "Обучение — Мезон" },
+      { property: "og:description", content: "Структурированные уроки по дебатам для школьников, студентов и взрослых." },
     ],
   }),
   component: LearnIndex,
@@ -19,8 +19,8 @@ export const Route = createFileRoute("/learn/")({
 
 const trackLabels: Record<string, string> = {
   basics: "Основы",
-  karl_popper: "Karl Popper",
-  parliamentary: "Parliamentary",
+  karl_popper: "Формат Мезон · соло",
+  parliamentary: "Формат Мезон · команды",
   judging: "Судейство",
 };
 

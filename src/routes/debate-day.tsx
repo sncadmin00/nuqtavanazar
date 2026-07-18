@@ -8,7 +8,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/debate-day")({
   head: () => ({
     meta: [
-      { title: "День дебатов — Debate Club UZ" },
+      { title: "День дебатов — Мезон" },
       { name: "description", content: "Итоги и расписание Дня дебатов: тема недели, лучшие раунды, рейтинг." },
     ],
   }),

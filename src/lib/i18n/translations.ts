@@ -9,8 +9,8 @@ export const LANGUAGES: { code: Lang; label: string; short: string }[] = [
 type Dict = Record<string, string>;
 
 const ru: Dict = {
-  "brand.name": "Debate Club Uzbekistan",
-  "brand.tagline": "Учимся спорить, чтобы менять мир к лучшему",
+  "brand.name": "Мезон",
+  "brand.tagline": "Инфраструктура структурированного спора: идея → критерий → аргумент",
 
   "nav.home": "Главная",
   "nav.learn": "Обучение",
@@ -115,7 +115,7 @@ const ru: Dict = {
   "events.contact.body": "Напишите нам — расскажем, как попасть в клуб и на ближайшие тренировки.",
 
   "about.title": "О клубе",
-  "about.subtitle": "Debate Club Uzbekistan — образовательная инициатива, стартующая в Бухаре.",
+  "about.subtitle": "Мезон — платформа структурированных дебатов, стартующая в Бухаре.",
 
   "auth.title": "Вход и регистрация",
   "auth.tab.signin": "Вход",
@@ -142,7 +142,7 @@ const ru: Dict = {
   "profile.saved": "Профиль обновлён",
 
   "footer.tagline": "Дебатное образование для нового поколения Узбекистана.",
-  "footer.rights": "© 2026 Debate Club Uzbekistan. Все права защищены.",
+  "footer.rights": "© 2026 Мезон. Все права защищены.",
 
   "category.politics": "Политика",
   "category.economics": "Экономика",
@@ -192,7 +192,7 @@ const uz: Dict = {
   "home.cta.title": "Boshlashga tayyormisiz?",
 
   "footer.tagline": "Oʻzbekistonning yangi avlodi uchun bahs taʼlimi.",
-  "footer.rights": "© 2026 Debate Club Uzbekistan. Barcha huquqlar himoyalangan.",
+  "footer.rights": "© 2026 Mezon. Barcha huquqlar himoyalangan.",
 };
 
 const en: Dict = {
@@ -238,7 +238,7 @@ const en: Dict = {
   "profile.title": "Profile",
 
   "footer.tagline": "Debate education for a new generation of Uzbekistan.",
-  "footer.rights": "© 2026 Debate Club Uzbekistan. All rights reserved.",
+  "footer.rights": "© 2026 Mezon. All rights reserved.",
 };
 
 export const translations: Record<Lang, Dict> = { ru, uz, en };

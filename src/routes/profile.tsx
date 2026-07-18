@@ -9,7 +9,7 @@ import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Профиль — Debate Club UZ" },
+      { title: "Профиль — Мезон" },
       { name: "description", content: "Ваш рейтинг, лига, результаты и настройки." },
     ],
   }),

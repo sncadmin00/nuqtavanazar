@@ -28,7 +28,7 @@ export function Header() {
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
         <Link to="/" className="flex items-baseline gap-2">
           <span className="text-[15px] font-semibold tracking-tight text-foreground">
-            Debate Club <span className="text-primary">UZ</span>
+            Ме<span className="text-primary">з</span>он
           </span>
         </Link>
 

@@ -9,8 +9,8 @@ import { Calendar, MapPin, Mail } from "lucide-react";
 export const Route = createFileRoute("/events")({
   head: () => ({
     meta: [
-      { title: "События и турниры дебатов | Debate Club UZ" },
-      { name: "description", content: "Расписание встреч и турниров Debate Club Uzbekistan." },
+      { title: "События и турниры дебатов | Мезон" },
+      { name: "description", content: "Расписание встреч и турниров платформы Мезон." },
     ],
   }),
   component: EventsPage,
@@ -67,8 +67,8 @@ function EventsPage() {
       <Card className="mt-10 p-6 gradient-ink text-white">
         <h2 className="font-display text-2xl font-bold">{t("events.contact.title")}</h2>
         <p className="mt-2 text-white/80">{t("events.contact.body")}</p>
-        <a href="mailto:hello@debateclub.uz" className="mt-4 inline-flex items-center gap-2 rounded-full bg-white text-foreground px-4 py-2 text-sm font-medium">
-          <Mail className="h-4 w-4" /> hello@debateclub.uz
+        <a href="mailto:hello@mezon.uz" className="mt-4 inline-flex items-center gap-2 rounded-full bg-white text-foreground px-4 py-2 text-sm font-medium">
+          <Mail className="h-4 w-4" /> hello@mezon.uz
         </a>
       </Card>
     </div>

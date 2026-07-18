@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/profile/$userId")({
   head: () => ({
-    meta: [{ title: "Профиль игрока — Debate Club UZ" }],
+    meta: [{ title: "Профиль игрока — Мезон" }],
   }),
   component: PublicProfilePage,
 });

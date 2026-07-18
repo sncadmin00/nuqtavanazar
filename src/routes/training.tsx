@@ -5,7 +5,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/training")({
   head: () => ({
     meta: [
-      { title: "Тренировка — Debate Club UZ" },
+      { title: "Тренировка — Мезон" },
       { name: "description", content: "Соло-тренировка речи: обе стороны одной темы, разовый AI-фидбек по содержанию и подаче." },
     ],
   }),

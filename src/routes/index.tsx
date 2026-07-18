@@ -10,7 +10,7 @@ import { fetchCurrentWeek, fetchPreviousWeek, type DebateWeek } from "@/lib/deba
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Debate Club UZ" },
+      { title: "Мезон — живые дебаты по правилам" },
       { name: "description", content: "Живые структурированные дебаты по правилам: 1×1, 2×2, круглый стол. Один День дебатов в неделю." },
     ],
   }),
