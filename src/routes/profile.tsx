@@ -147,20 +147,30 @@ function ProfilePage() {
             return (
               <li key={p.user_id} className={`flex items-center gap-3 py-2.5 -mx-4 px-4 ${isMe ? "bg-primary/10" : ""}`}>
                 <span className="w-5 font-mono text-[12px] tabular-nums text-muted-foreground">{i + 1}</span>
-                <Link
-                  to="/profile/$userId"
-                  params={{ userId: p.user_id }}
-                  className="flex flex-1 items-center gap-3 min-w-0"
-                  disabled={isMe}
-                >
-                  <span className="grid h-8 w-8 place-items-center rounded-full bg-[color:var(--color-ink)] text-[11px] font-semibold text-white">
-                    {(p.display_name ?? "?").slice(0, 1).toUpperCase()}
+                {isMe ? (
+                  <span className="flex flex-1 items-center gap-3 min-w-0">
+                    <span className="grid h-8 w-8 place-items-center rounded-full bg-[color:var(--color-ink)] text-[11px] font-semibold text-white">
+                      {(p.display_name ?? "?").slice(0, 1).toUpperCase()}
+                    </span>
+                    <span className="flex-1 truncate text-[13.5px] font-medium">
+                      {p.display_name ?? "Игрок"}
+                      <span className="ml-1.5 text-[10.5px] uppercase text-primary">вы</span>
+                    </span>
                   </span>
-                  <span className="flex-1 truncate text-[13.5px] font-medium">
-                    {p.display_name ?? "Игрок"}
-                    {isMe && <span className="ml-1.5 text-[10.5px] uppercase text-primary">вы</span>}
-                  </span>
-                </Link>
+                ) : (
+                  <Link
+                    to="/profile/$userId"
+                    params={{ userId: p.user_id }}
+                    className="flex flex-1 items-center gap-3 min-w-0"
+                  >
+                    <span className="grid h-8 w-8 place-items-center rounded-full bg-[color:var(--color-ink)] text-[11px] font-semibold text-white">
+                      {(p.display_name ?? "?").slice(0, 1).toUpperCase()}
+                    </span>
+                    <span className="flex-1 truncate text-[13.5px] font-medium">
+                      {p.display_name ?? "Игрок"}
+                    </span>
+                  </Link>
+                )}
                 <span className="font-mono text-[13px] tabular-nums">{p.mastery}</span>
               </li>
             );
