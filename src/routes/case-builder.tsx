@@ -126,6 +126,13 @@ function CaseBuilder() {
           </p>
         </div>
 
+        <div className="mt-4 rounded-[14px] hairline bg-white p-4">
+          <div className="formula-motif !text-foreground/60">Сторона</div>
+          <p className="mt-1 text-[13.5px] leading-snug text-foreground/90">
+            {SIDE_LABEL[side]}
+          </p>
+        </div>
+
         <div className="mt-4 space-y-2">
           {STEPS.map((s, i) => (
             <div key={s.label} className="rounded-[14px] hairline bg-white p-4">
