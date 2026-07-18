@@ -92,10 +92,11 @@ type Phase = "building" | "offer" | "reflection" | "saved";
 
 function CaseBuilder() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const [phase, setPhase] = useState<Phase>("building");
   const [step, setStep] = useState<Step>(0);
-  const [side, setSide] = useState<Side>("affirmation");
-  const [values, setValues] = useState<string[]>(["", "", ""]);
+  const [side, setSide] = useState<Side>(search.side ?? "affirmation");
+  const [values, setValues] = useState<string[]>([search.topic ?? "", "", ""]);
   const [completedSides, setCompletedSides] = useState<
     Array<{ side: Side; values: string[] }>
   >([]);
