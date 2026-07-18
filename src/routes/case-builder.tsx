@@ -505,7 +505,7 @@ function CaseBuilder() {
         </button>
       </div>
 
-      {step === 3 && canNext && (
+      {step === 4 && canNext && (
         <button
           onClick={() => navigate({ to: "/training" })}
           className="inline-flex w-full items-center justify-center gap-2 rounded-full hairline bg-white px-4 py-2.5 text-[12.5px] font-semibold text-foreground/80 hover:text-foreground"
