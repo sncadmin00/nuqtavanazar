@@ -251,13 +251,54 @@ function TrainingPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-4 space-y-4">
       <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
-        <div className="formula-motif !text-white/50">Тренировка</div>
-        <h1 className="mt-1 text-[22px] font-semibold leading-tight">
-          Проговорите обе стороны — одну идею, два взгляда
-        </h1>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="formula-motif !text-white/50">Тренировка</div>
+            <h1 className="mt-1 text-[22px] font-semibold leading-tight">
+              Проговорите обе стороны — одну идею, два взгляда
+            </h1>
+          </div>
+          <div
+            className={
+              "shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-semibold " +
+              (streak.current > 0
+                ? "bg-primary/20 text-primary-foreground text-white"
+                : "bg-white/10 text-white/70")
+            }
+            title={streak.current > 0 ? `Лучшая серия: ${streak.longest}` : "Серия начнётся с первого пройденного цикла"}
+          >
+            <Flame className={"h-4 w-4 " + (streak.current > 0 ? "text-primary" : "text-white/50")} />
+            {streak.current > 0 ? `${streak.current} ${dayWord(streak.current)} подряд` : "Серии пока нет"}
+          </div>
+        </div>
+
         <p className="mt-2 text-[13.5px] leading-relaxed text-white/70">
           Приватно. Никто не слышит. Голос — единственный инструмент, дыхание — единственная опора.
         </p>
+
+        {/* Week bar */}
+        <div className="mt-4">
+          <div className="flex items-center justify-between text-[10.5px] uppercase tracking-wider text-white/50">
+            <span>Эта неделя</span>
+            <span>{streak.weekDays.filter(Boolean).length}/7</span>
+          </div>
+          <div className="mt-1.5 grid grid-cols-7 gap-1.5">
+            {streak.weekDays.map((done, i) => (
+              <div key={i} className="flex flex-col items-center gap-1">
+                <div
+                  className={
+                    "h-2 w-full rounded-full " +
+                    (done ? "bg-primary" : "bg-white/15")
+                  }
+                />
+                <span className="text-[10px] text-white/50">{WEEKDAYS[i]}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-2 text-[11px] leading-snug text-white/50">
+            Цикл засчитывается, когда собраны обе стороны и сохранена рефлексия.
+          </p>
+        </div>
       </section>
 
       {/* Level selector */}
