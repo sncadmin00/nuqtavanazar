@@ -13,6 +13,7 @@ export const Route = createFileRoute("/case-builder")({
 });
 
 type Step = 0 | 1 | 2;
+type Side = "affirmation" | "negation";
 
 function IdeaIcon() {
   return (
@@ -80,8 +81,14 @@ const STEPS = [
 function CaseBuilder() {
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>(0);
+  const [side, setSide] = useState<Side>("affirmation");
   const [values, setValues] = useState<string[]>(["", "", ""]);
   const [done, setDone] = useState(false);
+
+  const SIDE_LABEL: Record<Side, string> = {
+    affirmation: "Утверждение",
+    negation: "Отрицание",
+  };
 
   const current = STEPS[step];
   const canNext = values[step].trim().length > 0;
@@ -119,6 +126,13 @@ function CaseBuilder() {
           </p>
         </div>
 
+        <div className="mt-4 rounded-[14px] hairline bg-white p-4">
+          <div className="formula-motif !text-foreground/60">Сторона</div>
+          <p className="mt-1 text-[13.5px] leading-snug text-foreground/90">
+            {SIDE_LABEL[side]}
+          </p>
+        </div>
+
         <div className="mt-4 space-y-2">
           {STEPS.map((s, i) => (
             <div key={s.label} className="rounded-[14px] hairline bg-white p-4">
@@ -138,6 +152,7 @@ function CaseBuilder() {
           <button
             onClick={() => {
               setStep(0);
+              setSide("affirmation");
               setValues(["", "", ""]);
               setDone(false);
             }}
@@ -201,6 +216,33 @@ function CaseBuilder() {
           <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Пример</div>
           <p className="mt-1 text-[13px] leading-snug text-foreground/85">«{current.example}»</p>
         </div>
+
+        {step === 0 && (
+          <div className="mt-5">
+            <div className="grid grid-cols-2 gap-2">
+              {(["affirmation", "negation"] as Side[]).map((s) => {
+                const active = side === s;
+                return (
+                  <button
+                    key={s}
+                    onClick={() => setSide(s)}
+                    className={
+                      "rounded-full px-3 py-2 text-[13px] font-semibold transition " +
+                      (active
+                        ? "bg-[color:var(--color-ink)] text-white"
+                        : "bg-accent text-foreground hover:bg-accent/80")
+                    }
+                  >
+                    {SIDE_LABEL[s]}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-[11.5px] leading-snug text-muted-foreground">
+              Сторона нужна явно — конструктор без ИИ сам её не определит.
+            </p>
+          </div>
+        )}
 
         <textarea
           value={values[step]}
