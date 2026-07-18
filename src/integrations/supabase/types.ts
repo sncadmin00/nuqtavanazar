@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      debate_weeks: {
+        Row: {
+          ai_summary: string | null
+          con_percent: number
+          created_at: string
+          event_at: string
+          id: string
+          listeners_total: number
+          pro_percent: number
+          rounds_count: number
+          topic: string | null
+          topic_reveal_at: string
+          week_start: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          con_percent?: number
+          created_at?: string
+          event_at: string
+          id?: string
+          listeners_total?: number
+          pro_percent?: number
+          rounds_count?: number
+          topic?: string | null
+          topic_reveal_at: string
+          week_start: string
+        }
+        Update: {
+          ai_summary?: string | null
+          con_percent?: number
+          created_at?: string
+          event_at?: string
+          id?: string
+          listeners_total?: number
+          pro_percent?: number
+          rounds_count?: number
+          topic?: string | null
+          topic_reveal_at?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string
@@ -107,6 +149,36 @@ export type Database = {
         }
         Relationships: []
       }
+      live_rooms: {
+        Row: {
+          format: string
+          id: string
+          is_live: boolean
+          listeners: number
+          started_at: string
+          topic: string | null
+          visibility: string
+        }
+        Insert: {
+          format: string
+          id?: string
+          is_live?: boolean
+          listeners?: number
+          started_at?: string
+          topic?: string | null
+          visibility?: string
+        }
+        Update: {
+          format?: string
+          id?: string
+          is_live?: boolean
+          listeners?: number
+          started_at?: string
+          topic?: string | null
+          visibility?: string
+        }
+        Relationships: []
+      }
       motions: {
         Row: {
           category: string
@@ -137,27 +209,129 @@ export type Database = {
         }
         Relationships: []
       }
+      player_ratings: {
+        Row: {
+          avatar_url: string | null
+          display_name: string | null
+          knock: number
+          league: string
+          mastery: number
+          mastery_trend_week: number
+          matches_played: number
+          moderator: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          display_name?: string | null
+          knock?: number
+          league?: string
+          mastery?: number
+          mastery_trend_week?: number
+          matches_played?: number
+          moderator?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          display_name?: string | null
+          knock?: number
+          league?: string
+          mastery?: number
+          mastery_trend_week?: number
+          matches_played?: number
+          moderator?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          avatar_url: string | null
+          birthdate: string | null
           city: string | null
           created_at: string
           display_name: string | null
           id: string
+          languages: Json
+          parent_confirmed_at: string | null
+          parent_email: string | null
           role: string | null
         }
         Insert: {
+          avatar_url?: string | null
+          birthdate?: string | null
           city?: string | null
           created_at?: string
           display_name?: string | null
           id: string
+          languages?: Json
+          parent_confirmed_at?: string | null
+          parent_email?: string | null
           role?: string | null
         }
         Update: {
+          avatar_url?: string | null
+          birthdate?: string | null
           city?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
+          languages?: Json
+          parent_confirmed_at?: string | null
+          parent_email?: string | null
           role?: string | null
+        }
+        Relationships: []
+      }
+      roundtables: {
+        Row: {
+          best_speaker_name: string | null
+          created_at: string
+          id: string
+          is_live: boolean
+          knock_count: number
+          listeners: number
+          moderator_id: string | null
+          moderator_name: string | null
+          opinion_after: number | null
+          opinion_before: number | null
+          participants: Json
+          starts_at: string
+          topic: string
+        }
+        Insert: {
+          best_speaker_name?: string | null
+          created_at?: string
+          id?: string
+          is_live?: boolean
+          knock_count?: number
+          listeners?: number
+          moderator_id?: string | null
+          moderator_name?: string | null
+          opinion_after?: number | null
+          opinion_before?: number | null
+          participants?: Json
+          starts_at?: string
+          topic: string
+        }
+        Update: {
+          best_speaker_name?: string | null
+          created_at?: string
+          id?: string
+          is_live?: boolean
+          knock_count?: number
+          listeners?: number
+          moderator_id?: string | null
+          moderator_name?: string | null
+          opinion_after?: number | null
+          opinion_before?: number | null
+          participants?: Json
+          starts_at?: string
+          topic?: string
         }
         Relationships: []
       }
@@ -196,6 +370,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      week_highlights: {
+        Row: {
+          created_at: string
+          format: string | null
+          id: string
+          knock_count: number
+          participants: string | null
+          recording_url: string | null
+          title: string
+          week_id: string
+        }
+        Insert: {
+          created_at?: string
+          format?: string | null
+          id?: string
+          knock_count?: number
+          participants?: string | null
+          recording_url?: string | null
+          title: string
+          week_id: string
+        }
+        Update: {
+          created_at?: string
+          format?: string | null
+          id?: string
+          knock_count?: number
+          participants?: string | null
+          recording_url?: string | null
+          title?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "week_highlights_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

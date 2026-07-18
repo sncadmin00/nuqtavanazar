@@ -1,275 +1,209 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { useI18n } from "@/lib/i18n";
+import { Settings, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
-import { LESSONS } from "@/lib/lessons";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import { CheckCircle2, Trash2, Gavel, TrendingUp } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { fetchTopRatings } from "@/lib/debate-data";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export const Route = createFileRoute("/profile")({
-  ssr: false,
-  head: () => ({ meta: [{ title: "Личный кабинет | Debate Club UZ" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [
+      { title: "Профиль — Debate Club UZ" },
+      { name: "description", content: "Ваш рейтинг, лига, результаты и настройки." },
+    ],
+  }),
   component: ProfilePage,
 });
 
-type SavedCase = {
-  id: string; motion_text: string; side: "pro" | "con" | null;
-  thesis: string | null; conclusion: string | null; created_at: string;
+const LEAGUE_LABEL: Record<string, string> = {
+  zonal: "Зональная лига",
+  republic: "Республиканская лига",
 };
 
-type Evaluation = {
-  id: string; motion: string; format: string; overall_score: number;
-  scores: Record<string, number>; strengths: string[]; improvements: string[];
-  created_at: string;
+type Rating = {
+  user_id: string;
+  mastery: number;
+  mastery_trend_week: number;
+  knock: number;
+  moderator: number;
+  matches_played: number;
+  league: string;
+  display_name: string | null;
 };
 
 function ProfilePage() {
-  const { t } = useI18n();
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
+  const { user, signOut, loading } = useAuth();
+  const [me, setMe] = useState<Rating | null>(null);
+  const [top, setTop] = useState<Awaited<ReturnType<typeof fetchTopRatings>>>([]);
+  const [tab, setTab] = useState<"mastery" | "knock" | "moderator">("mastery");
 
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/auth" });
-  }, [loading, user, navigate]);
-
-  const [displayName, setDisplayName] = useState("");
-  const [city, setCity] = useState("");
-  const [role, setRole] = useState("student");
-  const [progress, setProgress] = useState<Set<string>>(new Set());
-  const [cases, setCases] = useState<SavedCase[]>([]);
-  const [evals, setEvals] = useState<Evaluation[]>([]);
-  const [saving, setSaving] = useState(false);
+    fetchTopRatings(20).then(setTop);
+  }, []);
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("*").eq("id", user.id).maybeSingle()
-      .then(({ data }) => {
-        if (data) {
-          setDisplayName(data.display_name ?? "");
-          setCity(data.city ?? "");
-          setRole(data.role ?? "student");
+    supabase
+      .from("player_ratings")
+      .select("*")
+      .eq("user_id", user.id)
+      .maybeSingle()
+      .then(async ({ data }) => {
+        if (!data) {
+          const display = user.email?.split("@")[0] ?? "Игрок";
+          await supabase.from("player_ratings").insert({ user_id: user.id, display_name: display });
+          setMe({
+            user_id: user.id,
+            mastery: 1000,
+            mastery_trend_week: 0,
+            knock: 0,
+            moderator: 0,
+            matches_played: 0,
+            league: "zonal",
+            display_name: display,
+          });
+        } else {
+          setMe(data as Rating);
         }
       });
-    supabase.from("lesson_progress").select("lesson_id").eq("user_id", user.id)
-      .then(({ data }) => setProgress(new Set((data ?? []).map((r) => r.lesson_id))));
-    supabase.from("saved_cases").select("id, motion_text, side, thesis, conclusion, created_at")
-      .eq("user_id", user.id).order("created_at", { ascending: false })
-      .then(({ data }) => setCases((data as SavedCase[]) ?? []));
-    supabase.from("judge_evaluations")
-      .select("id, motion, format, overall_score, scores, strengths, improvements, created_at")
-      .eq("user_id", user.id).order("created_at", { ascending: false }).limit(20)
-      .then(({ data }) => setEvals((data as Evaluation[]) ?? []));
   }, [user]);
 
-  const saveProfile = async () => {
-    if (!user) return;
-    setSaving(true);
-    const { error } = await supabase.from("profiles").upsert({
-      id: user.id, display_name: displayName, city, role,
-    });
-    setSaving(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success(t("profile.saved"));
-  };
+  if (loading) return <div className="mx-auto max-w-3xl px-4 py-8 text-sm text-muted-foreground">…</div>;
 
-  const deleteCase = async (id: string) => {
-    await supabase.from("saved_cases").delete().eq("id", id);
-    setCases((prev) => prev.filter((c) => c.id !== id));
-  };
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-10 text-center">
+        <h1 className="text-xl font-semibold">Войдите, чтобы играть</h1>
+        <p className="mt-2 text-[13.5px] text-muted-foreground">
+          Рейтинг, история баттлов, круглые столы — всё в личном кабинете.
+        </p>
+        <Link to="/auth" className="mt-5 inline-block rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground">
+          Войти
+        </Link>
+      </div>
+    );
+  }
 
-  if (!user) return null;
+  const name = me?.display_name || (user.email?.split("@")[0] ?? "Игрок");
+  const sortedTop = [...top].sort((a, b) => {
+    const av = tab === "mastery" ? a.mastery : 0;
+    const bv = tab === "mastery" ? b.mastery : 0;
+    return bv - av;
+  });
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 py-12 md:py-16">
-      <h1 className="font-display text-4xl md:text-5xl font-bold">{t("profile.title")}</h1>
-      <p className="mt-2 text-muted-foreground">{user.email}</p>
-
-      <Card className="mt-8 p-6 border-border/60 shadow-card space-y-4">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <Label>{t("auth.displayName")}</Label>
-            <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+    <div className="mx-auto max-w-3xl px-4 py-4 space-y-4">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <div className="grid h-14 w-14 place-items-center rounded-full bg-[color:var(--color-ink)] text-lg font-semibold text-white">
+            {name.slice(0, 1).toUpperCase()}
           </div>
           <div>
-            <Label>{t("profile.city")}</Label>
-            <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Бухара" />
-          </div>
-          <div>
-            <Label>{t("profile.role")}</Label>
-            <Select value={role} onValueChange={setRole}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="school">{t("profile.role.school")}</SelectItem>
-                <SelectItem value="student">{t("profile.role.student")}</SelectItem>
-                <SelectItem value="other">{t("profile.role.other")}</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="text-[17px] font-semibold leading-tight">{name}</div>
+            <div className="mt-0.5 text-[12.5px] text-muted-foreground">
+              {LEAGUE_LABEL[me?.league ?? "zonal"]}
+            </div>
           </div>
         </div>
-        <Button onClick={saveProfile} disabled={saving}>{t("profile.save")}</Button>
-      </Card>
+        <button
+          onClick={() => document.getElementById("settings-sheet")?.scrollIntoView({ behavior: "smooth" })}
+          className="grid h-9 w-9 place-items-center rounded-full hairline bg-white"
+          aria-label="Настройки"
+        >
+          <Settings className="h-4 w-4" />
+        </button>
+      </div>
 
-      <Card className="mt-6 p-6 border-border/60 shadow-card">
-        <h2 className="font-display text-2xl font-bold">{t("profile.progress")}</h2>
-        <div className="mt-4 space-y-2">
-          {LESSONS.map((l) => {
-            const done = progress.has(l.id);
+      {/* 3 stats */}
+      <div className="grid grid-cols-3 gap-2">
+        <Stat label="Мастерство" value={me?.mastery ?? 1000} accent />
+        <Stat label="Тук" value={me?.knock ?? 0} />
+        <Stat label="Модератор" value={me?.moderator ? me.moderator : null} />
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 rounded-full hairline bg-white p-1">
+        {(["mastery", "knock", "moderator"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`flex-1 rounded-full py-1.5 text-[12.5px] font-medium transition-colors ${
+              tab === t ? "bg-[color:var(--color-ink)] text-white" : "text-muted-foreground"
+            }`}
+          >
+            {t === "mastery" ? "Мастерство" : t === "knock" ? "Тук" : "Модератор"}
+          </button>
+        ))}
+      </div>
+
+      {/* Leaderboard */}
+      <section className="rounded-[16px] hairline bg-white p-4">
+        <div className="formula-motif !text-foreground/70">Лидеры лиги</div>
+        <ul className="mt-2 divide-y divide-[color:var(--color-border)]">
+          {sortedTop.slice(0, 8).map((p, i) => {
+            const isMe = p.user_id === user.id;
             return (
-              <div key={l.id} className="flex items-center justify-between rounded-lg border p-3">
-                <div>
-                  <div className="font-medium">{l.title}</div>
-                  <div className="text-xs text-muted-foreground">{l.minutes} {t("learn.minutes")}</div>
-                </div>
-                {done ? (
-                  <Badge className="rounded-full"><CheckCircle2 className="mr-1 h-3 w-3" /> {t("learn.completed")}</Badge>
+              <li key={p.user_id} className={`flex items-center gap-3 py-2.5 -mx-4 px-4 ${isMe ? "bg-primary/10" : ""}`}>
+                <span className="w-5 font-mono text-[12px] tabular-nums text-muted-foreground">{i + 1}</span>
+                {isMe ? (
+                  <span className="flex flex-1 items-center gap-3 min-w-0">
+                    <span className="grid h-8 w-8 place-items-center rounded-full bg-[color:var(--color-ink)] text-[11px] font-semibold text-white">
+                      {(p.display_name ?? "?").slice(0, 1).toUpperCase()}
+                    </span>
+                    <span className="flex-1 truncate text-[13.5px] font-medium">
+                      {p.display_name ?? "Игрок"}
+                      <span className="ml-1.5 text-[10.5px] uppercase text-primary">вы</span>
+                    </span>
+                  </span>
                 ) : (
-                  <Badge variant="outline" className="rounded-full">—</Badge>
+                  <Link
+                    to="/profile/$userId"
+                    params={{ userId: p.user_id }}
+                    className="flex flex-1 items-center gap-3 min-w-0"
+                  >
+                    <span className="grid h-8 w-8 place-items-center rounded-full bg-[color:var(--color-ink)] text-[11px] font-semibold text-white">
+                      {(p.display_name ?? "?").slice(0, 1).toUpperCase()}
+                    </span>
+                    <span className="flex-1 truncate text-[13.5px] font-medium">
+                      {p.display_name ?? "Игрок"}
+                    </span>
+                  </Link>
                 )}
-              </div>
+                <span className="font-mono text-[13px] tabular-nums">{p.mastery}</span>
+              </li>
             );
           })}
+        </ul>
+        <div className="mt-3 text-[12.5px] font-medium text-primary">Вся лига →</div>
+      </section>
+
+      {/* Settings */}
+      <section id="settings-sheet" className="rounded-[16px] hairline bg-white p-4 space-y-3">
+        <div className="formula-motif !text-foreground/70">Настройки</div>
+        <div className="flex items-center justify-between">
+          <span className="text-[13.5px]">Язык интерфейса</span>
+          <LanguageSwitcher />
         </div>
-      </Card>
-
-      <JudgeStatsCard evals={evals} />
-
-
-
-      <Card className="mt-6 p-6 border-border/60 shadow-card">
-        <h2 className="font-display text-2xl font-bold">{t("profile.cases")}</h2>
-        <div className="mt-4 space-y-3">
-          {cases.length === 0 ? (
-            <p className="text-muted-foreground">{t("profile.noCases")}</p>
-          ) : (
-            cases.map((c) => (
-              <div key={c.id} className="rounded-xl border p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-medium">{c.motion_text}</p>
-                    {c.thesis && <p className="mt-1 text-sm text-muted-foreground">{c.thesis}</p>}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {c.side && <Badge variant="outline" className="rounded-full uppercase">{c.side}</Badge>}
-                    <Button size="icon" variant="ghost" onClick={() => deleteCase(c.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </Card>
+        <button
+          onClick={() => signOut()}
+          className="flex w-full items-center justify-center gap-2 rounded-full hairline bg-white py-2.5 text-[13.5px] font-medium text-destructive"
+        >
+          <LogOut className="h-4 w-4" /> Выйти
+        </button>
+      </section>
     </div>
   );
 }
 
-function JudgeStatsCard({ evals }: { evals: Evaluation[] }) {
-  if (evals.length === 0) {
-    return (
-      <Card className="mt-6 p-6 border-primary/30 bg-gradient-to-br from-primary/5 to-transparent shadow-card">
-        <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-xl gradient-brand text-brand-foreground">
-            <Gavel className="h-5 w-5" />
-          </span>
-          <div>
-            <h2 className="font-display text-2xl font-bold">AI-Инсайты</h2>
-            <p className="text-sm text-muted-foreground">Пока нет оценок от AI-судьи</p>
-          </div>
-        </div>
-        <Button asChild className="mt-4"><Link to="/judge">Оценить речь</Link></Button>
-      </Card>
-    );
-  }
-
-  const avg = evals.reduce((s, e) => s + (e.overall_score ?? 0), 0) / evals.length;
-  const criteria: Record<string, number[]> = {};
-  evals.forEach((e) => {
-    Object.entries(e.scores ?? {}).forEach(([k, v]) => {
-      (criteria[k] ??= []).push(Number(v) || 0);
-    });
-  });
-  const avgByCrit = Object.entries(criteria).map(([k, arr]) => ({
-    key: k, avg: arr.reduce((a, b) => a + b, 0) / arr.length,
-  })).sort((a, b) => a.avg - b.avg);
-  const weakest = avgByCrit[0];
-  const strongest = avgByCrit[avgByCrit.length - 1];
-  const recentImprovements = evals.slice(0, 3).flatMap((e) => e.improvements ?? []).slice(0, 4);
-
+function Stat({ label, value, accent = false }: { label: string; value: number | null; accent?: boolean }) {
   return (
-    <Card className="mt-6 p-6 border-primary/30 bg-gradient-to-br from-primary/5 to-transparent shadow-card">
-      <div className="flex items-center gap-3">
-        <span className="grid h-10 w-10 place-items-center rounded-xl gradient-brand text-brand-foreground">
-          <Gavel className="h-5 w-5" />
-        </span>
-        <div>
-          <h2 className="font-display text-2xl font-bold">AI-Инсайты</h2>
-          <p className="text-sm text-muted-foreground">На основе {evals.length} оценок AI-судьи</p>
-        </div>
+    <div className={`rounded-[14px] p-3 text-center ${accent ? "bg-primary/10" : "hairline bg-white"}`}>
+      <div className={`font-mono text-[22px] font-semibold leading-none tabular-nums ${accent ? "text-primary" : "text-foreground"}`}>
+        {value == null ? "—" : value}
       </div>
-
-      <div className="mt-5 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border bg-card p-4">
-          <div className="text-xs uppercase text-muted-foreground">Средний балл</div>
-          <div className="mt-1 font-display text-3xl font-bold">{avg.toFixed(1)}<span className="text-base text-muted-foreground">/10</span></div>
-        </div>
-        {strongest && (
-          <div className="rounded-xl border bg-green-500/10 p-4">
-            <div className="text-xs uppercase text-green-700 dark:text-green-400">Сильная сторона</div>
-            <div className="mt-1 font-semibold capitalize">{strongest.key}</div>
-            <div className="text-sm text-muted-foreground">{strongest.avg.toFixed(1)}/10</div>
-          </div>
-        )}
-        {weakest && weakest !== strongest && (
-          <div className="rounded-xl border bg-red-500/10 p-4">
-            <div className="text-xs uppercase text-red-700 dark:text-red-400">Зона роста</div>
-            <div className="mt-1 font-semibold capitalize">{weakest.key}</div>
-            <div className="text-sm text-muted-foreground">{weakest.avg.toFixed(1)}/10</div>
-          </div>
-        )}
-      </div>
-
-      {recentImprovements.length > 0 && (
-        <div className="mt-5">
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <TrendingUp className="h-4 w-4" /> Рекомендации AI
-          </div>
-          <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-            {recentImprovements.map((t, i) => <li key={i}>• {t}</li>)}
-          </ul>
-        </div>
-      )}
-
-      <div className="mt-5 flex gap-2">
-        <Button asChild size="sm"><Link to="/judge">Новая оценка</Link></Button>
-        <Button asChild size="sm" variant="outline"><Link to="/learn">Открыть уроки</Link></Button>
-      </div>
-
-      <div className="mt-6">
-        <div className="text-sm font-semibold mb-2">Последние оценки</div>
-        <div className="space-y-2">
-          {evals.slice(0, 5).map((e) => (
-            <div key={e.id} className="flex items-center justify-between rounded-lg border p-3 text-sm">
-              <div className="min-w-0">
-                <div className="truncate font-medium">{e.motion}</div>
-                <div className="text-xs text-muted-foreground uppercase">{e.format}</div>
-              </div>
-              <Badge className="rounded-full">{e.overall_score}/10</Badge>
-            </div>
-          ))}
-        </div>
-      </div>
-    </Card>
+      <div className="mt-1 text-[10.5px] uppercase tracking-wider text-muted-foreground">{label}</div>
+    </div>
   );
 }
-
