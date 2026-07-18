@@ -111,7 +111,7 @@ function CaseBuilder() {
   const [step, setStep] = useState<Step>(0);
   const [side, setSide] = useState<Side>(search.side ?? "affirmation");
   const [topic, setTopic] = useState<string>(search.topic ?? "");
-  const [values, setValues] = useState<string[]>(["", "", ""]);
+  const [values, setValues] = useState<string[]>(["", "", "", ""]);
   const [completedSides, setCompletedSides] = useState<
     Array<{ side: Side; values: string[] }>
   >([]);
@@ -144,7 +144,7 @@ function CaseBuilder() {
   };
 
   const goNext = () => {
-    if (step < 2) {
+    if (step < 3) {
       setStep((step + 1) as Step);
     } else {
       finishCurrentSide();
@@ -158,7 +158,7 @@ function CaseBuilder() {
   const startSecondSide = () => {
     const done = completedSides[0];
     setSide(done.side === "affirmation" ? "negation" : "affirmation");
-    setValues(["", "", ""]);
+    setValues(["", "", "", ""]);
     setStep(0);
     setPhase("building");
   };
@@ -167,7 +167,7 @@ function CaseBuilder() {
     setStep(0);
     setSide("affirmation");
     setTopic("");
-    setValues(["", "", ""]);
+    setValues(["", "", "", ""]);
     setCompletedSides([]);
     setOpinion("");
     setChanged(null);
@@ -474,7 +474,7 @@ function CaseBuilder() {
           disabled={!canNext}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[color:var(--color-ink)] px-4 py-2.5 text-[13.5px] font-semibold text-white disabled:opacity-40 active:scale-[0.99]"
         >
-          {step === 2 ? (
+          {step === 3 ? (
             <>
               Готово <CheckCircle2 className="h-4 w-4" />
             </>
@@ -486,7 +486,7 @@ function CaseBuilder() {
         </button>
       </div>
 
-      {step === 2 && canNext && (
+      {step === 3 && canNext && (
         <button
           onClick={() => navigate({ to: "/training" })}
           className="inline-flex w-full items-center justify-center gap-2 rounded-full hairline bg-white px-4 py-2.5 text-[12.5px] font-semibold text-foreground/80 hover:text-foreground"
