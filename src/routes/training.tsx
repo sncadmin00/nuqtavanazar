@@ -116,7 +116,6 @@ type DiceState =
       status: "ready";
       motion: string;
       rationale: string;
-      assignment: SideAssignment;
     }
   | { status: "error"; message: string };
 
