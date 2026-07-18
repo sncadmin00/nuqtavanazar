@@ -413,27 +413,14 @@ function TrainingPage() {
             {dice.rationale}
           </p>
 
-          <div className="mt-4 rounded-[12px] bg-primary/15 p-3">
-            <div className="text-[10.5px] font-semibold uppercase tracking-wider text-white/60">
-              Твоя сторона
-            </div>
-            <div className="mt-1 text-[14px] font-semibold">
-              {dice.assignment.side === "affirmation" ? "Утверждение" : "Отрицание"}
-            </div>
-            <p className="mt-1 text-[12px] text-white/75">
-              {dice.assignment.reason ??
-                `Пока мало рефлексий (${dice.assignment.samples}/3) — сторона выпала случайно.`}
-            </p>
-          </div>
-
           <button
             onClick={() => {
               setCaseStarted(true);
-              goBuildWithAssignment();
+              goBuildFromDice();
             }}
             className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-2.5 text-[13.5px] font-semibold text-white active:scale-[0.99]"
           >
-            Собрать эту сторону <ListChecks className="h-4 w-4" />
+            Собрать кейс <ListChecks className="h-4 w-4" />
           </button>
         </section>
       )}
