@@ -1,7 +1,23 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks, Waves, Check, X } from "lucide-react";
+import {
+  Dices,
+  Mic,
+  Sparkles,
+  Lock,
+  ChevronLeft,
+  ChevronRight,
+  ListChecks,
+  Waves,
+  Check,
+  X,
+  Flame,
+  Loader2,
+} from "lucide-react";
+import { getStreak, type StreakInfo } from "@/lib/streak";
+import { getSideAssignment, type SideAssignment } from "@/lib/dice-intel";
+import { generateMotion } from "@/lib/ai.functions";
 
 export const Route = createFileRoute("/training")({
   head: () => ({
