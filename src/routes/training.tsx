@@ -343,15 +343,22 @@ function TrainingPage() {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 
         <button
-          onClick={() => toast("Генератор тем скоро запустится")}
-          className="flex items-start gap-3 rounded-[16px] hairline bg-white p-4 text-left active:scale-[0.99]"
+          onClick={rollDice}
+          disabled={dice.status === "loading"}
+          className="flex items-start gap-3 rounded-[16px] hairline bg-white p-4 text-left active:scale-[0.99] disabled:opacity-70"
         >
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-accent">
-            <Dices className="h-5 w-5 text-foreground" />
+            {dice.status === "loading" ? (
+              <Loader2 className="h-5 w-5 animate-spin text-foreground" />
+            ) : (
+              <Dices className="h-5 w-5 text-foreground" />
+            )}
           </span>
           <span className="flex-1">
-            <span className="block text-[14px] font-semibold">Кубик — случайная тема</span>
-            <span className="mt-0.5 block text-[12px] text-muted-foreground">Одна кнопка, готовая формулировка</span>
+            <span className="block text-[14px] font-semibold">Умный кубик</span>
+            <span className="mt-0.5 block text-[12px] text-muted-foreground">
+              Тема + сторона, специально не та, к которой ты склоняешься
+            </span>
           </span>
         </button>
 
