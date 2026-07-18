@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, Mic } from "lucide-react";
+import { toast } from "sonner";
+import { ArrowLeft, ArrowRight, CheckCircle2, Flag, Mic, Save } from "lucide-react";
+import { saveReflection, type CaseReflection } from "@/lib/freeTalk";
 
 export const Route = createFileRoute("/case-builder")({
   head: () => ({
