@@ -310,7 +310,7 @@ function TrainingPage() {
               <li className="relative flex items-start gap-3">
                 <Dot n={1} state={stateOf(0)} />
                 <div className="flex-1 min-w-0 pt-0.5">
-                  <div className="text-[13.5px] font-semibold">Тема и сторона</div>
+                  <div className="text-[13.5px] font-semibold">Тема</div>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <button
                       onClick={rollDice}
