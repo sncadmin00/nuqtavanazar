@@ -38,9 +38,11 @@ function ProfilePage() {
   const [me, setMe] = useState<Rating | null>(null);
   const [top, setTop] = useState<Awaited<ReturnType<typeof fetchTopRatings>>>([]);
   const [tab, setTab] = useState<"mastery" | "knock" | "moderator">("mastery");
+  const [streak, setStreak] = useState<StreakInfo>({ current: 0, longest: 0, weekDays: Array(7).fill(false) });
 
   useEffect(() => {
     fetchTopRatings(20).then(setTop);
+    setStreak(getStreak());
   }, []);
 
   useEffect(() => {
