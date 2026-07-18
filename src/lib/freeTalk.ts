@@ -12,7 +12,8 @@ export type FreeTalkRecord = {
 
 const DB_NAME = "mezon.freetalk";
 const STORE = "recordings";
-const VERSION = 1;
+const REFLECTIONS_STORE = "reflections";
+const VERSION = 2;
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -23,10 +24,57 @@ function openDB(): Promise<IDBDatabase> {
         const store = db.createObjectStore(STORE, { keyPath: "id" });
         store.createIndex("createdAt", "createdAt");
       }
+      if (!db.objectStoreNames.contains(REFLECTIONS_STORE)) {
+        const store = db.createObjectStore(REFLECTIONS_STORE, { keyPath: "id" });
+        store.createIndex("createdAt", "createdAt");
+      }
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
   });
+}
+
+export type CaseReflection = {
+  id: string;
+  createdAt: number;
+  topic: string;
+  sides: Array<{ side: "affirmation" | "negation"; values: string[] }>;
+  opinion: string;
+  changed: "strong" | "little" | "no" | null;
+};
+
+export async function saveReflection(rec: CaseReflection): Promise<void> {
+  const db = await openDB();
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(REFLECTIONS_STORE, "readwrite");
+    tx.objectStore(REFLECTIONS_STORE).put(rec);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
+
+export async function listReflections(): Promise<CaseReflection[]> {
+  const db = await openDB();
+  const items = await new Promise<CaseReflection[]>((resolve, reject) => {
+    const tx = db.transaction(REFLECTIONS_STORE, "readonly");
+    const req = tx.objectStore(REFLECTIONS_STORE).getAll();
+    req.onsuccess = () => resolve(req.result as CaseReflection[]);
+    req.onerror = () => reject(req.error);
+  });
+  db.close();
+  return items.sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export async function deleteReflection(id: string): Promise<void> {
+  const db = await openDB();
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(REFLECTIONS_STORE, "readwrite");
+    tx.objectStore(REFLECTIONS_STORE).delete(id);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
 }
 
 export async function saveRecording(rec: FreeTalkRecord): Promise<void> {
