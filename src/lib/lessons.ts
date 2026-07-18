@@ -114,7 +114,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "format-1x1",
-    order: 3,
+    order: 4,
     title: "Раунд 1×1: дуэль спикеров",
     summary: "Один против одного: жёсткий тайминг, обмен опровержениями, работа с критерием оппонента.",
     minutes: 12,
@@ -145,7 +145,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "format-2x2",
-    order: 4,
+    order: 5,
     title: "Раунд 2×2: командная игра",
     summary: "Две команды по два спикера. Распределение ролей, работа с общим критерием.",
     minutes: 14,
@@ -177,7 +177,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "format-roundtable",
-    order: 5,
+    order: 6,
     title: "Круглый стол: модерируемое обсуждение",
     summary: "3–6 участников, модератор, сравнение позиций по единому критерию.",
     minutes: 12,
@@ -205,7 +205,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "judging-rubric",
-    order: 6,
+    order: 7,
     title: "Как судить раунд Мезон",
     summary: "Единые критерии судейства для 1×1, 2×2 и круглого стола.",
     minutes: 10,
@@ -237,7 +237,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "speaking-breath",
-    order: 7,
+    order: 8,
     title: "Дыхание и голос без микрофона-костыля",
     summary: "Как звучать наполненно и ровно, даже когда микрофон слабый и вас никто не видит.",
     minutes: 6,
@@ -264,7 +264,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "speaking-pauses",
-    order: 8,
+    order: 9,
     title: "Пауза вместо слов-паразитов",
     summary: "Почему «эээ», «ну», «как бы» съедают вес аргумента и как заменить их тишиной.",
     minutes: 5,
@@ -290,7 +290,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "speaking-no-script",
-    order: 9,
+    order: 10,
     title: "Как говорить без написанного текста",
     summary: "Опоры вместо сценария: ключевые слова, а не готовые фразы.",
     minutes: 6,
@@ -316,7 +316,7 @@ export const LESSONS: Lesson[] = [
   },
   {
     id: "speaking-tempo",
-    order: 10,
+    order: 11,
     title: "Держать темп под давлением времени",
     summary: "Как не ускоряться, когда таймер идёт, и укладываться без обрывов.",
     minutes: 5,
