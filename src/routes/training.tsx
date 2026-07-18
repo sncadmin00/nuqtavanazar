@@ -13,7 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { getStreak, type StreakInfo } from "@/lib/streak";
-import { getSideAssignment, type SideAssignment } from "@/lib/dice-intel";
+
 import { generateMotion } from "@/lib/ai.functions";
 import { WeekStrip } from "@/components/WeekStrip";
 
