@@ -130,7 +130,7 @@ function CaseBuilder() {
   const [step, setStep] = useState<Step>(0);
   const [side, setSide] = useState<Side>(search.side ?? "affirmation");
   const [topic, setTopic] = useState<string>(search.topic ?? "");
-  const [values, setValues] = useState<string[]>(["", "", "", ""]);
+  const [values, setValues] = useState<string[]>(["", "", "", "", ""]);
   const [completedSides, setCompletedSides] = useState<
     Array<{ side: Side; values: string[] }>
   >([]);
