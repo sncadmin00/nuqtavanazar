@@ -32,6 +32,7 @@ export const LESSONS: Lesson[] = [
     minutes: 12,
     level: "beginner",
     track: "basics",
+    category: "case",
     blocks: [
       { type: "p", text: "Мезон — платформа структурированного спора. В центре всего одна формула: идея → критерий → аргумент. Она одинаково работает и в соло-тренировке, и в парном раунде 1×1, и в командной игре 2×2, и в круглом столе." },
       { type: "h2", text: "Три шага формулы" },
@@ -66,6 +67,7 @@ export const LESSONS: Lesson[] = [
     minutes: 10,
     level: "beginner",
     track: "solo",
+    category: "case",
     blocks: [
       { type: "p", text: "Соло-режим — базовая единица подготовки. Вы получаете тему, выбираете сторону и записываете речь на 3 минуты по формуле Мезон." },
       { type: "h2", text: "Структура речи" },
@@ -90,6 +92,7 @@ export const LESSONS: Lesson[] = [
     minutes: 12,
     level: "intermediate",
     track: "duel",
+    category: "case",
     blocks: [
       { type: "p", text: "1×1 — самый быстрый живой формат Мезон. Два спикера, только звук, судья и таймер. Тема объявляется за 24 часа." },
       { type: "h2", text: "Структура раунда" },
@@ -120,6 +123,7 @@ export const LESSONS: Lesson[] = [
     minutes: 14,
     level: "intermediate",
     track: "team",
+    category: "case",
     blocks: [
       { type: "p", text: "2×2 — командный формат Мезон. Каждая сторона играет вдвоём: первый спикер строит кейс, второй опровергает и сжимает." },
       { type: "h2", text: "Структура раунда" },
@@ -151,6 +155,7 @@ export const LESSONS: Lesson[] = [
     minutes: 12,
     level: "intermediate",
     track: "roundtable",
+    category: "case",
     blocks: [
       { type: "p", text: "Круглый стол — формат Мезон для сложных тем, где стороны не сводятся к двум. Модератор задаёт единый критерий и по очереди даёт слово участникам." },
       { type: "h2", text: "Как устроен раунд" },
@@ -178,6 +183,7 @@ export const LESSONS: Lesson[] = [
     minutes: 10,
     level: "intermediate",
     track: "judging",
+    category: "case",
     blocks: [
       { type: "p", text: "Судья Мезон оценивает не то, с чем лично согласен, а кто из сторон убедительнее в рамках раунда. Все три формата судятся по одной рубрике." },
       { type: "h2", text: "Содержание (matter)" },
