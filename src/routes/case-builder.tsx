@@ -22,7 +22,7 @@ export const Route = createFileRoute("/case-builder")({
   component: CaseBuilder,
 });
 
-type Step = 0 | 1 | 2;
+type Step = 0 | 1 | 2 | 3;
 type Side = "affirmation" | "negation";
 
 function IdeaIcon() {
@@ -63,11 +63,23 @@ function ArgumentIcon() {
   );
 }
 
+function ProofIcon() {
+  return (
+    <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
+      <rect width="80" height="80" rx="16" fill="#1A1A2E" />
+      <rect x="20" y="18" width="40" height="48" rx="4" stroke="#F7F3EC" strokeWidth="4" />
+      <path d="M28 32h24" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M28 42h24" stroke="#F7F3EC" strokeWidth="4" strokeLinecap="round" />
+      <path d="M28 52h14" stroke="#E8562D" strokeWidth="4" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const STEPS = [
   {
-    label: "Идея",
+    label: "Позиция",
     question: "Что?",
-    placeholder: "Твоя идея…",
+    placeholder: "Твоя позиция…",
     icon: IdeaIcon,
   },
   {
@@ -78,9 +90,15 @@ const STEPS = [
   },
   {
     label: "Аргумент",
-    question: "Факт?",
+    question: "Как?",
     placeholder: "Твой аргумент…",
     icon: ArgumentIcon,
+  },
+  {
+    label: "Доказательство",
+    question: "Факты?",
+    placeholder: "Твои факты…",
+    icon: ProofIcon,
   },
 ];
 
@@ -93,7 +111,7 @@ function CaseBuilder() {
   const [step, setStep] = useState<Step>(0);
   const [side, setSide] = useState<Side>(search.side ?? "affirmation");
   const [topic, setTopic] = useState<string>(search.topic ?? "");
-  const [values, setValues] = useState<string[]>(["", "", ""]);
+  const [values, setValues] = useState<string[]>(["", "", "", ""]);
   const [completedSides, setCompletedSides] = useState<
     Array<{ side: Side; values: string[] }>
   >([]);
@@ -126,7 +144,7 @@ function CaseBuilder() {
   };
 
   const goNext = () => {
-    if (step < 2) {
+    if (step < 3) {
       setStep((step + 1) as Step);
     } else {
       finishCurrentSide();
@@ -140,7 +158,7 @@ function CaseBuilder() {
   const startSecondSide = () => {
     const done = completedSides[0];
     setSide(done.side === "affirmation" ? "negation" : "affirmation");
-    setValues(["", "", ""]);
+    setValues(["", "", "", ""]);
     setStep(0);
     setPhase("building");
   };
@@ -149,7 +167,7 @@ function CaseBuilder() {
     setStep(0);
     setSide("affirmation");
     setTopic("");
-    setValues(["", "", ""]);
+    setValues(["", "", "", ""]);
     setCompletedSides([]);
     setOpinion("");
     setChanged(null);
@@ -456,7 +474,7 @@ function CaseBuilder() {
           disabled={!canNext}
           className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-[color:var(--color-ink)] px-4 py-2.5 text-[13.5px] font-semibold text-white disabled:opacity-40 active:scale-[0.99]"
         >
-          {step === 2 ? (
+          {step === 3 ? (
             <>
               Готово <CheckCircle2 className="h-4 w-4" />
             </>
@@ -468,7 +486,7 @@ function CaseBuilder() {
         </button>
       </div>
 
-      {step === 2 && canNext && (
+      {step === 3 && canNext && (
         <button
           onClick={() => navigate({ to: "/training" })}
           className="inline-flex w-full items-center justify-center gap-2 rounded-full hairline bg-white px-4 py-2.5 text-[12.5px] font-semibold text-foreground/80 hover:text-foreground"
