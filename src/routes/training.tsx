@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks, Mic2, ArrowRight } from "lucide-react";
+import { Dices, Mic, Sparkles, Lock, ChevronLeft, ChevronRight, ListChecks, Mic2, ArrowRight, Waves } from "lucide-react";
 import { LESSONS } from "@/lib/lessons";
 
 export const Route = createFileRoute("/training")({
@@ -145,8 +145,9 @@ function TrainingPage() {
         </p>
       </div>
 
-      {/* Two cards row */}
-      <div className="grid gap-3 sm:grid-cols-2">
+      {/* Cards row */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+
         <button
           onClick={() => toast("Генератор тем скоро запустится")}
           className="flex items-start gap-3 rounded-[16px] hairline bg-white p-4 text-left active:scale-[0.99]"
