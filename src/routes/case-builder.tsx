@@ -22,7 +22,7 @@ export const Route = createFileRoute("/case-builder")({
   component: CaseBuilder,
 });
 
-type Step = 0 | 1 | 2 | 3;
+type Step = 0 | 1 | 2 | 3 | 4;
 type Side = "affirmation" | "negation";
 
 function IdeaIcon() {
