@@ -222,7 +222,7 @@ function ProfilePage() {
 function Stat({ label, value, accent = false }: { label: string; value: number | null; accent?: boolean }) {
   return (
     <div className={`rounded-[14px] p-3 text-center ${accent ? "bg-primary/10" : "hairline bg-white"}`}>
-      <div className={`font-mono text-[22px] font-semibold leading-none tabular-nums ${accent ? "text-primary" : "text-foreground"}`}>
+      <div className={`font-display text-[26px] leading-none tabular-nums ${accent ? "text-primary" : "text-foreground"}`}>
         {value == null ? "—" : value}
       </div>
       <div className="mt-1 text-[10.5px] uppercase tracking-wider text-muted-foreground">{label}</div>
