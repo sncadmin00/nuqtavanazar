@@ -295,7 +295,10 @@ function TrainingPage() {
         return (
           <div className="rounded-[18px] hairline bg-white p-4">
             <div className="flex items-center justify-between">
-              <div className="formula-motif !text-foreground/70">Твой путь сегодня</div>
+              <div className="flex items-center gap-2">
+                <AnimatedLogo size={22} mode="pulse" trigger={activeIdx} />
+                <div className="formula-motif !text-foreground/70">Твой путь сегодня</div>
+              </div>
               <div className="text-[11px] text-muted-foreground">
                 {activeIdx + 1}/3
               </div>
