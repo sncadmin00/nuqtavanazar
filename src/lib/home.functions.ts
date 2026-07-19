@@ -152,55 +152,65 @@ function stripSecrets(row: any, revealed: boolean, gameOver: boolean): WeekPubli
   return out;
 }
 
-async function loadRoundtableCard(sb: ReturnType<typeof makeServerPublicClient>): Promise<RoundtableCardState> {
+async function loadRoundtableCard(
+  sb: ReturnType<typeof makeServerPublicClient>,
+  phase: HomePhase,
+): Promise<RoundtableCardState> {
   const nowIso = new Date().toISOString();
-  const { data: live } = await sb
-    .from("roundtables")
-    .select("id, topic, moderator_name, participants, listeners, knock_count")
-    .eq("is_live", true)
-    .order("starts_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (live) {
-    return {
-      state: "live",
-      roundtable: {
-        id: live.id,
-        topic: live.topic,
-        moderator_name: live.moderator_name,
-        participants: (live.participants as any[]) ?? [],
-        listeners: live.listeners,
-        knock_count: live.knock_count,
-      },
-    };
+
+  if (phase === "game_day") {
+    // Live first, then upcoming within this cycle
+    const { data: live } = await sb
+      .from("roundtables")
+      .select("id, topic, moderator_name, participants, listeners, knock_count")
+      .eq("is_live", true)
+      .order("starts_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (live) {
+      return {
+        state: "live",
+        roundtable: {
+          id: live.id,
+          topic: live.topic,
+          moderator_name: live.moderator_name,
+          participants: (live.participants as any[]) ?? [],
+          listeners: live.listeners,
+          knock_count: live.knock_count,
+        },
+      };
+    }
+    const { data: upcoming } = await sb
+      .from("roundtables")
+      .select("id, topic, moderator_name, participants, starts_at, capacity")
+      .eq("is_live", false)
+      .gt("starts_at", nowIso)
+      .order("starts_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (upcoming) {
+      const parts = ((upcoming.participants as any[]) ?? []).map((p) => ({
+        full_name: p.full_name ?? p.name ?? "Участник",
+        pitch: p.pitch,
+      }));
+      const capacity = (upcoming as any).capacity ?? 6;
+      return {
+        state: "upcoming",
+        roundtable: {
+          id: upcoming.id,
+          topic: upcoming.topic,
+          starts_at: upcoming.starts_at,
+          moderator_name: upcoming.moderator_name,
+          participants: parts,
+          capacity,
+          seats_free: Math.max(0, capacity - parts.length),
+        },
+      };
+    }
+    return { state: "empty" };
   }
-  const { data: upcoming } = await sb
-    .from("roundtables")
-    .select("id, topic, moderator_name, participants, starts_at, capacity")
-    .eq("is_live", false)
-    .gt("starts_at", nowIso)
-    .order("starts_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-  if (upcoming) {
-    const parts = ((upcoming.participants as any[]) ?? []).map((p) => ({
-      full_name: p.full_name ?? p.name ?? "Участник",
-      pitch: p.pitch,
-    }));
-    const capacity = (upcoming as any).capacity ?? 6;
-    return {
-      state: "upcoming",
-      roundtable: {
-        id: upcoming.id,
-        topic: upcoming.topic,
-        starts_at: upcoming.starts_at,
-        moderator_name: upcoming.moderator_name,
-        participants: parts,
-        capacity,
-        seats_free: Math.max(0, capacity - parts.length),
-      },
-    };
-  }
+
+  // Discussion mode: last recorded roundtable
   const { data: past } = await sb
     .from("roundtables")
     .select("id, topic, moderator_name, participants, starts_at, best_speaker_name, opinion_before, opinion_after, listeners, recording_url")
