@@ -48,7 +48,7 @@ function FormatCard({ label, count, listeners, live }: { label: string; count: n
         <Swords className="h-4 w-4 text-primary" />
         <span className="text-[12px] font-semibold uppercase tracking-wide text-foreground">{label}</span>
       </div>
-      <div className="mt-2 font-mono text-[22px] font-semibold leading-none tabular-nums">{count}</div>
+      <div className="mt-2 font-display text-[26px] leading-none tabular-nums">{count}</div>
       <div className="mt-0.5 text-[11px] text-muted-foreground">
         {live
           ? `${count === 1 ? "комната" : "комнат"} · ${listeners} слушат.`

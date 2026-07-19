@@ -64,7 +64,7 @@ export function MyRatingCard() {
         <div className="text-[12px] text-muted-foreground">{LEAGUE_LABEL[data.league] ?? data.league}</div>
       </div>
       <div className="text-right">
-        <div className="font-mono text-[20px] font-semibold tabular-nums">{data.mastery}</div>
+        <div className="font-display text-[24px] leading-none tabular-nums">{data.mastery}</div>
         <div className={`flex items-center justify-end gap-0.5 text-[11px] font-medium ${trendColor}`}>
           <TrendIcon className="h-3 w-3" />
           <span className="font-mono tabular-nums">{trend > 0 ? "+" : ""}{trend}</span>
