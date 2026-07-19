@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 function isNewSupabaseApiKey(v: string) {
   return v.startsWith("sb_publishable_") || v.startsWith("sb_secret_");
@@ -80,6 +81,16 @@ export type MatchesStatus = {
   listeners_two: number;
 };
 
+export type VoiceNote = {
+  id: string;
+  author_name: string;
+  audio_url: string;
+  duration_sec: number;
+  transcript_preview: string | null;
+  knock_count: number;
+  created_at: string;
+};
+
 export type RoundtableCardState =
   | { state: "live"; roundtable: LiveRT }
   | { state: "upcoming"; roundtable: UpcomingRT }
@@ -132,6 +143,8 @@ export type HomeState = {
     featured: FeaturedSpeaker[];
     poll: RetroPollStats;
     ranking: RatingRow[];
+    voice_notes: VoiceNote[];
+    voice_week_id: string;
   };
 };
 
@@ -152,55 +165,65 @@ function stripSecrets(row: any, revealed: boolean, gameOver: boolean): WeekPubli
   return out;
 }
 
-async function loadRoundtableCard(sb: ReturnType<typeof makeServerPublicClient>): Promise<RoundtableCardState> {
+async function loadRoundtableCard(
+  sb: ReturnType<typeof makeServerPublicClient>,
+  phase: HomePhase,
+): Promise<RoundtableCardState> {
   const nowIso = new Date().toISOString();
-  const { data: live } = await sb
-    .from("roundtables")
-    .select("id, topic, moderator_name, participants, listeners, knock_count")
-    .eq("is_live", true)
-    .order("starts_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (live) {
-    return {
-      state: "live",
-      roundtable: {
-        id: live.id,
-        topic: live.topic,
-        moderator_name: live.moderator_name,
-        participants: (live.participants as any[]) ?? [],
-        listeners: live.listeners,
-        knock_count: live.knock_count,
-      },
-    };
+
+  if (phase === "game_day") {
+    // Live first, then upcoming within this cycle
+    const { data: live } = await sb
+      .from("roundtables")
+      .select("id, topic, moderator_name, participants, listeners, knock_count")
+      .eq("is_live", true)
+      .order("starts_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (live) {
+      return {
+        state: "live",
+        roundtable: {
+          id: live.id,
+          topic: live.topic,
+          moderator_name: live.moderator_name,
+          participants: (live.participants as any[]) ?? [],
+          listeners: live.listeners,
+          knock_count: live.knock_count,
+        },
+      };
+    }
+    const { data: upcoming } = await sb
+      .from("roundtables")
+      .select("id, topic, moderator_name, participants, starts_at, capacity")
+      .eq("is_live", false)
+      .gt("starts_at", nowIso)
+      .order("starts_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (upcoming) {
+      const parts = ((upcoming.participants as any[]) ?? []).map((p) => ({
+        full_name: p.full_name ?? p.name ?? "Участник",
+        pitch: p.pitch,
+      }));
+      const capacity = (upcoming as any).capacity ?? 6;
+      return {
+        state: "upcoming",
+        roundtable: {
+          id: upcoming.id,
+          topic: upcoming.topic,
+          starts_at: upcoming.starts_at,
+          moderator_name: upcoming.moderator_name,
+          participants: parts,
+          capacity,
+          seats_free: Math.max(0, capacity - parts.length),
+        },
+      };
+    }
+    return { state: "empty" };
   }
-  const { data: upcoming } = await sb
-    .from("roundtables")
-    .select("id, topic, moderator_name, participants, starts_at, capacity")
-    .eq("is_live", false)
-    .gt("starts_at", nowIso)
-    .order("starts_at", { ascending: true })
-    .limit(1)
-    .maybeSingle();
-  if (upcoming) {
-    const parts = ((upcoming.participants as any[]) ?? []).map((p) => ({
-      full_name: p.full_name ?? p.name ?? "Участник",
-      pitch: p.pitch,
-    }));
-    const capacity = (upcoming as any).capacity ?? 6;
-    return {
-      state: "upcoming",
-      roundtable: {
-        id: upcoming.id,
-        topic: upcoming.topic,
-        starts_at: upcoming.starts_at,
-        moderator_name: upcoming.moderator_name,
-        participants: parts,
-        capacity,
-        seats_free: Math.max(0, capacity - parts.length),
-      },
-    };
-  }
+
+  // Discussion mode: last recorded roundtable
   const { data: past } = await sb
     .from("roundtables")
     .select("id, topic, moderator_name, participants, starts_at, best_speaker_name, opinion_before, opinion_after, listeners, recording_url")
@@ -291,7 +314,11 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
 
   const eventAt = current ? new Date(current.event_at) : null;
   const eventEnds = current ? new Date(current.event_ends_at ?? current.event_at) : null;
-  const revealAt = current ? new Date(current.topic_reveal_at) : null;
+  // Reveal window is derived from event_at (48h before), so it always stays
+  // in sync if the debate day is rescheduled — the DB column is a fallback.
+  const derivedReveal = eventAt ? new Date(eventAt.getTime() - 48 * 60 * 60 * 1000) : null;
+  const columnReveal = current?.topic_reveal_at ? new Date(current.topic_reveal_at) : null;
+  const revealAt = derivedReveal ?? columnReveal;
 
   const revealed = !!(revealAt && now >= revealAt);
   const eventOver = !!(eventEnds && now >= eventEnds);
@@ -303,20 +330,37 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
 
   const [matches, roundtable] = await Promise.all([
     current && eventAt ? loadMatches(sb, current, now, eventAt) : Promise.resolve<MatchesStatus>({ mode: "bookings", one_v_one: 0, two_v_two: 0, listeners_one: 0, listeners_two: 0 }),
-    loadRoundtableCard(sb),
+    loadRoundtableCard(sb, phase),
   ]);
 
   let discussion: HomeState["discussion"];
   if (phase === "discussion" && previous) {
-    const [argsRes, quotesRes, featuredRes, pollRes, ratingsRes] = await Promise.all([
+    const [argsRes, quotesRes, featuredRes, pollRes, ratingsRes, voiceRes] = await Promise.all([
       sb.from("week_arguments").select("*").eq("week_id", previous.id).order("knock_count", { ascending: false }),
       sb.from("week_quotes").select("*").eq("week_id", previous.id).order("order_index", { ascending: true }).limit(4),
       sb.from("week_featured_speakers").select("*").eq("week_id", previous.id),
       sb.rpc("get_week_vote_stats", { _week_id: previous.id }),
       sb.from("player_ratings").select("user_id, mastery, mastery_trend_week, display_name, avatar_url, league").order("mastery", { ascending: false }).limit(10),
+      sb.from("week_voice_notes")
+        .select("id, author_name, audio_path, duration_sec, transcript_preview, knock_count, created_at")
+        .eq("week_id", previous.id)
+        .eq("status", "approved")
+        .eq("visibility", "public")
+        .order("knock_count", { ascending: false })
+        .limit(50),
     ]);
     const args = (argsRes.data ?? []) as IdeaArgument[];
     const pollData = Array.isArray(pollRes.data) ? pollRes.data[0] : pollRes.data;
+    const supaUrl = process.env.SUPABASE_URL!;
+    const voice_notes: VoiceNote[] = ((voiceRes.data ?? []) as any[]).map((v) => ({
+      id: v.id,
+      author_name: v.author_name,
+      audio_url: `${supaUrl}/storage/v1/object/public/week-voice/${v.audio_path}`,
+      duration_sec: v.duration_sec,
+      transcript_preview: v.transcript_preview,
+      knock_count: v.knock_count,
+      created_at: v.created_at,
+    }));
     discussion = {
       arguments_pro: args.filter((a) => a.side === "pro").slice(0, 2),
       arguments_con: args.filter((a) => a.side === "con").slice(0, 2),
@@ -324,6 +368,8 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
       featured: (featuredRes.data ?? []) as FeaturedSpeaker[],
       poll: (pollData as RetroPollStats) ?? { pro: 0, con: 0, total: 0 },
       ranking: (ratingsRes.data ?? []) as RatingRow[],
+      voice_notes,
+      voice_week_id: previous.id,
     };
   }
 
@@ -360,3 +406,63 @@ export const fetchRetroPollStats = createServerFn({ method: "GET" })
     const row = Array.isArray(rows) ? rows[0] : rows;
     return (row as RetroPollStats) ?? { pro: 0, con: 0, total: 0 };
   });
+
+
+
+export const createVoiceNote = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    week_id: string;
+    audio_path: string;
+    duration_sec: number;
+    transcript_preview?: string;
+  }) => input)
+  .handler(async ({ data, context }): Promise<VoiceNote> => {
+    if (data.duration_sec <= 0 || data.duration_sec > 65) {
+      throw new Error("Длительность записи должна быть от 1 до 60 секунд");
+    }
+    if (!data.audio_path.startsWith(`${context.userId}/`)) {
+      throw new Error("Неверный путь к файлу");
+    }
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", context.userId)
+      .maybeSingle();
+    const author_name = profile?.display_name ?? "Автор";
+    const { data: row, error } = await context.supabase
+      .from("week_voice_notes")
+      .insert({
+        week_id: data.week_id,
+        user_id: context.userId,
+        author_name,
+        audio_path: data.audio_path,
+        duration_sec: Math.round(data.duration_sec),
+        transcript_preview: data.transcript_preview?.slice(0, 140) ?? null,
+      })
+      .select("id, author_name, audio_path, duration_sec, transcript_preview, knock_count, created_at")
+      .single();
+    if (error) throw new Error(error.message);
+    return {
+      id: row.id,
+      author_name: row.author_name,
+      audio_url: `${process.env.SUPABASE_URL}/storage/v1/object/public/week-voice/${row.audio_path}`,
+      duration_sec: row.duration_sec,
+      transcript_preview: row.transcript_preview,
+      knock_count: row.knock_count,
+      created_at: row.created_at,
+    };
+  });
+
+export const knockVoiceNote = createServerFn({ method: "POST" })
+  .inputValidator((input: { voice_note_id: string; visitor_id: string }) => input)
+  .handler(async ({ data }): Promise<number> => {
+    const sb = makeServerPublicClient();
+    const { data: count, error } = await sb.rpc("knock_week_voice_note", {
+      _voice_note_id: data.voice_note_id,
+      _visitor_id: data.visitor_id,
+    });
+    if (error) throw new Error(error.message);
+    return (count as number) ?? 0;
+  });
+

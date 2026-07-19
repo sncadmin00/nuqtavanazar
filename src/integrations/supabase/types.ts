@@ -676,6 +676,85 @@ export type Database = {
           },
         ]
       }
+      week_voice_knocks: {
+        Row: {
+          created_at: string
+          id: string
+          visitor_id: string
+          voice_note_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          visitor_id: string
+          voice_note_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          visitor_id?: string
+          voice_note_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "week_voice_knocks_voice_note_id_fkey"
+            columns: ["voice_note_id"]
+            isOneToOne: false
+            referencedRelation: "week_voice_notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      week_voice_notes: {
+        Row: {
+          audio_path: string
+          author_name: string
+          created_at: string
+          duration_sec: number
+          id: string
+          knock_count: number
+          status: string
+          transcript_preview: string | null
+          user_id: string
+          visibility: string
+          week_id: string
+        }
+        Insert: {
+          audio_path: string
+          author_name: string
+          created_at?: string
+          duration_sec: number
+          id?: string
+          knock_count?: number
+          status?: string
+          transcript_preview?: string | null
+          user_id: string
+          visibility?: string
+          week_id: string
+        }
+        Update: {
+          audio_path?: string
+          author_name?: string
+          created_at?: string
+          duration_sec?: number
+          id?: string
+          knock_count?: number
+          status?: string
+          transcript_preview?: string | null
+          user_id?: string
+          visibility?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "week_voice_notes_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -696,6 +775,10 @@ export type Database = {
           pro: number
           total: number
         }[]
+      }
+      knock_week_voice_note: {
+        Args: { _visitor_id: string; _voice_note_id: string }
+        Returns: number
       }
     }
     Enums: {
