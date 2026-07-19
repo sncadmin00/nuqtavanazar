@@ -188,7 +188,7 @@ export const generateMotion = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const diffMap = { easy: "простой (школьный уровень)", medium: "средний", hard: "сложный (университетский уровень)" };
-    const prompt = `Сгенерируй ОДНУ новую дебатную тему (motion) для клуба Debate Club Uzbekistan.
+    const prompt = `Сгенерируй ОДНУ новую дебатную тему (motion) для клуба Nuqta va Nazar.
 
 Категория: ${data.category}
 Сложность: ${diffMap[data.difficulty]}
