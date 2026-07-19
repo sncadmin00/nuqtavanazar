@@ -111,9 +111,22 @@ export function AnimatedLogo({
 }
 
 export function SplashLogo() {
+  const [showMark, setShowMark] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setShowMark(true), 50 + DUR * 2 + 120);
+    return () => clearTimeout(t);
+  }, []);
   return (
-    <div className="fixed inset-0 z-[100] grid place-items-center bg-[color:var(--color-ink)]">
-      <AnimatedLogo size={120} mode="loop" />
+    <div className="fixed inset-0 z-[100] grid place-items-center gap-4 bg-[color:var(--color-ink)]">
+      <div className="flex flex-col items-center gap-5">
+        <AnimatedLogo size={120} mode="reveal" />
+        <div
+          className="font-[Federo] text-2xl tracking-wide text-[#F4F1EA] transition-opacity duration-500"
+          style={{ opacity: showMark ? 1 : 0 }}
+        >
+          nuqta va nazar
+        </div>
+      </div>
     </div>
   );
 }
