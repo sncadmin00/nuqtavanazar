@@ -69,14 +69,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Мезон — инфраструктура структурированного спора" },
+      { title: "Nuqta va Nazar — инфраструктура структурированного спора" },
       {
         name: "description",
         content:
-          "Мезон — платформа живых судимых дебатов Узбекистана: 1×1, 2×2 и круглый стол по формуле «идея → критерий → аргумент». Недельный ритм «День дебатов».",
+          "Nuqta va Nazar — платформа живых судимых дебатов Узбекистана: 1×1, 2×2 и круглый стол по формуле «идея → критерий → аргумент». Недельный ритм «День дебатов».",
       },
-      { name: "author", content: "Мезон" },
-      { property: "og:title", content: "Мезон" },
+      { name: "author", content: "Nuqta va Nazar" },
+      { property: "og:title", content: "Nuqta va Nazar" },
       { property: "og:description", content: "Живые структурированные дебаты для школьников, студентов и взрослых Узбекистана." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

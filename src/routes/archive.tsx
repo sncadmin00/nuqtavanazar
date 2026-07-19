@@ -14,7 +14,7 @@ import {
 export const Route = createFileRoute("/archive")({
   head: () => ({
     meta: [
-      { title: "Мой архив — Мезон" },
+      { title: "Мой архив — Nuqta va Nazar" },
       { name: "description", content: "Приватный архив свободных записей и личных рефлексий. Только для тебя, без анализа." },
     ],
   }),

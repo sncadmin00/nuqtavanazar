@@ -20,7 +20,7 @@ import { WeekStrip } from "@/components/WeekStrip";
 export const Route = createFileRoute("/training")({
   head: () => ({
     meta: [
-      { title: "Тренировка — Мезон" },
+      { title: "Тренировка — Nuqta va Nazar" },
       {
         name: "description",
         content: "Соло-тренировка речи: 30/60/90 секунд, конструктор кейса, свободные мысли.",
