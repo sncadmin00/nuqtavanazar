@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Lock } from "lucide-react";
-import type { DebateWeek } from "@/lib/debate-data";
+import type { WeekPublic } from "@/lib/home.functions";
 
 const DAYS = ["воскресенье", "понедельник", "вторник", "среду", "четверг", "пятницу", "субботу"];
 
@@ -13,9 +13,9 @@ function diff(target: Date) {
   return { days, hours, minutes };
 }
 
-export function CountdownHero({ week }: { week: DebateWeek | null }) {
+export function CountdownHero({ week }: { week: WeekPublic | null }) {
   const eventAt = week ? new Date(week.event_at) : nextSaturday();
-  const revealAt = week ? new Date(week.topic_reveal_at) : new Date(eventAt.getTime() - 24 * 3600 * 1000);
+  // Reveal window is controlled server-side; topic is present in props only if already revealed.
 
   const [t, setT] = useState(() => diff(eventAt));
   useEffect(() => {
@@ -23,7 +23,7 @@ export function CountdownHero({ week }: { week: DebateWeek | null }) {
     return () => clearInterval(id);
   }, [eventAt]);
 
-  const revealed = Date.now() >= revealAt.getTime() && !!week?.topic;
+  const revealed = !!week?.topic;
   const dayLabel = DAYS[eventAt.getDay()];
 
   return (
