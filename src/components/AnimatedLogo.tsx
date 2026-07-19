@@ -2,39 +2,37 @@ import { useEffect, useState } from "react";
 
 type Dot = { cx: number; cy: number; r: number; fill: string; opacity: number };
 
-// Center orange dot — fixed at (50,50), only radius changes
-const CENTER: Dot[] = [
-  { cx: 50, cy: 50, r: 5, fill: "#E8562D", opacity: 1 },
-  { cx: 50, cy: 50, r: 5, fill: "#E8562D", opacity: 1 },
-  { cx: 50, cy: 50, r: 7, fill: "#E8562D", opacity: 1 },
-];
+// 5 dots — index preserved across states. idx2 is always orange, others cream.
+// Color does not animate — only cx / cy / r / opacity.
+const O = "#E8562D";
+const C = "#F4F1EA";
 
-// 4 cream dots — index preserved across states
-const CREAM: Dot[][] = [
-  // 0 — scattered wide (radius ~38)
+const STATES: Dot[][] = [
+  // 0 — "Circle": 5 dots on a circle radius 32 around (50,50)
   [
-    { cx: 23.1, cy: 76.9, r: 4, fill: "#F4F1EA", opacity: 1 },
-    { cx: 76.9, cy: 76.9, r: 4, fill: "#F4F1EA", opacity: 1 },
-    { cx: 23.1, cy: 23.1, r: 4, fill: "#F4F1EA", opacity: 1 },
-    { cx: 76.9, cy: 23.1, r: 4, fill: "#F4F1EA", opacity: 1 },
+    { cx: 50, cy: 18, r: 4, fill: C, opacity: 1 },
+    { cx: 80.4, cy: 40.1, r: 4, fill: C, opacity: 1 },
+    { cx: 68.8, cy: 75.9, r: 5, fill: O, opacity: 1 },
+    { cx: 31.2, cy: 75.9, r: 4, fill: C, opacity: 1 },
+    { cx: 19.6, cy: 40.1, r: 4, fill: C, opacity: 1 },
   ],
-  // 1 — narrowed (radius ~25)
+  // 1 — "Line": horizontal line at y=50, orange centered
   [
-    { cx: 32.3, cy: 67.7, r: 4, fill: "#F4F1EA", opacity: 1 },
-    { cx: 67.7, cy: 67.7, r: 4, fill: "#F4F1EA", opacity: 1 },
-    { cx: 32.3, cy: 32.3, r: 4, fill: "#F4F1EA", opacity: 1 },
-    { cx: 67.7, cy: 32.3, r: 4, fill: "#F4F1EA", opacity: 1 },
+    { cx: 15, cy: 50, r: 4, fill: C, opacity: 1 },
+    { cx: 32.5, cy: 50, r: 4, fill: C, opacity: 1 },
+    { cx: 50, cy: 50, r: 5, fill: O, opacity: 1 },
+    { cx: 67.5, cy: 50, r: 4, fill: C, opacity: 1 },
+    { cx: 85, cy: 50, r: 4, fill: C, opacity: 1 },
   ],
-  // 2 — final composition
+  // 2 — Final composition (as in header/favicon)
   [
-    { cx: 26, cy: 71, r: 4.6, fill: "#F4F1EA", opacity: 1 },
-    { cx: 75, cy: 64, r: 4.3, fill: "#F4F1EA", opacity: 1 },
-    { cx: 32, cy: 34, r: 3.2, fill: "#F4F1EA", opacity: 0.75 },
-    { cx: 71, cy: 23, r: 3.0, fill: "#F4F1EA", opacity: 0.7 },
+    { cx: 32, cy: 34, r: 3.2, fill: C, opacity: 0.75 },
+    { cx: 71, cy: 23, r: 3.0, fill: C, opacity: 0.7 },
+    { cx: 50, cy: 50, r: 7, fill: O, opacity: 1 },
+    { cx: 75, cy: 64, r: 4.3, fill: C, opacity: 1 },
+    { cx: 26, cy: 71, r: 4.6, fill: C, opacity: 1 },
   ],
 ];
-
-const STATES: Dot[][] = CREAM.map((cream, i) => [CENTER[i], ...cream]);
 
 const EASE = "cubic-bezier(.65,0,.35,1)";
 const DUR = 900;
