@@ -22,6 +22,7 @@ import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LearnIndexRouteImport } from './routes/learn.index'
+import { Route as WeekWeekIdRouteImport } from './routes/week.$weekId'
 import { Route as ProfileUserIdRouteImport } from './routes/profile.$userId'
 import { Route as LearnModuleIdRouteImport } from './routes/learn.$moduleId'
 
@@ -90,6 +91,11 @@ const LearnIndexRoute = LearnIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LearnRoute,
 } as any)
+const WeekWeekIdRoute = WeekWeekIdRouteImport.update({
+  id: '/week/$weekId',
+  path: '/week/$weekId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileUserIdRoute = ProfileUserIdRouteImport.update({
   id: '/$userId',
   path: '/$userId',
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/training': typeof TrainingRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
+  '/week/$weekId': typeof WeekWeekIdRoute
   '/learn/': typeof LearnIndexRoute
 }
 export interface FileRoutesByTo {
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/training': typeof TrainingRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
+  '/week/$weekId': typeof WeekWeekIdRoute
   '/learn': typeof LearnIndexRoute
 }
 export interface FileRoutesById {
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/training': typeof TrainingRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
+  '/week/$weekId': typeof WeekWeekIdRoute
   '/learn/': typeof LearnIndexRoute
 }
 export interface FileRouteTypes {
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/training'
     | '/learn/$moduleId'
     | '/profile/$userId'
+    | '/week/$weekId'
     | '/learn/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
     | '/training'
     | '/learn/$moduleId'
     | '/profile/$userId'
+    | '/week/$weekId'
     | '/learn'
   id:
     | '__root__'
@@ -202,6 +213,7 @@ export interface FileRouteTypes {
     | '/training'
     | '/learn/$moduleId'
     | '/profile/$userId'
+    | '/week/$weekId'
     | '/learn/'
   fileRoutesById: FileRoutesById
 }
@@ -218,6 +230,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrainingRoute: typeof TrainingRoute
+  WeekWeekIdRoute: typeof WeekWeekIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -313,6 +326,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnIndexRouteImport
       parentRoute: typeof LearnRoute
     }
+    '/week/$weekId': {
+      id: '/week/$weekId'
+      path: '/week/$weekId'
+      fullPath: '/week/$weekId'
+      preLoaderRoute: typeof WeekWeekIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile/$userId': {
       id: '/profile/$userId'
       path: '/$userId'
@@ -366,6 +386,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrainingRoute: TrainingRoute,
+  WeekWeekIdRoute: WeekWeekIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
