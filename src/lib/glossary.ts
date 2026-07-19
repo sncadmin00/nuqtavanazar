@@ -6,7 +6,7 @@ export type Term = {
 };
 
 export const GLOSSARY: Term[] = [
-  { term: "Nuqta va Nazar", ru: "Единый формат структурированного спора платформы. Работает в режимах соло, 1×1, 2×2 и круглый стол.", en: "The platform's unified debate format with solo, 1×1, 2×2 and roundtable modes." },
+  { term: "Формат Nuqta va Nazar", ru: "Собственный формат структурированного спора платформы. Работает в режимах соло, 1×1, 2×2 и круглый стол.", en: "The platform's own structured-debate format with solo, 1×1, 2×2 and roundtable modes." },
   { term: "Идея", ru: "Тезис стороны — одно предложение, которое сторона защищает или опровергает.", en: "The one-sentence thesis a side defends or opposes." },
   { term: "Критерий", ru: "Линейка, по которой сравниваются кейсы сторон. Ядро формулы Nuqta va Nazar.", en: "The yardstick used to compare the two sides' cases. The core of the Nuqta va Nazar formula." },
   { term: "Аргумент", ru: "Обоснованное утверждение: заявление + объяснение + пример + вывод, привязанный к критерию.", en: "A claim backed by reasoning, evidence and a link back to the criterion." },
