@@ -37,10 +37,7 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
 
   return (
     <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
-      <div className="flex items-baseline justify-between">
-        <div className="formula-motif !text-white/50">День дебатов</div>
-        <div className="formula-motif !text-white/50">идея → критерий → аргумент</div>
-      </div>
+      <div className="formula-motif !text-white/50">День дебатов</div>
       <h2 className="mt-1 text-[15px] font-medium text-white/80">
         До ближайшего Дня дебатов · {dayLabel}
       </h2>
@@ -67,12 +64,7 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
         ) : (
           <div className="flex items-start gap-2.5 text-white/60">
             <Lock className="mt-0.5 h-4 w-4 shrink-0" />
-            <div>
-              <div className="text-[13px] font-medium text-white/85">Тема появится за 48 часов до старта</div>
-              <div className="mt-0.5 text-[12px] text-white/50">
-                Никто не готовит заученные речи заранее
-              </div>
-            </div>
+            <div className="text-[13px] font-medium text-white/85">Тема появится за 48 часов до старта</div>
           </div>
         )}
       </div>
