@@ -1,15 +1,20 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { Flame } from "lucide-react";
 import { CountdownHero } from "@/components/home/CountdownHero";
-import { LastWeekBanner } from "@/components/home/LastWeekBanner";
 import { PrimaryActions } from "@/components/home/PrimaryActions";
 import { MyRatingCard } from "@/components/home/MyRatingCard";
-import { LiveNow } from "@/components/home/LiveNow";
+import { MatchesStatus } from "@/components/home/MatchesStatus";
+import { RoundtableCard } from "@/components/home/RoundtableCard";
+import { PrevWeekResultCard } from "@/components/home/discussion/PrevWeekResultCard";
+import { IdeaClash } from "@/components/home/discussion/IdeaClash";
+import { TopQuotesCarousel } from "@/components/home/discussion/TopQuotesCarousel";
+import { FeaturedSpeakers } from "@/components/home/discussion/FeaturedSpeakers";
+import { RetroPoll } from "@/components/home/discussion/RetroPoll";
+import { WeekRankingFull } from "@/components/home/discussion/WeekRankingFull";
 import { WeekStrip } from "@/components/WeekStrip";
 import { getStreak, type StreakInfo } from "@/lib/streak";
-import { fetchCurrentWeek, fetchPreviousWeek, type DebateWeek } from "@/lib/debate-data";
+import { getHomeState, type HomeState } from "@/lib/home.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -18,6 +23,7 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Живые структурированные дебаты по правилам: 1×1, 2×2, круглый стол. Один День дебатов в неделю." },
     ],
   }),
+  loader: () => getHomeState(),
   component: HomePage,
 });
 
@@ -31,25 +37,22 @@ function dayWord(n: number): string {
 }
 
 function HomePage() {
-  const [current, setCurrent] = useState<DebateWeek | null>(null);
-  const [prev, setPrev] = useState<DebateWeek | null>(null);
+  const state = Route.useLoaderData() as HomeState;
   const [streak, setStreak] = useState<StreakInfo>({
     current: 0,
     longest: 0,
     weekDays: Array(7).fill(false),
   });
-
   useEffect(() => {
-    fetchCurrentWeek().then(setCurrent);
-    fetchPreviousWeek().then(setPrev);
     setStreak(getStreak());
   }, []);
 
-  const revealed = !!(current?.topic && Date.now() >= new Date(current.topic_reveal_at).getTime());
+  const revealed = !!state.current_week?.topic;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-4 space-y-4">
-      <CountdownHero week={current} />
+      <CountdownHero week={state.current_week} />
+
       <Link
         to="/training"
         className="block rounded-[16px] hairline bg-white p-4 active:scale-[0.99]"
@@ -74,10 +77,35 @@ function HomePage() {
           <WeekStrip days={streak.weekDays} tone="light" />
         </div>
       </Link>
-      <LastWeekBanner week={prev} />
+
       <PrimaryActions />
       <MyRatingCard />
-      <LiveNow weekTopicRevealed={revealed} weekTopic={current?.topic ?? null} />
+
+      {state.phase === "game_day" ? (
+        <>
+          <MatchesStatus matches={state.matches} revealed={revealed} />
+          <RoundtableCard state={state.roundtable} />
+        </>
+      ) : (
+        <DiscussionMode state={state} />
+      )}
     </div>
+  );
+}
+
+function DiscussionMode({ state }: { state: HomeState }) {
+  const prev = state.previous_week;
+  const d = state.discussion;
+  return (
+    <>
+      {prev && <PrevWeekResultCard week={prev} />}
+      {d && <IdeaClash pro={d.arguments_pro} con={d.arguments_con} />}
+      {d && <TopQuotesCarousel quotes={d.quotes} />}
+      {d && <FeaturedSpeakers items={d.featured} />}
+      {d && prev && <RetroPoll weekId={prev.id} initial={d.poll} />}
+      <RoundtableCard state={state.roundtable} />
+      {d && <WeekRankingFull rows={d.ranking} />}
+      <MatchesStatus matches={state.matches} revealed={!!state.current_week?.topic} />
+    </>
   );
 }
