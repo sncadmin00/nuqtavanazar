@@ -466,3 +466,131 @@ export const knockVoiceNote = createServerFn({ method: "POST" })
     return (count as number) ?? 0;
   });
 
+export type ArchivedWeekState = {
+  week: WeekPublic;
+  discussion: NonNullable<HomeState["discussion"]>;
+  roundtable: RoundtableCardState;
+  prev_week_id: string | null;
+  next_week_id: string | null;
+};
+
+async function loadPastRoundtableForWeek(
+  sb: ReturnType<typeof makeServerPublicClient>,
+  weekStartIso: string,
+): Promise<RoundtableCardState> {
+  const start = new Date(weekStartIso);
+  const end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const { data: past } = await sb
+    .from("roundtables")
+    .select("id, topic, moderator_name, participants, starts_at, best_speaker_name, opinion_before, opinion_after, listeners, recording_url")
+    .eq("is_live", false)
+    .gte("starts_at", start.toISOString())
+    .lt("starts_at", end.toISOString())
+    .order("starts_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!past) return { state: "empty" };
+  const parts = ((past.participants as any[]) ?? []).map((p) => ({
+    full_name: p.full_name ?? p.name ?? "Участник",
+    pitch: p.pitch,
+  }));
+  return {
+    state: "past",
+    roundtable: {
+      id: past.id,
+      topic: past.topic,
+      starts_at: past.starts_at,
+      moderator_name: past.moderator_name,
+      participants: parts,
+      best_speaker_name: past.best_speaker_name,
+      opinion_before: past.opinion_before,
+      opinion_after: past.opinion_after,
+      listeners: past.listeners,
+      recording_url: (past as any).recording_url ?? null,
+    },
+  };
+}
+
+export const getArchivedWeek = createServerFn({ method: "GET" })
+  .inputValidator((input: { week_id?: string }) => input)
+  .handler(async ({ data }): Promise<ArchivedWeekState | null> => {
+    const sb = makeServerPublicClient();
+    const now = new Date();
+
+    let target: any = null;
+    if (data.week_id) {
+      const { data: row } = await sb.from("debate_weeks").select("*").eq("id", data.week_id).maybeSingle();
+      target = row;
+    } else {
+      const { data: rows } = await sb
+        .from("debate_weeks")
+        .select("*")
+        .order("week_start", { ascending: false })
+        .limit(10);
+      target = (rows ?? []).find((w: any) => new Date(w.event_ends_at ?? w.event_at) < now) ?? null;
+    }
+    if (!target) return null;
+
+    const targetEnds = new Date(target.event_ends_at ?? target.event_at);
+    if (targetEnds >= now) return null;
+
+    const [{ data: olderRows }, { data: newerRows }] = await Promise.all([
+      sb.from("debate_weeks").select("id, week_start, event_at, event_ends_at").lt("week_start", target.week_start).order("week_start", { ascending: false }).limit(1),
+      sb.from("debate_weeks").select("id, week_start, event_at, event_ends_at").gt("week_start", target.week_start).order("week_start", { ascending: true }).limit(10),
+    ]);
+    const prev_week_id = (olderRows?.[0]?.id as string | undefined) ?? null;
+    const nextCompleted = (newerRows ?? []).find(
+      (w: any) => new Date(w.event_ends_at ?? w.event_at) < now,
+    );
+    const next_week_id = (nextCompleted?.id as string | undefined) ?? null;
+
+    const weekPub = stripSecrets(target, true, true);
+
+    const [argsRes, quotesRes, featuredRes, pollRes, ratingsRes, voiceRes, roundtable] = await Promise.all([
+      sb.from("week_arguments").select("*").eq("week_id", target.id).order("knock_count", { ascending: false }),
+      sb.from("week_quotes").select("*").eq("week_id", target.id).order("order_index", { ascending: true }).limit(4),
+      sb.from("week_featured_speakers").select("*").eq("week_id", target.id),
+      sb.rpc("get_week_vote_stats", { _week_id: target.id }),
+      sb.from("player_ratings").select("user_id, mastery, mastery_trend_week, display_name, avatar_url, league").order("mastery", { ascending: false }).limit(10),
+      sb.from("week_voice_notes")
+        .select("id, author_name, audio_path, duration_sec, transcript_preview, knock_count, created_at")
+        .eq("week_id", target.id)
+        .eq("status", "approved")
+        .eq("visibility", "public")
+        .order("knock_count", { ascending: false })
+        .limit(50),
+      loadPastRoundtableForWeek(sb, target.week_start),
+    ]);
+
+    const args = (argsRes.data ?? []) as IdeaArgument[];
+    const pollData = Array.isArray(pollRes.data) ? pollRes.data[0] : pollRes.data;
+    const supaUrl = process.env.SUPABASE_URL!;
+    const voice_notes: VoiceNote[] = ((voiceRes.data ?? []) as any[]).map((v) => ({
+      id: v.id,
+      author_name: v.author_name,
+      audio_url: `${supaUrl}/storage/v1/object/public/week-voice/${v.audio_path}`,
+      duration_sec: v.duration_sec,
+      transcript_preview: v.transcript_preview,
+      knock_count: v.knock_count,
+      created_at: v.created_at,
+    }));
+
+    return {
+      week: weekPub,
+      discussion: {
+        arguments_pro: args.filter((a) => a.side === "pro").slice(0, 2),
+        arguments_con: args.filter((a) => a.side === "con").slice(0, 2),
+        quotes: (quotesRes.data ?? []) as WeekQuote[],
+        featured: (featuredRes.data ?? []) as FeaturedSpeaker[],
+        poll: (pollData as RetroPollStats) ?? { pro: 0, con: 0, total: 0 },
+        ranking: (ratingsRes.data ?? []) as RatingRow[],
+        voice_notes,
+        voice_week_id: target.id,
+      },
+      roundtable,
+      prev_week_id,
+      next_week_id,
+    };
+  });
+
+
