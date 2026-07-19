@@ -137,7 +137,6 @@ function DiscussionMode({ state }: { state: HomeState }) {
       {d && <FeaturedSpeakers items={d.featured} />}
       {d && <WeekRankingFull rows={d.ranking} />}
       <RoundtableCard state={state.roundtable} />
-      <MatchesStatus matches={state.matches} revealed={!!state.current_week?.topic} />
     </>
   );
 }
