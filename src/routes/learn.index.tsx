@@ -8,9 +8,9 @@ import { ArrowRight, Clock, Sparkles } from "lucide-react";
 export const Route = createFileRoute("/learn/")({
   head: () => ({
     meta: [
-      { title: "Обучение дебатам — формат Мезон | Мезон" },
-      { name: "description", content: "Уроки Мезон: как собрать кейс (идея → критерий → аргумент) и как говорить уверенно в аудио-раунде." },
-      { property: "og:title", content: "Обучение — Мезон" },
+      { title: "Обучение дебатам — формат Nuqta va Nazar | Nuqta va Nazar" },
+      { name: "description", content: "Уроки Nuqta va Nazar: как собрать кейс (идея → критерий → аргумент) и как говорить уверенно в аудио-раунде." },
+      { property: "og:title", content: "Обучение — Nuqta va Nazar" },
       { property: "og:description", content: "Структурированные уроки по дебатам и ораторскому искусству." },
     ],
   }),
@@ -30,7 +30,7 @@ const trackLabels: Record<string, string> = {
 const categoryMeta: Record<LessonCategory, { title: string; subtitle: string }> = {
   case: {
     title: "Как составить кейс",
-    subtitle: "Формула Мезон: идея → критерий → аргумент.",
+    subtitle: "Формула Nuqta va Nazar: идея → критерий → аргумент.",
   },
   speaking: {
     title: "Ораторское искусство",

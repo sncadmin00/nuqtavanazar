@@ -9,7 +9,7 @@ export const LANGUAGES: { code: Lang; label: string; short: string }[] = [
 type Dict = Record<string, string>;
 
 const ru: Dict = {
-  "brand.name": "Мезон",
+  "brand.name": "Nuqta va Nazar",
   "brand.tagline": "Инфраструктура структурированного спора: идея → критерий → аргумент",
 
   "nav.home": "Главная",
@@ -115,7 +115,7 @@ const ru: Dict = {
   "events.contact.body": "Напишите нам — расскажем, как попасть в клуб и на ближайшие тренировки.",
 
   "about.title": "О клубе",
-  "about.subtitle": "Мезон — платформа структурированных дебатов, стартующая в Бухаре.",
+  "about.subtitle": "Nuqta va Nazar — платформа структурированных дебатов, стартующая в Бухаре.",
 
   "auth.title": "Вход и регистрация",
   "auth.tab.signin": "Вход",
@@ -142,7 +142,7 @@ const ru: Dict = {
   "profile.saved": "Профиль обновлён",
 
   "footer.tagline": "Дебатное образование для нового поколения Узбекистана.",
-  "footer.rights": "© 2026 Мезон. Все права защищены.",
+  "footer.rights": "© 2026 Nuqta va Nazar. Все права защищены.",
 
   "category.politics": "Политика",
   "category.economics": "Экономика",
@@ -194,7 +194,7 @@ const uz: Dict = {
   "home.cta.title": "Boshlashga tayyormisiz?",
 
   "footer.tagline": "Oʻzbekistonning yangi avlodi uchun bahs taʼlimi.",
-  "footer.rights": "© 2026 Mezon. Barcha huquqlar himoyalangan.",
+  "footer.rights": "© 2026 Nuqta va Nazar. Barcha huquqlar himoyalangan.",
 };
 
 const en: Dict = {
@@ -240,7 +240,7 @@ const en: Dict = {
   "profile.title": "Profile",
 
   "footer.tagline": "Debate education for a new generation of Uzbekistan.",
-  "footer.rights": "© 2026 Mezon. All rights reserved.",
+  "footer.rights": "© 2026 Nuqta va Nazar. All rights reserved.",
 };
 
 export const translations: Record<Lang, Dict> = { ru, uz, en };

@@ -15,8 +15,8 @@ export const Route = createFileRoute("/case-builder")({
   }),
   head: () => ({
     meta: [
-      { title: "Собрать кейс — Мезон" },
-      { name: "description", content: "Пошаговый конструктор кейса Мезон: идея → критерий → аргумент." },
+      { title: "Собрать кейс — Nuqta va Nazar" },
+      { name: "description", content: "Пошаговый конструктор кейса Nuqta va Nazar: идея → критерий → аргумент." },
     ],
   }),
   component: CaseBuilder,

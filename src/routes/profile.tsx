@@ -10,7 +10,7 @@ import { getStreak, type StreakInfo } from "@/lib/streak";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Профиль — Мезон" },
+      { title: "Профиль — Nuqta va Nazar" },
       { name: "description", content: "Ваш рейтинг, лига, результаты и настройки." },
     ],
   }),

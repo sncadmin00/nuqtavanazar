@@ -7,7 +7,7 @@ import { randomPrompt, saveRecording } from "@/lib/freeTalk";
 export const Route = createFileRoute("/free-talk")({
   head: () => ({
     meta: [
-      { title: "Свободные мысли — Мезон" },
+      { title: "Свободные мысли — Nuqta va Nazar" },
       {
         name: "description",
         content:

@@ -6,7 +6,7 @@ import { GraduationCap, Trophy, Users, Tv } from "lucide-react";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "О платформе — Мезон" },
+      { title: "О платформе — Nuqta va Nazar" },
       { name: "description", content: "Образовательный дебатный клуб, стартующий в Бухаре с амбицией национального охвата." },
     ],
   }),
@@ -17,13 +17,13 @@ function AboutPage() {
   const { t } = useI18n();
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 py-12 md:py-16">
-      <h1 className="font-display text-4xl md:text-5xl font-bold">О платформе Мезон</h1>
+      <h1 className="font-display text-4xl md:text-5xl font-bold">О платформе Nuqta va Nazar</h1>
       <p className="mt-3 text-lg text-muted-foreground">
-        «Мезон» — от слова «весы»: умение увидеть обе стороны вопроса. И одновременно — название фундаментальной частицы, из которой строится большее. Мы делаем инфраструктуру структурированного спора для всей страны и разрабатываем собственный формат дебатов вместо чужих брендов.
+        Nuqta va Nazar (с узбекского — «точка и взгляд») — инфраструктура структурированного спора: одна общая точка обсуждения и разные взгляды на неё. Мы строим её для всей страны и разрабатываем собственный формат дебатов вместо чужих брендов.
       </p>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
-        <Milestone icon={GraduationCap} title="Старт" body="Первые тренировки в Бухаре — единый формат Мезон с режимами соло, 1×1, 2×2 и круглый стол." />
+        <Milestone icon={GraduationCap} title="Старт" body="Первые тренировки в Бухаре — единый формат Nuqta va Nazar с режимами соло, 1×1, 2×2 и круглый стол." />
         <Milestone icon={Users} title="Сообщество" body="Открытая платформа для школьников, студентов и взрослых. Тренинги, воркшопы, показательные раунды." />
         <Milestone icon={Trophy} title="Лиги и турниры" body="Elo-рейтинг, зональная и республиканская лиги, регулярный «День дебатов» по субботам." />
         <Milestone icon={Tv} title="Национальные дебаты" body="Долгосрочная цель — университетские дебаты на национальном ТВ Узбекистана." />
@@ -31,7 +31,7 @@ function AboutPage() {
 
       <Card className="mt-10 p-6 border-border/60 shadow-card">
         <h2 className="font-display text-2xl font-bold">Контакты</h2>
-        <p className="mt-2 text-muted-foreground">Пишите нам на <a className="text-primary underline" href="mailto:hello@mezon.uz">hello@mezon.uz</a>. Мы отвечаем всем желающим присоединиться.</p>
+        <p className="mt-2 text-muted-foreground">Пишите нам на <a className="text-primary underline" href="mailto:hello@nuqtavanazar.uz">hello@nuqtavanazar.uz</a>. Мы отвечаем всем желающим присоединиться.</p>
       </Card>
     </div>
   );
