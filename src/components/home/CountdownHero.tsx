@@ -54,7 +54,7 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
           <div className="flex items-start gap-2.5 text-white/60">
             <Lock className="mt-0.5 h-4 w-4 shrink-0" />
             <div>
-              <div className="text-[13px] font-medium text-white/85">Тема появится за 24 часа до старта</div>
+              <div className="text-[13px] font-medium text-white/85">Тема появится за 48 часов до старта</div>
               <div className="mt-0.5 text-[12px] text-white/50">
                 Никто не готовит заученные речи заранее
               </div>
