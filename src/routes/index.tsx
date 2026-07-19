@@ -129,14 +129,14 @@ function DiscussionMode({ state }: { state: HomeState }) {
     <>
       {prev && <PrevWeekResultCard week={prev} />}
       {d && <IdeaClash pro={d.arguments_pro} con={d.arguments_con} />}
-      {d && <TopQuotesCarousel quotes={d.quotes} />}
-      {d && <FeaturedSpeakers items={d.featured} />}
-      {d && prev && <RetroPoll weekId={prev.id} initial={d.poll} />}
       {d && (
         <VoiceOfTheWeek weekId={d.voice_week_id} initial={d.voice_notes} />
       )}
-      <RoundtableCard state={state.roundtable} />
+      {d && prev && <RetroPoll weekId={prev.id} initial={d.poll} />}
+      {d && <TopQuotesCarousel quotes={d.quotes} />}
+      {d && <FeaturedSpeakers items={d.featured} />}
       {d && <WeekRankingFull rows={d.ranking} />}
+      <RoundtableCard state={state.roundtable} />
       <MatchesStatus matches={state.matches} revealed={!!state.current_week?.topic} />
     </>
   );
