@@ -127,6 +127,28 @@ function AuthListener() {
   return null;
 }
 
+function Splash() {
+  const [gone, setGone] = useState(false);
+  const [fade, setFade] = useState(false);
+  useEffect(() => {
+    const f = setTimeout(() => setFade(true), 1600);
+    const g = setTimeout(() => setGone(true), 2100);
+    return () => {
+      clearTimeout(f);
+      clearTimeout(g);
+    };
+  }, []);
+  if (gone) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[100] grid place-items-center bg-[color:var(--color-ink)] transition-opacity duration-500"
+      style={{ opacity: fade ? 0 : 1, pointerEvents: fade ? "none" : "auto" }}
+    >
+      <AnimatedLogo size={120} mode="reveal" />
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -135,6 +157,7 @@ function RootComponent() {
       <I18nProvider>
         <AuthProvider>
           <AuthListener />
+          <Splash />
           <div className="flex min-h-screen flex-col bg-background">
             <Header />
             <main className="flex-1 pb-20">
