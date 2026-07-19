@@ -334,15 +334,32 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
 
   let discussion: HomeState["discussion"];
   if (phase === "discussion" && previous) {
-    const [argsRes, quotesRes, featuredRes, pollRes, ratingsRes] = await Promise.all([
+    const [argsRes, quotesRes, featuredRes, pollRes, ratingsRes, voiceRes] = await Promise.all([
       sb.from("week_arguments").select("*").eq("week_id", previous.id).order("knock_count", { ascending: false }),
       sb.from("week_quotes").select("*").eq("week_id", previous.id).order("order_index", { ascending: true }).limit(4),
       sb.from("week_featured_speakers").select("*").eq("week_id", previous.id),
       sb.rpc("get_week_vote_stats", { _week_id: previous.id }),
       sb.from("player_ratings").select("user_id, mastery, mastery_trend_week, display_name, avatar_url, league").order("mastery", { ascending: false }).limit(10),
+      sb.from("week_voice_notes")
+        .select("id, author_name, audio_path, duration_sec, transcript_preview, knock_count, created_at")
+        .eq("week_id", previous.id)
+        .eq("status", "approved")
+        .eq("visibility", "public")
+        .order("knock_count", { ascending: false })
+        .limit(50),
     ]);
     const args = (argsRes.data ?? []) as IdeaArgument[];
     const pollData = Array.isArray(pollRes.data) ? pollRes.data[0] : pollRes.data;
+    const supaUrl = process.env.SUPABASE_URL!;
+    const voice_notes: VoiceNote[] = ((voiceRes.data ?? []) as any[]).map((v) => ({
+      id: v.id,
+      author_name: v.author_name,
+      audio_url: `${supaUrl}/storage/v1/object/public/week-voice/${v.audio_path}`,
+      duration_sec: v.duration_sec,
+      transcript_preview: v.transcript_preview,
+      knock_count: v.knock_count,
+      created_at: v.created_at,
+    }));
     discussion = {
       arguments_pro: args.filter((a) => a.side === "pro").slice(0, 2),
       arguments_con: args.filter((a) => a.side === "con").slice(0, 2),
@@ -350,6 +367,8 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
       featured: (featuredRes.data ?? []) as FeaturedSpeaker[],
       poll: (pollData as RetroPollStats) ?? { pro: 0, con: 0, total: 0 },
       ranking: (ratingsRes.data ?? []) as RatingRow[],
+      voice_notes,
+      voice_week_id: previous.id,
     };
   }
 
