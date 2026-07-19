@@ -38,7 +38,7 @@ export function Header() {
             className="text-[16px] leading-none text-[color:var(--color-ink)]"
             style={{ fontFamily: "'Federo', serif" }}
           >
-            nuqta va nazar
+            nuqta <span style={{ color: "#E8562D" }}>va</span> nazar
           </span>
         </Link>
 
