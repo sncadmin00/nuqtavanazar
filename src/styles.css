@@ -118,7 +118,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; font-weight: 600; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; font-weight: 400; }
 }
 
 /* Thin hairline borders (0.5px effect via 1px on retina) */
