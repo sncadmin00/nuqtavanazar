@@ -80,6 +80,16 @@ export type MatchesStatus = {
   listeners_two: number;
 };
 
+export type VoiceNote = {
+  id: string;
+  author_name: string;
+  audio_url: string;
+  duration_sec: number;
+  transcript_preview: string | null;
+  knock_count: number;
+  created_at: string;
+};
+
 export type RoundtableCardState =
   | { state: "live"; roundtable: LiveRT }
   | { state: "upcoming"; roundtable: UpcomingRT }
