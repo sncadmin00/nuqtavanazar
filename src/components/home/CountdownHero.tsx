@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Lock } from "lucide-react";
 import type { WeekPublic } from "@/lib/home.functions";
+import { AnimatedLogo } from "@/components/AnimatedLogo";
 
 const DAYS = ["воскресенье", "понедельник", "вторник", "среду", "четверг", "пятницу", "субботу"];
 
@@ -26,6 +27,14 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
   const revealed = !!week?.topic;
   const dayLabel = DAYS[eventAt.getDay()];
 
+  // Fire a one-shot logo "reveal" pulse the first time the topic becomes visible.
+  const prevRevealed = useRef(revealed);
+  const [revealTick, setRevealTick] = useState(0);
+  useEffect(() => {
+    if (revealed && !prevRevealed.current) setRevealTick((n) => n + 1);
+    prevRevealed.current = revealed;
+  }, [revealed]);
+
   return (
     <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
       <div className="flex items-baseline justify-between">
@@ -44,11 +53,16 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
 
       <div className="mt-5 border-t border-white/10 pt-4">
         {revealed ? (
-          <div>
-            <span className="inline-block rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-foreground">
-              Объявлено
-            </span>
-            <p className="mt-2 text-[15px] leading-snug text-white">{week!.topic}</p>
+          <div className="flex items-start gap-3">
+            <div className="shrink-0">
+              <AnimatedLogo size={40} mode="reveal" trigger={revealTick} />
+            </div>
+            <div>
+              <span className="inline-block rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-foreground">
+                Объявлено
+              </span>
+              <p className="mt-2 text-[15px] leading-snug text-white">{week!.topic}</p>
+            </div>
           </div>
         ) : (
           <div className="flex items-start gap-2.5 text-white/60">
