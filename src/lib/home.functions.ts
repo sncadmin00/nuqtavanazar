@@ -142,6 +142,8 @@ export type HomeState = {
     featured: FeaturedSpeaker[];
     poll: RetroPollStats;
     ranking: RatingRow[];
+    voice_notes: VoiceNote[];
+    voice_week_id: string;
   };
 };
 
