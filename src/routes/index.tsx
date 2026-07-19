@@ -41,7 +41,8 @@ function PrevWeekBanner({ week }: { week: WeekPublic }) {
   if (!week.topic) return null;
   return (
     <Link
-      to="/debate-day"
+      to="/week/$weekId"
+      params={{ weekId: week.id }}
       className="block rounded-[14px] bg-white hairline px-4 py-3"
     >
       <div className="flex items-center justify-between gap-3">
