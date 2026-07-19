@@ -14,12 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenge_bookings: {
+        Row: {
+          challenger_id: string | null
+          created_at: string
+          format: string
+          id: string
+          opponent_id: string | null
+          status: string
+          week_id: string
+        }
+        Insert: {
+          challenger_id?: string | null
+          created_at?: string
+          format: string
+          id?: string
+          opponent_id?: string | null
+          status?: string
+          week_id: string
+        }
+        Update: {
+          challenger_id?: string | null
+          created_at?: string
+          format?: string
+          id?: string
+          opponent_id?: string | null
+          status?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_bookings_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      debate_cadence: {
+        Row: {
+          day_of_week: number
+          event_duration_hours: number
+          event_time: string
+          id: boolean
+          interval_days: number
+          reveal_lead_hours: number
+          timezone: string
+          updated_at: string
+        }
+        Insert: {
+          day_of_week?: number
+          event_duration_hours?: number
+          event_time?: string
+          id?: boolean
+          interval_days?: number
+          reveal_lead_hours?: number
+          timezone?: string
+          updated_at?: string
+        }
+        Update: {
+          day_of_week?: number
+          event_duration_hours?: number
+          event_time?: string
+          id?: boolean
+          interval_days?: number
+          reveal_lead_hours?: number
+          timezone?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       debate_weeks: {
         Row: {
           ai_summary: string | null
           con_percent: number
           created_at: string
           event_at: string
+          event_ends_at: string | null
           id: string
           listeners_total: number
           pro_percent: number
@@ -33,6 +105,7 @@ export type Database = {
           con_percent?: number
           created_at?: string
           event_at: string
+          event_ends_at?: string | null
           id?: string
           listeners_total?: number
           pro_percent?: number
@@ -46,6 +119,7 @@ export type Database = {
           con_percent?: number
           created_at?: string
           event_at?: string
+          event_ends_at?: string | null
           id?: string
           listeners_total?: number
           pro_percent?: number
@@ -287,9 +361,48 @@ export type Database = {
         }
         Relationships: []
       }
+      roundtable_applications: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          pitch: string
+          roundtable_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id?: string
+          pitch: string
+          roundtable_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          pitch?: string
+          roundtable_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roundtable_applications_roundtable_id_fkey"
+            columns: ["roundtable_id"]
+            isOneToOne: false
+            referencedRelation: "roundtables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       roundtables: {
         Row: {
           best_speaker_name: string | null
+          capacity: number
           created_at: string
           id: string
           is_live: boolean
@@ -300,11 +413,13 @@ export type Database = {
           opinion_after: number | null
           opinion_before: number | null
           participants: Json
+          recording_url: string | null
           starts_at: string
           topic: string
         }
         Insert: {
           best_speaker_name?: string | null
+          capacity?: number
           created_at?: string
           id?: string
           is_live?: boolean
@@ -315,11 +430,13 @@ export type Database = {
           opinion_after?: number | null
           opinion_before?: number | null
           participants?: Json
+          recording_url?: string | null
           starts_at?: string
           topic: string
         }
         Update: {
           best_speaker_name?: string | null
+          capacity?: number
           created_at?: string
           id?: string
           is_live?: boolean
@@ -330,6 +447,7 @@ export type Database = {
           opinion_after?: number | null
           opinion_before?: number | null
           participants?: Json
+          recording_url?: string | null
           starts_at?: string
           topic?: string
         }
@@ -370,6 +488,82 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      week_arguments: {
+        Row: {
+          author_name: string | null
+          created_at: string
+          id: string
+          knock_count: number
+          side: string
+          text: string
+          week_id: string
+        }
+        Insert: {
+          author_name?: string | null
+          created_at?: string
+          id?: string
+          knock_count?: number
+          side: string
+          text: string
+          week_id: string
+        }
+        Update: {
+          author_name?: string | null
+          created_at?: string
+          id?: string
+          knock_count?: number
+          side?: string
+          text?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "week_arguments_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      week_featured_speakers: {
+        Row: {
+          avatar_url: string | null
+          badge_note: string | null
+          created_at: string
+          display_name: string
+          id: string
+          kind: string
+          week_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          badge_note?: string | null
+          created_at?: string
+          display_name: string
+          id?: string
+          kind: string
+          week_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          badge_note?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          kind?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "week_featured_speakers_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       week_highlights: {
         Row: {
@@ -412,12 +606,97 @@ export type Database = {
           },
         ]
       }
+      week_public_votes: {
+        Row: {
+          created_at: string
+          id: string
+          side: string
+          visitor_id: string
+          week_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          side: string
+          visitor_id: string
+          week_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          side?: string
+          visitor_id?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "week_public_votes_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      week_quotes: {
+        Row: {
+          author_name: string
+          created_at: string
+          id: string
+          knock_count: number
+          order_index: number
+          text: string
+          week_id: string
+        }
+        Insert: {
+          author_name: string
+          created_at?: string
+          id?: string
+          knock_count?: number
+          order_index?: number
+          text: string
+          week_id: string
+        }
+        Update: {
+          author_name?: string
+          created_at?: string
+          id?: string
+          knock_count?: number
+          order_index?: number
+          text?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "week_quotes_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cast_retro_vote: {
+        Args: { _side: string; _visitor_id: string; _week_id: string }
+        Returns: {
+          con: number
+          pro: number
+          total: number
+        }[]
+      }
+      get_week_vote_stats: {
+        Args: { _week_id: string }
+        Returns: {
+          con: number
+          pro: number
+          total: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
