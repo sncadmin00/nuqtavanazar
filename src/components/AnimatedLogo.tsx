@@ -102,7 +102,7 @@ export function AnimatedLogo({
           fill={d.fill}
           opacity={d.opacity}
           style={{
-            transition: `cx ${DUR}ms ${EASE}, cy ${DUR}ms ${EASE}, r ${DUR}ms ${EASE}, opacity ${DUR}ms ${EASE}, fill ${DUR}ms ${EASE}`,
+            transition: `cx ${DUR}ms ${EASE}, cy ${DUR}ms ${EASE}, r ${DUR}ms ${EASE}, opacity ${DUR}ms ${EASE}`,
           }}
         />
       ))}
