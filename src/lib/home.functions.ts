@@ -405,4 +405,61 @@ export const fetchRetroPollStats = createServerFn({ method: "GET" })
     const { data: rows } = await sb.rpc("get_week_vote_stats", { _week_id: data.week_id });
     const row = Array.isArray(rows) ? rows[0] : rows;
     return (row as RetroPollStats) ?? { pro: 0, con: 0, total: 0 };
+
+export const createVoiceNote = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: {
+    week_id: string;
+    audio_path: string;
+    duration_sec: number;
+    transcript_preview?: string;
+  }) => input)
+  .handler(async ({ data, context }): Promise<VoiceNote> => {
+    if (data.duration_sec <= 0 || data.duration_sec > 65) {
+      throw new Error("Длительность записи должна быть от 1 до 60 секунд");
+    }
+    if (!data.audio_path.startsWith(`${context.userId}/`)) {
+      throw new Error("Неверный путь к файлу");
+    }
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", context.userId)
+      .maybeSingle();
+    const author_name = profile?.display_name ?? "Автор";
+    const { data: row, error } = await context.supabase
+      .from("week_voice_notes")
+      .insert({
+        week_id: data.week_id,
+        user_id: context.userId,
+        author_name,
+        audio_path: data.audio_path,
+        duration_sec: Math.round(data.duration_sec),
+        transcript_preview: data.transcript_preview?.slice(0, 140) ?? null,
+      })
+      .select("id, author_name, audio_path, duration_sec, transcript_preview, knock_count, created_at")
+      .single();
+    if (error) throw new Error(error.message);
+    return {
+      id: row.id,
+      author_name: row.author_name,
+      audio_url: `${process.env.SUPABASE_URL}/storage/v1/object/public/week-voice/${row.audio_path}`,
+      duration_sec: row.duration_sec,
+      transcript_preview: row.transcript_preview,
+      knock_count: row.knock_count,
+      created_at: row.created_at,
+    };
   });
+
+export const knockVoiceNote = createServerFn({ method: "POST" })
+  .inputValidator((input: { voice_note_id: string; visitor_id: string }) => input)
+  .handler(async ({ data }): Promise<number> => {
+    const sb = makeServerPublicClient();
+    const { data: count, error } = await sb.rpc("knock_week_voice_note", {
+      _voice_note_id: data.voice_note_id,
+      _visitor_id: data.visitor_id,
+    });
+    if (error) throw new Error(error.message);
+    return (count as number) ?? 0;
+  });
+
