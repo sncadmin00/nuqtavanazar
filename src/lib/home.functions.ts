@@ -405,6 +405,9 @@ export const fetchRetroPollStats = createServerFn({ method: "GET" })
     const { data: rows } = await sb.rpc("get_week_vote_stats", { _week_id: data.week_id });
     const row = Array.isArray(rows) ? rows[0] : rows;
     return (row as RetroPollStats) ?? { pro: 0, con: 0, total: 0 };
+  });
+
+
 
 export const createVoiceNote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
