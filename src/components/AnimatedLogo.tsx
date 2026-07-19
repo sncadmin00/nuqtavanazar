@@ -124,7 +124,7 @@ export function SplashLogo() {
           className="font-[Federo] text-2xl tracking-wide text-[#F4F1EA] transition-opacity duration-500"
           style={{ opacity: showMark ? 1 : 0 }}
         >
-          nuqta va nazar
+          nuqta <span style={{ color: "#E8562D" }}>va</span> nazar
         </div>
       </div>
     </div>
