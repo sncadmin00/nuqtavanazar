@@ -37,10 +37,7 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
 
   return (
     <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
-      <div className="flex items-baseline justify-between">
-        <div className="formula-motif !text-white/50">День дебатов</div>
-        <div className="formula-motif !text-white/50">идея → критерий → аргумент</div>
-      </div>
+      <div className="formula-motif !text-white/50">День дебатов</div>
       <h2 className="mt-1 text-[15px] font-medium text-white/80">
         До ближайшего Дня дебатов · {dayLabel}
       </h2>
