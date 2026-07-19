@@ -69,7 +69,7 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
 function TimeBlock({ value, label }: { value: number; label: string }) {
   return (
     <div className="rounded-[12px] bg-primary/15 py-3 text-center">
-      <div className="font-mono text-[28px] font-semibold leading-none tabular-nums text-primary">
+      <div className="font-display text-[32px] leading-none tabular-nums text-primary">
         {String(value).padStart(2, "0")}
       </div>
       <div className="mt-1 text-[10px] uppercase tracking-wider text-white/60">{label}</div>
