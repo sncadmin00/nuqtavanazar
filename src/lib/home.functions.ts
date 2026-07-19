@@ -301,7 +301,11 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
 
   const eventAt = current ? new Date(current.event_at) : null;
   const eventEnds = current ? new Date(current.event_ends_at ?? current.event_at) : null;
-  const revealAt = current ? new Date(current.topic_reveal_at) : null;
+  // Reveal window is derived from event_at (48h before), so it always stays
+  // in sync if the debate day is rescheduled — the DB column is a fallback.
+  const derivedReveal = eventAt ? new Date(eventAt.getTime() - 48 * 60 * 60 * 1000) : null;
+  const columnReveal = current?.topic_reveal_at ? new Date(current.topic_reveal_at) : null;
+  const revealAt = derivedReveal ?? columnReveal;
 
   const revealed = !!(revealAt && now >= revealAt);
   const eventOver = !!(eventEnds && now >= eventEnds);
@@ -313,7 +317,7 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
 
   const [matches, roundtable] = await Promise.all([
     current && eventAt ? loadMatches(sb, current, now, eventAt) : Promise.resolve<MatchesStatus>({ mode: "bookings", one_v_one: 0, two_v_two: 0, listeners_one: 0, listeners_two: 0 }),
-    loadRoundtableCard(sb),
+    loadRoundtableCard(sb, phase),
   ]);
 
   let discussion: HomeState["discussion"];
