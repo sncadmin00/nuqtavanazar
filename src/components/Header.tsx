@@ -26,17 +26,22 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-[color:var(--color-cream)]/85 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2" aria-label="Nuqta va Nazar — на главную">
-          <svg viewBox="0 0 100 100" width="26" height="26" aria-hidden="true">
-            <circle cx="32" cy="34" r="3.2" fill="#1A1A2E" opacity="0.55"/>
-            <circle cx="71" cy="23" r="3.0" fill="#1A1A2E" opacity="0.45"/>
-            <circle cx="26" cy="71" r="4.6" fill="#1A1A2E"/>
-            <circle cx="75" cy="64" r="4.3" fill="#1A1A2E"/>
+        <Link
+          to="/"
+          aria-label="Nuqta va Nazar — на главную"
+          className="flex items-center gap-2 rounded-[14px] bg-[#1A1A2E] pl-2 pr-3 py-1.5"
+          style={{ border: "1.5px solid #F4F1EA" }}
+        >
+          <svg viewBox="0 0 100 100" width="22" height="22" aria-hidden="true">
+            <circle cx="32" cy="34" r="3.2" fill="#F4F1EA" opacity="0.75"/>
+            <circle cx="71" cy="23" r="3.0" fill="#F4F1EA" opacity="0.7"/>
+            <circle cx="26" cy="71" r="4.6" fill="#F4F1EA"/>
+            <circle cx="75" cy="64" r="4.3" fill="#F4F1EA"/>
             <circle cx="50" cy="50" r="7.0" fill="#E8562D"/>
           </svg>
           <span
-            className="text-[16px] leading-none text-[color:var(--color-ink)]"
-            style={{ fontFamily: "'Federo', serif" }}
+            className="text-[15px] leading-none text-[#F4F1EA]"
+            style={{ fontFamily: "'Federo', serif", fontWeight: 400 }}
           >
             nuqta va nazar
           </span>
