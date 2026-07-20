@@ -121,8 +121,8 @@ export function SplashLogo() {
       <div className="flex flex-col items-center gap-5">
         <AnimatedLogo size={120} mode="reveal" />
         <div
-          className="font-[Federo] text-2xl tracking-wide text-[#F4F1EA] transition-opacity duration-500"
-          style={{ opacity: showMark ? 1 : 0 }}
+          className="text-2xl tracking-wide transition-opacity duration-500"
+          style={{ opacity: showMark ? 1 : 0, fontFamily: "'Federo', serif", fontWeight: 400, color: "#F4F1EA" }}
         >
           nuqta va nazar
         </div>
