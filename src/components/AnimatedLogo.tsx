@@ -129,10 +129,11 @@ export function SplashLogo() {
         <AnimatedLogo size={120} mode="reveal" scheme="dark" />
         <div
           className="text-2xl tracking-wide transition-opacity duration-500"
-          style={{ opacity: showMark ? 1 : 0, fontFamily: "'Federo', serif", fontWeight: 400, color: "#FFFFFF" }}
+          style={{ opacity: showMark ? 1 : 0, fontFamily: "'Audiowide', system-ui, sans-serif", fontWeight: 400, color: "#FFFFFF", letterSpacing: "0.02em" }}
         >
           nuqta va nazar
         </div>
+
       </div>
     </div>
   );
