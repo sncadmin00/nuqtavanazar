@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth-context";
 import type { RatingRow } from "@/lib/home.functions";
+import { useT } from "@/lib/i18n";
 
 export function WeekRankingFull({ rows }: { rows: RatingRow[] }) {
   const { user } = useAuth();
+  const t = useT();
   const myId = user?.id;
   const myInTop = rows.some((r) => r.user_id === myId);
   const myRow = !myInTop ? rows.find((r) => r.user_id === myId) : null;
@@ -11,12 +13,12 @@ export function WeekRankingFull({ rows }: { rows: RatingRow[] }) {
   return (
     <section className="rounded-[16px] hairline bg-white p-4">
       <div className="flex items-baseline justify-between">
-        <h3 className="text-[14.5px] font-semibold">Рейтинг недели</h3>
-        <Link to="/profile" className="formula-motif !text-primary">Вся лига →</Link>
+        <h3 className="text-[14.5px] font-semibold">{t("ranking.title")}</h3>
+        <Link to="/profile" className="formula-motif !text-primary">{t("ranking.leagueLink")}</Link>
       </div>
 
       {rows.length === 0 ? (
-        <p className="mt-3 text-[12px] text-muted-foreground">Пока пусто. Первые матчи — на этой неделе.</p>
+        <p className="mt-3 text-[12px] text-muted-foreground">{t("ranking.empty")}</p>
       ) : (
         <ol className="mt-3 space-y-1.5">
           {rows.slice(0, 3).map((r, idx) => (

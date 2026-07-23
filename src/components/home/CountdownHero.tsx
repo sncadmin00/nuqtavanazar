@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Lock } from "lucide-react";
 import type { WeekPublic } from "@/lib/home.functions";
 import { AnimatedLogo } from "@/components/AnimatedLogo";
-
-const DAYS = ["воскресенье", "понедельник", "вторник", "среду", "четверг", "пятницу", "субботу"];
+import { useT } from "@/lib/i18n";
 
 function diff(target: Date) {
   const ms = Math.max(0, target.getTime() - Date.now());
@@ -15,19 +14,18 @@ function diff(target: Date) {
 }
 
 export function CountdownHero({ week }: { week: WeekPublic | null }) {
+  const t = useT();
   const eventAt = week ? new Date(week.event_at) : nextSaturday();
-  // Reveal window is controlled server-side; topic is present in props only if already revealed.
 
-  const [t, setT] = useState(() => diff(eventAt));
+  const [tm, setTm] = useState(() => diff(eventAt));
   useEffect(() => {
-    const id = setInterval(() => setT(diff(eventAt)), 30_000);
+    const id = setInterval(() => setTm(diff(eventAt)), 30_000);
     return () => clearInterval(id);
   }, [eventAt]);
 
   const revealed = !!week?.topic;
-  const dayLabel = DAYS[eventAt.getDay()];
+  const dayLabel = t(`day.${eventAt.getDay()}`);
 
-  // Fire a one-shot logo "reveal" pulse the first time the topic becomes visible.
   const prevRevealed = useRef(revealed);
   const [revealTick, setRevealTick] = useState(0);
   useEffect(() => {
@@ -37,15 +35,15 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
 
   return (
     <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
-      <div className="formula-motif !text-white/50">День дебатов</div>
+      <div className="formula-motif !text-white/50">{t("hero.eyebrow")}</div>
       <h2 className="mt-1 text-[15px] font-medium text-white/80">
-        До ближайшего Дня дебатов · {dayLabel}
+        {t("hero.untilNext", { day: dayLabel })}
       </h2>
 
       <div className="mt-4 grid grid-cols-3 gap-2">
-        <TimeBlock value={t.days} label="дни" />
-        <TimeBlock value={t.hours} label="часы" />
-        <TimeBlock value={t.minutes} label="мин" />
+        <TimeBlock value={tm.days} label={t("hero.days")} />
+        <TimeBlock value={tm.hours} label={t("hero.hours")} />
+        <TimeBlock value={tm.minutes} label={t("hero.mins")} />
       </div>
 
       <div className="mt-5 border-t border-white/10 pt-4">
@@ -56,7 +54,7 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
             </div>
             <div>
               <span className="inline-block rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary-foreground">
-                Объявлено
+                {t("hero.announced")}
               </span>
               <p className="mt-2 text-[15px] leading-snug text-white">{week!.topic}</p>
             </div>
@@ -64,7 +62,7 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
         ) : (
           <div className="flex items-start gap-2.5 text-white/60">
             <Lock className="mt-0.5 h-4 w-4 shrink-0" />
-            <div className="text-[13px] font-medium text-white/85">Тема появится за 48 часов до старта</div>
+            <div className="text-[13px] font-medium text-white/85">{t("hero.hiddenHint")}</div>
           </div>
         )}
       </div>

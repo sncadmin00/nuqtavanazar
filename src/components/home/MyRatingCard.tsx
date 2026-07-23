@@ -3,14 +3,11 @@ import { useEffect, useState } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
-
-const LEAGUE_LABEL: Record<string, string> = {
-  zonal: "Зональная лига",
-  republic: "Республиканская лига",
-};
+import { useT } from "@/lib/i18n";
 
 export function MyRatingCard() {
   const { user } = useAuth();
+  const t = useT();
   const [data, setData] = useState<{
     mastery: number;
     mastery_trend_week: number;
@@ -29,18 +26,18 @@ export function MyRatingCard() {
         setData(data ?? {
           mastery: 1000,
           mastery_trend_week: 0,
-          display_name: user.email?.split("@")[0] ?? "Игрок",
+          display_name: user.email?.split("@")[0] ?? t("rating.player"),
           league: "zonal",
         });
       });
-  }, [user]);
+  }, [user, t]);
 
   if (!user) {
     return (
       <Link to="/auth" className="block rounded-[16px] hairline bg-white p-4">
-        <div className="formula-motif">Ваш рейтинг</div>
-        <div className="mt-1.5 text-[15px] font-medium">Войдите, чтобы играть и попадать в рейтинг</div>
-        <div className="mt-2 text-[13px] text-primary font-medium">Войти →</div>
+        <div className="formula-motif">{t("rating.eyebrow")}</div>
+        <div className="mt-1.5 text-[15px] font-medium">{t("rating.signInPrompt")}</div>
+        <div className="mt-2 text-[13px] text-primary font-medium">{t("rating.signInGo")}</div>
       </Link>
     );
   }
@@ -52,7 +49,8 @@ export function MyRatingCard() {
   const trend = data.mastery_trend_week;
   const TrendIcon = trend > 0 ? TrendingUp : trend < 0 ? TrendingDown : Minus;
   const trendColor = trend > 0 ? "text-emerald-600" : trend < 0 ? "text-destructive" : "text-muted-foreground";
-  const name = data.display_name || (user.email?.split("@")[0] ?? "Игрок");
+  const name = data.display_name || (user.email?.split("@")[0] ?? t("rating.player"));
+  const leagueLabel = t(`league.${data.league}`);
 
   return (
     <Link to="/profile" className="flex items-center gap-3 rounded-[16px] hairline bg-white p-4">
@@ -61,7 +59,7 @@ export function MyRatingCard() {
       </div>
       <div className="min-w-0 flex-1">
         <div className="truncate text-[14px] font-medium">{name}</div>
-        <div className="text-[12px] text-muted-foreground">{LEAGUE_LABEL[data.league] ?? data.league}</div>
+        <div className="text-[12px] text-muted-foreground">{leagueLabel}</div>
       </div>
       <div className="text-right">
         <div className="font-display text-[24px] leading-none tabular-nums">{data.mastery}</div>

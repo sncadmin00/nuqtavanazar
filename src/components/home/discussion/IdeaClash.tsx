@@ -1,22 +1,26 @@
 import type { IdeaArgument } from "@/lib/home.functions";
+import { useT } from "@/lib/i18n";
 
 export function IdeaClash({ pro, con }: { pro: IdeaArgument[]; con: IdeaArgument[] }) {
+  const t = useT();
   if (pro.length === 0 && con.length === 0) return null;
   return (
     <section>
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-[15px] font-semibold">Столкновение идей</h3>
-        <span className="formula-motif !text-muted-foreground">топ-2 по тук</span>
+        <h3 className="text-[15px] font-semibold">{t("clash.title")}</h3>
+        <span className="formula-motif !text-muted-foreground">{t("clash.topByKnocks")}</span>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2.5">
-        <Column label="ЗА" tone="pro" items={pro} />
-        <Column label="ПРОТИВ" tone="con" items={con} />
+        <Column label={t("clash.pro")} tone="pro" items={pro} anon={t("clash.anon")} knock={t("clash.knock")} />
+        <Column label={t("clash.con")} tone="con" items={con} anon={t("clash.anon")} knock={t("clash.knock")} />
       </div>
     </section>
   );
 }
 
-function Column({ label, tone, items }: { label: string; tone: "pro" | "con"; items: IdeaArgument[] }) {
+function Column({ label, tone, items, anon, knock }: {
+  label: string; tone: "pro" | "con"; items: IdeaArgument[]; anon: string; knock: string;
+}) {
   const dot = tone === "pro" ? "bg-primary" : "bg-[color:var(--color-ink)]/60";
   return (
     <div className="rounded-[14px] hairline bg-white p-3">
@@ -30,8 +34,8 @@ function Column({ label, tone, items }: { label: string; tone: "pro" | "con"; it
           <div key={a.id}>
             <p className="text-[12.5px] leading-snug text-foreground">{a.text}</p>
             <div className="mt-1 flex items-center gap-2 font-mono text-[10.5px] tabular-nums text-muted-foreground">
-              <span>{a.author_name ?? "аноним"}</span>
-              <span>· тук {a.knock_count}</span>
+              <span>{a.author_name ?? anon}</span>
+              <span>· {knock} {a.knock_count}</span>
             </div>
           </div>
         ))}
