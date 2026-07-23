@@ -33,20 +33,12 @@ export function Header() {
         <Link
           to="/"
           aria-label={t("header.brandAria")}
-          className="flex items-center gap-2.5 rounded-[12px] pl-2.5 pr-3 py-1.5"
+          className="flex items-center rounded-[12px] px-3 py-2"
           style={{ background: "#0A0E29" }}
         >
-          <svg viewBox="0 0 100 92" width="22" height="20.24" aria-hidden="true">
-            <circle cx="14.81" cy="20.33" r="6.98" fill="#BEBBBC"/>
-            <circle cx="75.78" cy="9.82" r="5.37" fill="#BEBBBC"/>
-            <circle cx="9.25" cy="78.41" r="9.25" fill="#FFFFFF"/>
-            <circle cx="85.03" cy="69.16" r="7.88" fill="#FFFFFF"/>
-            <circle cx="45.93" cy="42.58" r="10.69" fill="#F66434"/>
-          </svg>
-          <span aria-hidden="true" style={{ width: 1, height: 20, background: "#FFFFFF", opacity: 0.9 }} />
-          <img src={wordmark} alt="nuqta va nazar" style={{ height: 14, width: "auto", display: "block" }} />
-
+          <img src={wordmark} alt="nuqta va nazar" style={{ height: 22, width: "auto", display: "block" }} />
         </Link>
+
 
 
 
