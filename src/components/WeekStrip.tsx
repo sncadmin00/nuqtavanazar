@@ -1,14 +1,19 @@
-const WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
+import { useT } from "@/lib/i18n";
 
 export function WeekStrip({
   days,
   tone = "dark",
-  label = "Эта неделя",
+  label,
 }: {
   days: boolean[];
   tone?: "dark" | "light";
   label?: string;
 }) {
+  const t = useT();
+  const WEEKDAYS = [
+    t("week.mon"), t("week.tue"), t("week.wed"), t("week.thu"),
+    t("week.fri"), t("week.sat"), t("week.sun"),
+  ];
   const done = days.filter(Boolean).length;
   const isDark = tone === "dark";
   return (
@@ -19,7 +24,7 @@ export function WeekStrip({
           (isDark ? "text-white/50" : "text-muted-foreground")
         }
       >
-        <span>{label}</span>
+        <span>{label ?? t("week.thisWeek")}</span>
         <span>{done}/7</span>
       </div>
       <div className="mt-1.5 grid grid-cols-7 gap-1.5">
