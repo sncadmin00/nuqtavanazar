@@ -33,6 +33,11 @@ const ru: Dict = {
   "home.streak.days.one": "{n} день подряд",
   "home.streak.days.few": "{n} дня подряд",
   "home.streak.days.many": "{n} дней подряд",
+  "week.thisWeek": "Эта неделя",
+  "week.mon": "Пн", "week.tue": "Вт", "week.wed": "Ср", "week.thu": "Чт",
+  "week.fri": "Пт", "week.sat": "Сб", "week.sun": "Вс",
+
+
 
   // Countdown hero
   "hero.eyebrow": "День дебатов",
@@ -178,6 +183,11 @@ const uz: Dict = {
   "home.streak.days.one": "{n} kun ketma-ket",
   "home.streak.days.few": "{n} kun ketma-ket",
   "home.streak.days.many": "{n} kun ketma-ket",
+  "week.thisWeek": "Bu hafta",
+  "week.mon": "Du", "week.tue": "Se", "week.wed": "Ch", "week.thu": "Pa",
+  "week.fri": "Ju", "week.sat": "Sh", "week.sun": "Ya",
+
+
 
   "hero.eyebrow": "Bahs kuni",
   "hero.untilNext": "Yaqin Bahs kunigacha · {day}",
