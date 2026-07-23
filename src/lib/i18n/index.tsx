@@ -1,16 +1,23 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { translate, type Lang } from "./translations";
+import { translate, tPlural, type Lang } from "./translations";
 
 type Ctx = {
   lang: Lang;
   setLang: (l: Lang) => void;
-  t: (key: string) => string;
+  t: (key: string, vars?: Record<string, string | number>) => string;
+  tp: (n: number, base: string) => string;
 };
+
+function fmt(s: string, vars?: Record<string, string | number>) {
+  if (!vars) return s;
+  return s.replace(/\{(\w+)\}/g, (_, k) => (vars[k] !== undefined ? String(vars[k]) : `{${k}}`));
+}
 
 const I18nContext = createContext<Ctx>({
   lang: "ru",
   setLang: () => {},
   t: (k) => translate("ru", k),
+  tp: (n, base) => tPlural("ru", n, base),
 });
 
 const STORAGE_KEY = "dcuz.lang";
@@ -18,7 +25,6 @@ const STORAGE_KEY = "dcuz.lang";
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>("ru");
 
-  // Read persisted lang after hydration to avoid SSR mismatch.
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY) as Lang | null;
@@ -37,9 +43,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const t = (key: string) => translate(lang, key);
+  const t = (key: string, vars?: Record<string, string | number>) => fmt(translate(lang, key), vars);
+  const tp = (n: number, base: string) => tPlural(lang, n, base);
 
-  return <I18nContext.Provider value={{ lang, setLang, t }}>{children}</I18nContext.Provider>;
+  return <I18nContext.Provider value={{ lang, setLang, t, tp }}>{children}</I18nContext.Provider>;
 }
 
 export function useI18n() {
