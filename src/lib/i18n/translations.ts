@@ -9,242 +9,359 @@ export const LANGUAGES: { code: Lang; label: string; short: string }[] = [
 type Dict = Record<string, string>;
 
 const ru: Dict = {
+  // Brand
   "brand.name": "Nuqta va Nazar",
-  "brand.tagline": "Инфраструктура структурированного спора: идея → критерий → аргумент",
 
-  "nav.home": "Главная",
-  "nav.learn": "Обучение",
-  "nav.motions": "Банк тем",
-  "nav.glossary": "Глоссарий",
-  "nav.practice": "Тренировка",
-  "nav.judges": "Судьям",
-  "nav.events": "События",
-  "nav.about": "О клубе",
-  "nav.profile": "Кабинет",
-  "nav.signin": "Войти",
-  "nav.signup": "Регистрация",
-  "nav.signout": "Выйти",
-  "nav.menu": "Меню",
+  // Header
+  "header.signIn": "Войти",
+  "header.brandAria": "Nuqta va Nazar — на главную",
 
-  "home.hero.badge": "Дебаты в Узбекистане · старт в Бухаре",
-  "home.hero.title": "Дебаты, которые готовят к жизни",
-  "home.hero.subtitle":
-    "Онлайн-платформа обучения дебатам для школьников и студентов. Два международных формата, теория, банк тем и практика — на трёх языках.",
-  "home.hero.ctaPrimary": "Начать обучение",
-  "home.hero.ctaSecondary": "Присоединиться к клубу",
+  // Bottom tabs
+  "tabs.home": "Главная",
+  "tabs.learn": "Обучение",
+  "tabs.debateDay": "День дебатов",
+  "tabs.training": "Тренировка",
+  "tabs.profile": "Профиль",
+  "tabs.ariaNav": "Основная навигация",
 
-  "home.formats.title": "Три формата — одна формула",
-  "home.formats.kp.title": "1×1 · дуэль",
-  "home.formats.kp.audience": "Быстрый живой раунд",
-  "home.formats.kp.desc":
-    "Два спикера, только звук. Раунд по схеме 3 → 3 → 2 → 2 → 1 → 1 минут вокруг общего критерия.",
-  "home.formats.ap.title": "2×2 · команды",
-  "home.formats.ap.audience": "Командная игра",
-  "home.formats.ap.desc":
-    "Две команды по два спикера. Единый критерий на команду, распределение ролей: конструктор и сжиматель.",
-  "home.formats.learnMore": "Узнать больше",
+  // Home — banners / streak
+  "home.prevWeek.title": "Итоги прошлой недели",
+  "home.pro": "За",
+  "home.con": "Против",
+  "home.training.title": "Тренировка",
+  "home.streak.none": "Серии пока нет",
+  "home.streak.days.one": "{n} день подряд",
+  "home.streak.days.few": "{n} дня подряд",
+  "home.streak.days.many": "{n} дней подряд",
 
-  "home.mission.title": "Наша миссия",
-  "home.mission.body":
-    "Мы строим сообщество, где молодые люди Узбекистана учатся аргументировать, критически мыслить и уверенно говорить публично. Стартуем с университетов Бухары и идём к национальным университетским дебатам на ТВ.",
+  // Countdown hero
+  "hero.eyebrow": "День дебатов",
+  "hero.untilNext": "До ближайшего Дня дебатов · {day}",
+  "hero.days": "дни",
+  "hero.hours": "часы",
+  "hero.mins": "мин",
+  "hero.announced": "Объявлено",
+  "hero.hiddenHint": "Тема появится за 48 часов до старта",
 
-  "home.pillars.learn.title": "Структурированные уроки",
-  "home.pillars.learn.body": "От основ аргументации до тонкостей форматов — с прогрессом в личном кабинете.",
-  "home.pillars.motions.title": "Банк тем",
-  "home.pillars.motions.body": "Десятки актуальных мотиваций для тренировок с фильтрами по формату и категории.",
-  "home.pillars.practice.title": "Тренировка кейсов",
-  "home.pillars.practice.body": "Конструктор речи по шаблону: тезис, аргументы, примеры, заключение.",
-  "home.pillars.judges.title": "Судейство",
-  "home.pillars.judges.body": "Критерии, чек-листы и примеры оценочных листов для честного судейства.",
+  // Day of week (accusative form used after «в …»)
+  "day.0": "воскресенье",
+  "day.1": "понедельник",
+  "day.2": "вторник",
+  "day.3": "среду",
+  "day.4": "четверг",
+  "day.5": "пятницу",
+  "day.6": "субботу",
 
-  "home.cta.title": "Готовы начать?",
-  "home.cta.body": "Зарегистрируйтесь, чтобы сохранять кейсы, отмечать пройденные уроки и получать приглашения на турниры.",
+  // Primary actions
+  "actions.findOpponent": "Найти соперника",
+  "actions.training": "Тренировка",
+  "actions.liveSoon": "Live-поиск скоро откроется",
+  "actions.liveSoon.desc": "Матчинг соперника заработает в День дебатов.",
 
-  "learn.title": "Обучение",
-  "learn.subtitle": "Последовательные модули для новичков и опытных спикеров.",
-  "learn.module": "Модуль",
-  "learn.minutes": "мин",
-  "learn.markComplete": "Отметить пройденным",
-  "learn.completed": "Пройдено",
-  "learn.back": "К списку модулей",
+  // My rating card
+  "rating.eyebrow": "Ваш рейтинг",
+  "rating.signInPrompt": "Войдите, чтобы играть и попадать в рейтинг",
+  "rating.signInGo": "Войти →",
+  "rating.player": "Игрок",
+  "league.zonal": "Зональная лига",
+  "league.republic": "Республиканская лига",
 
-  "motions.title": "Банк тем (Motion Bank)",
-  "motions.subtitle": "База мотиваций для тренировок. Фильтруйте по формату и категории.",
-  "motions.add": "Добавить тему",
-  "motions.addTitle": "Новая тема",
-  "motions.form.title": "Формулировка",
-  "motions.form.category": "Категория",
-  "motions.form.format": "Формат",
-  "motions.form.submit": "Добавить",
-  "motions.filter.all": "Все",
-  "motions.filter.format": "Формат",
-  "motions.filter.category": "Категория",
-  "motions.empty": "Ничего не найдено",
-  "motions.loginToAdd": "Войдите, чтобы добавлять свои темы",
+  // Idea clash
+  "clash.title": "Столкновение идей",
+  "clash.topByKnocks": "топ-2 по тук",
+  "clash.pro": "ЗА",
+  "clash.con": "ПРОТИВ",
+  "clash.anon": "аноним",
+  "clash.knock": "тук",
 
-  "glossary.title": "Глоссарий дебатов",
-  "glossary.subtitle": "Ключевые термины на трёх языках.",
-  "glossary.search": "Поиск термина…",
-  "glossary.empty": "Ничего не найдено",
+  // Retro poll
+  "poll.title": "А ты как думаешь?",
+  "poll.subtitle": "Голосование по теме прошлой недели — открыто ретроактивно",
+  "poll.pro": "За",
+  "poll.con": "Против",
+  "poll.votes.one": "{n} голос",
+  "poll.votes.few": "{n} голоса",
+  "poll.votes.many": "{n} голосов",
 
-  "practice.title": "Тренировка: конструктор кейса",
-  "practice.subtitle": "Выберите тему и заполните шаблон речи. Сохраните черновик в личный кабинет.",
-  "practice.motion": "Тема (motion)",
-  "practice.side": "Сторона",
-  "practice.side.pro": "Утверждение (Pro)",
-  "practice.side.con": "Отрицание (Con)",
-  "practice.thesis": "Тезис",
-  "practice.arguments": "Аргументы",
-  "practice.argument": "Аргумент",
-  "practice.addArgument": "Добавить аргумент",
-  "practice.conclusion": "Заключение",
-  "practice.save": "Сохранить в кабинет",
-  "practice.saved": "Кейс сохранён",
-  "practice.loginRequired": "Войдите, чтобы сохранять кейсы",
+  // Top quotes
+  "quotes.title": "Топ реплик недели",
+  "quotes.prev": "Назад",
+  "quotes.next": "Вперёд",
+  "quotes.knock": "тук",
 
-  "judges.title": "Судьям (Judge Training)",
-  "judges.subtitle": "Критерии оценки, чек-листы, примеры баллотов.",
-  "judges.criteria.title": "Основные критерии",
-  "judges.checklist.title": "Чек-лист судьи",
-  "judges.ballot.title": "Пример баллота",
+  // Featured speakers
+  "featured.best": "Лучший спикер",
+  "featured.rising": "Новый голос",
 
-  "events.title": "События и турниры",
-  "events.subtitle": "Расписание встреч клуба и турниров.",
-  "events.empty": "Пока нет запланированных событий",
-  "events.contact.title": "Хотите присоединиться?",
-  "events.contact.body": "Напишите нам — расскажем, как попасть в клуб и на ближайшие тренировки.",
+  // Week ranking
+  "ranking.title": "Рейтинг недели",
+  "ranking.leagueLink": "Вся лига →",
+  "ranking.empty": "Пока пусто. Первые матчи — на этой неделе.",
 
-  "about.title": "О клубе",
-  "about.subtitle": "Nuqta va Nazar — платформа структурированных дебатов, стартующая в Бухаре.",
+  // Voice of the week
+  "voice.title": "Голос недели",
+  "voice.subtitle": "Скажи, что думаешь по теме прошлой недели — до 60 секунд.",
+  "voice.signInPrompt": "Войди, чтобы записать голос",
+  "voice.uploading": "Загружаем…",
+  "voice.stop": "Остановить",
+  "voice.start": "Добавь свой голос — 60 сек",
+  "voice.needMic": "Нужен доступ к микрофону",
+  "voice.uploaded": "Голос добавлен",
+  "voice.uploadFail": "Не удалось загрузить",
+  "voice.fallbackTitle": "Голосовая реакция",
+  "voice.records.one": "{n} запись",
+  "voice.records.few": "{n} записи",
+  "voice.records.many": "{n} записей",
 
-  "auth.title": "Вход и регистрация",
-  "auth.tab.signin": "Вход",
-  "auth.tab.signup": "Регистрация",
-  "auth.email": "Email",
-  "auth.password": "Пароль",
-  "auth.displayName": "Как к вам обращаться",
-  "auth.city": "Город",
-  "auth.submit.signin": "Войти",
-  "auth.submit.signup": "Создать аккаунт",
-  "auth.errors.generic": "Что-то пошло не так. Попробуйте ещё раз.",
-  "auth.signup.checkEmail": "Проверьте почту, чтобы подтвердить регистрацию.",
+  // Roundtable
+  "rt.emptyDesc": "Круглый стол сейчас не идёт. Ближайший — скоро объявим.",
+  "rt.live": "Круглый стол идёт",
+  "rt.moderator": "Модератор",
+  "rt.listenSoon": "Прослушивание скоро откроется",
 
-  "profile.title": "Личный кабинет",
-  "profile.progress": "Прогресс обучения",
-  "profile.cases": "Мои кейсы",
-  "profile.noCases": "Пока нет сохранённых кейсов",
-  "profile.city": "Город",
-  "profile.role": "Роль",
-  "profile.role.school": "Школьник",
-  "profile.role.student": "Студент",
-  "profile.role.other": "Другое",
-  "profile.save": "Сохранить профиль",
-  "profile.saved": "Профиль обновлён",
+  // Matches status (game day)
+  "matches.live": "Матчи сейчас",
+  "matches.upcoming": "Матчи · сегодня",
+  "matches.notReady": "Матчи откроются в День дебатов",
+  "matches.watchSoon": "Просмотр скоро откроется",
 
-  "footer.tagline": "Дебатное образование для нового поколения Узбекистана.",
-  "footer.rights": "© 2026 Nuqta va Nazar. Все права защищены.",
-
-  "category.politics": "Политика",
-  "category.economics": "Экономика",
-  "category.ethics": "Этика",
-  "category.technology": "Технологии",
-  "category.education": "Образование",
-  "category.environment": "Экология",
-  "category.health": "Здоровье",
-  "category.culture": "Культура",
-  "category.other": "Другое",
-
-  "format.solo": "Соло",
-  "format.duel": "1×1",
-  "format.team": "2×2",
-  "format.roundtable": "Круглый стол",
-  "format.both": "Все форматы",
+  // Common
+  "common.dash": "—",
 };
 
 const uz: Dict = {
-  "brand.tagline": "Dunyoni yaxshilash uchun bahslashishni oʻrganamiz",
+  "brand.name": "Nuqta va Nazar",
 
-  "nav.home": "Bosh sahifa",
-  "nav.learn": "Oʻqish",
-  "nav.motions": "Mavzular",
-  "nav.glossary": "Lugʻat",
-  "nav.practice": "Mashq",
-  "nav.judges": "Hakamlar",
-  "nav.events": "Tadbirlar",
-  "nav.about": "Klub haqida",
-  "nav.profile": "Kabinet",
-  "nav.signin": "Kirish",
-  "nav.signup": "Roʻyxatdan oʻtish",
-  "nav.signout": "Chiqish",
-  "nav.menu": "Menyu",
+  "header.signIn": "Kirish",
+  "header.brandAria": "Nuqta va Nazar — bosh sahifa",
 
-  "home.hero.badge": "Oʻzbekistonda bahslar · Buxorodan boshlaymiz",
-  "home.hero.title": "Hayotga tayyorlaydigan bahslar",
-  "home.hero.subtitle":
-    "Maktab oʻquvchilari va talabalar uchun bahs oʻrganish onlayn platformasi. Ikkita xalqaro format, nazariya, mavzular banki va amaliyot — uch tilda.",
-  "home.hero.ctaPrimary": "Oʻqishni boshlash",
-  "home.hero.ctaSecondary": "Klubga qoʻshilish",
+  "tabs.home": "Bosh sahifa",
+  "tabs.learn": "Oʻqish",
+  "tabs.debateDay": "Bahs kuni",
+  "tabs.training": "Mashq",
+  "tabs.profile": "Kabinet",
+  "tabs.ariaNav": "Asosiy navigatsiya",
 
-  "home.formats.title": "Uch format — bitta formula",
-  "home.formats.kp.audience": "Tez jonli raund",
-  "home.formats.ap.audience": "Jamoaviy oʻyin",
-  "home.formats.learnMore": "Batafsil",
+  "home.prevWeek.title": "Oʻtgan hafta natijalari",
+  "home.pro": "Roziman",
+  "home.con": "Qarshiman",
+  "home.training.title": "Mashq",
+  "home.streak.none": "Hali seriya yoʻq",
+  "home.streak.days.one": "{n} kun ketma-ket",
+  "home.streak.days.few": "{n} kun ketma-ket",
+  "home.streak.days.many": "{n} kun ketma-ket",
 
-  "home.mission.title": "Missiyamiz",
-  "home.cta.title": "Boshlashga tayyormisiz?",
+  "hero.eyebrow": "Bahs kuni",
+  "hero.untilNext": "Yaqin Bahs kunigacha · {day}",
+  "hero.days": "kun",
+  "hero.hours": "soat",
+  "hero.mins": "daqiqa",
+  "hero.announced": "Eʼlon qilindi",
+  "hero.hiddenHint": "Mavzu boshlanishdan 48 soat oldin paydo boʻladi",
 
-  "footer.tagline": "Oʻzbekistonning yangi avlodi uchun bahs taʼlimi.",
-  "footer.rights": "© 2026 Nuqta va Nazar. Barcha huquqlar himoyalangan.",
+  "day.0": "yakshanba",
+  "day.1": "dushanba",
+  "day.2": "seshanba",
+  "day.3": "chorshanba",
+  "day.4": "payshanba",
+  "day.5": "juma",
+  "day.6": "shanba",
+
+  "actions.findOpponent": "Raqib topish",
+  "actions.training": "Mashq",
+  "actions.liveSoon": "Live-qidiruv tez orada ochiladi",
+  "actions.liveSoon.desc": "Raqib tanlash Bahs kunida ishga tushadi.",
+
+  "rating.eyebrow": "Sizning reytingingiz",
+  "rating.signInPrompt": "Reytingga kirish uchun tizimga kiring",
+  "rating.signInGo": "Kirish →",
+  "rating.player": "Oʻyinchi",
+  "league.zonal": "Hududiy liga",
+  "league.republic": "Respublika ligasi",
+
+  "clash.title": "Fikrlar toʻqnashuvi",
+  "clash.topByKnocks": "eng koʻp tuk boʻyicha top-2",
+  "clash.pro": "ROZIMAN",
+  "clash.con": "QARSHIMAN",
+  "clash.anon": "anonim",
+  "clash.knock": "tuk",
+
+  "poll.title": "Sizningcha-chi?",
+  "poll.subtitle": "Oʻtgan hafta mavzusi boʻyicha ovoz berish — retroaktiv ochiq",
+  "poll.pro": "Roziman",
+  "poll.con": "Qarshiman",
+  "poll.votes.one": "{n} ovoz",
+  "poll.votes.few": "{n} ovoz",
+  "poll.votes.many": "{n} ovoz",
+
+  "quotes.title": "Hafta eng yaxshi soʻzlari",
+  "quotes.prev": "Orqaga",
+  "quotes.next": "Oldinga",
+  "quotes.knock": "tuk",
+
+  "featured.best": "Eng yaxshi soʻzlovchi",
+  "featured.rising": "Yangi ovoz",
+
+  "ranking.title": "Hafta reytingi",
+  "ranking.leagueLink": "Butun liga →",
+  "ranking.empty": "Hali boʻsh. Birinchi oʻyinlar — shu haftada.",
+
+  "voice.title": "Hafta ovozi",
+  "voice.subtitle": "Oʻtgan hafta mavzusi haqida fikringizni ayting — 60 soniyagacha.",
+  "voice.signInPrompt": "Ovoz yozish uchun tizimga kiring",
+  "voice.uploading": "Yuklanmoqda…",
+  "voice.stop": "Toʻxtatish",
+  "voice.start": "Ovoz qoʻshing — 60 soniya",
+  "voice.needMic": "Mikrofonga ruxsat kerak",
+  "voice.uploaded": "Ovoz qoʻshildi",
+  "voice.uploadFail": "Yuklab boʻlmadi",
+  "voice.fallbackTitle": "Ovozli reaksiya",
+  "voice.records.one": "{n} yozuv",
+  "voice.records.few": "{n} yozuv",
+  "voice.records.many": "{n} yozuv",
+
+  "rt.emptyDesc": "Davra suhbati hozir yoʻq. Yaqin orada eʼlon qilamiz.",
+  "rt.live": "Davra suhbati bormoqda",
+  "rt.moderator": "Moderator",
+  "rt.listenSoon": "Tinglash tez orada ochiladi",
+
+  "matches.live": "Hozirgi oʻyinlar",
+  "matches.upcoming": "Oʻyinlar · bugun",
+  "matches.notReady": "Oʻyinlar Bahs kunida ochiladi",
+  "matches.watchSoon": "Tomosha tez orada ochiladi",
+
+  "common.dash": "—",
 };
 
 const en: Dict = {
-  "brand.tagline": "Learning to argue in order to change the world for the better",
+  "brand.name": "Nuqta va Nazar",
 
-  "nav.home": "Home",
-  "nav.learn": "Learn",
-  "nav.motions": "Motion Bank",
-  "nav.glossary": "Glossary",
-  "nav.practice": "Practice",
-  "nav.judges": "Judges",
-  "nav.events": "Events",
-  "nav.about": "About",
-  "nav.profile": "Profile",
-  "nav.signin": "Sign in",
-  "nav.signup": "Sign up",
-  "nav.signout": "Sign out",
-  "nav.menu": "Menu",
+  "header.signIn": "Sign in",
+  "header.brandAria": "Nuqta va Nazar — home",
 
-  "home.hero.badge": "Debate in Uzbekistan · launching in Bukhara",
-  "home.hero.title": "Debate skills that prepare you for life",
-  "home.hero.subtitle":
-    "An online debate-education platform for high-school and university students. Two international formats, theory, a motion bank and practice — in three languages.",
-  "home.hero.ctaPrimary": "Start learning",
-  "home.hero.ctaSecondary": "Join the club",
+  "tabs.home": "Home",
+  "tabs.learn": "Learn",
+  "tabs.debateDay": "Debate Day",
+  "tabs.training": "Practice",
+  "tabs.profile": "Profile",
+  "tabs.ariaNav": "Primary navigation",
 
-  "home.formats.title": "Three formats — one formula",
-  "home.formats.kp.audience": "Fast live duel",
-  "home.formats.ap.audience": "Team play",
-  "home.formats.learnMore": "Learn more",
+  "home.prevWeek.title": "Last week results",
+  "home.pro": "Pro",
+  "home.con": "Con",
+  "home.training.title": "Practice",
+  "home.streak.none": "No streak yet",
+  "home.streak.days.one": "{n} day in a row",
+  "home.streak.days.few": "{n} days in a row",
+  "home.streak.days.many": "{n} days in a row",
 
-  "home.mission.title": "Our mission",
-  "home.cta.title": "Ready to start?",
+  "hero.eyebrow": "Debate Day",
+  "hero.untilNext": "Until next Debate Day · {day}",
+  "hero.days": "days",
+  "hero.hours": "hours",
+  "hero.mins": "min",
+  "hero.announced": "Announced",
+  "hero.hiddenHint": "The motion appears 48 hours before start",
 
-  "learn.title": "Learn",
-  "motions.title": "Motion Bank",
-  "glossary.title": "Debate Glossary",
-  "practice.title": "Practice: case builder",
-  "judges.title": "Judge Training",
-  "events.title": "Events & tournaments",
-  "about.title": "About the club",
-  "auth.title": "Sign in / Sign up",
-  "profile.title": "Profile",
+  "day.0": "Sunday",
+  "day.1": "Monday",
+  "day.2": "Tuesday",
+  "day.3": "Wednesday",
+  "day.4": "Thursday",
+  "day.5": "Friday",
+  "day.6": "Saturday",
 
-  "footer.tagline": "Debate education for a new generation of Uzbekistan.",
-  "footer.rights": "© 2026 Nuqta va Nazar. All rights reserved.",
+  "actions.findOpponent": "Find opponent",
+  "actions.training": "Practice",
+  "actions.liveSoon": "Live match-up opens soon",
+  "actions.liveSoon.desc": "Opponent matching activates on Debate Day.",
+
+  "rating.eyebrow": "Your rating",
+  "rating.signInPrompt": "Sign in to play and enter the rating",
+  "rating.signInGo": "Sign in →",
+  "rating.player": "Player",
+  "league.zonal": "Zonal league",
+  "league.republic": "Republic league",
+
+  "clash.title": "Clash of ideas",
+  "clash.topByKnocks": "top-2 by knocks",
+  "clash.pro": "PRO",
+  "clash.con": "CON",
+  "clash.anon": "anon",
+  "clash.knock": "knocks",
+
+  "poll.title": "What do you think?",
+  "poll.subtitle": "Voting on last week's motion — open retroactively",
+  "poll.pro": "Pro",
+  "poll.con": "Con",
+  "poll.votes.one": "{n} vote",
+  "poll.votes.few": "{n} votes",
+  "poll.votes.many": "{n} votes",
+
+  "quotes.title": "Top lines of the week",
+  "quotes.prev": "Previous",
+  "quotes.next": "Next",
+  "quotes.knock": "knocks",
+
+  "featured.best": "Best speaker",
+  "featured.rising": "New voice",
+
+  "ranking.title": "Weekly ranking",
+  "ranking.leagueLink": "Full league →",
+  "ranking.empty": "Empty for now. First matches — this week.",
+
+  "voice.title": "Voice of the week",
+  "voice.subtitle": "Say what you think about last week's motion — up to 60 seconds.",
+  "voice.signInPrompt": "Sign in to record your voice",
+  "voice.uploading": "Uploading…",
+  "voice.stop": "Stop",
+  "voice.start": "Add your voice — 60 s",
+  "voice.needMic": "Microphone permission required",
+  "voice.uploaded": "Voice added",
+  "voice.uploadFail": "Upload failed",
+  "voice.fallbackTitle": "Voice reaction",
+  "voice.records.one": "{n} clip",
+  "voice.records.few": "{n} clips",
+  "voice.records.many": "{n} clips",
+
+  "rt.emptyDesc": "No roundtable at the moment. Next one — announced soon.",
+  "rt.live": "Roundtable is live",
+  "rt.moderator": "Moderator",
+  "rt.listenSoon": "Listening opens soon",
+
+  "matches.live": "Matches now",
+  "matches.upcoming": "Matches · today",
+  "matches.notReady": "Matches open on Debate Day",
+  "matches.watchSoon": "Viewing opens soon",
+
+  "common.dash": "—",
 };
 
 export const translations: Record<Lang, Dict> = { ru, uz, en };
 
 export function translate(lang: Lang, key: string): string {
   return translations[lang][key] ?? translations.ru[key] ?? key;
+}
+
+// Russian-style plural selector (one/few/many). For uz/en we still call
+// the same helper — the dictionaries above map all three buckets to the
+// language-correct single form, so the result is grammatical everywhere.
+export function pluralKey(lang: Lang, n: number, base: string): string {
+  if (lang === "en") {
+    return `${base}.${n === 1 ? "one" : "many"}`;
+  }
+  if (lang === "uz") {
+    return `${base}.many`;
+  }
+  const mod100 = n % 100;
+  const mod10 = n % 10;
+  if (mod100 >= 11 && mod100 <= 14) return `${base}.many`;
+  if (mod10 === 1) return `${base}.one`;
+  if (mod10 >= 2 && mod10 <= 4) return `${base}.few`;
+  return `${base}.many`;
+}
+
+export function tPlural(lang: Lang, n: number, base: string): string {
+  const key = pluralKey(lang, n, base);
+  return translate(lang, key).replace("{n}", String(n));
 }
