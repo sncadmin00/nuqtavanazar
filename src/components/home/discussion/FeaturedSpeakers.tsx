@@ -1,14 +1,16 @@
 import { Award, Sparkles } from "lucide-react";
 import type { FeaturedSpeaker } from "@/lib/home.functions";
+import { useT } from "@/lib/i18n";
 
 export function FeaturedSpeakers({ items }: { items: FeaturedSpeaker[] }) {
+  const t = useT();
   if (items.length === 0) return null;
   const best = items.find((i) => i.kind === "best");
   const rising = items.find((i) => i.kind === "rising");
   return (
     <section className="grid grid-cols-2 gap-2.5">
-      {best && <Card sp={best} icon={Award} label="Лучший спикер" tone="primary" />}
-      {rising && <Card sp={rising} icon={Sparkles} label="Новый голос" tone="ink" />}
+      {best && <Card sp={best} icon={Award} label={t("featured.best")} tone="primary" />}
+      {rising && <Card sp={rising} icon={Sparkles} label={t("featured.rising")} tone="ink" />}
     </section>
   );
 }

@@ -1,8 +1,10 @@
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { WeekQuote } from "@/lib/home.functions";
+import { useT } from "@/lib/i18n";
 
 export function TopQuotesCarousel({ quotes }: { quotes: WeekQuote[] }) {
+  const t = useT();
   const ref = useRef<HTMLDivElement>(null);
   const [i, setI] = useState(0);
   if (quotes.length === 0) return null;
@@ -19,19 +21,19 @@ export function TopQuotesCarousel({ quotes }: { quotes: WeekQuote[] }) {
   return (
     <section>
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-[15px] font-semibold">Топ реплик недели</h3>
+        <h3 className="text-[15px] font-semibold">{t("quotes.title")}</h3>
         <div className="flex items-center gap-1">
           <button
             onClick={() => scrollTo(i - 1)}
             className="grid h-7 w-7 place-items-center rounded-full hairline bg-white"
-            aria-label="Назад"
+            aria-label={t("quotes.prev")}
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={() => scrollTo(i + 1)}
             className="grid h-7 w-7 place-items-center rounded-full hairline bg-white"
-            aria-label="Вперёд"
+            aria-label={t("quotes.next")}
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -54,7 +56,7 @@ export function TopQuotesCarousel({ quotes }: { quotes: WeekQuote[] }) {
             <p className="text-[14px] italic leading-snug text-foreground">«{q.text}»</p>
             <div className="mt-3 flex items-center justify-between text-[11.5px]">
               <span className="font-semibold text-foreground">{q.author_name}</span>
-              <span className="font-mono tabular-nums text-muted-foreground">тук {q.knock_count}</span>
+              <span className="font-mono tabular-nums text-muted-foreground">{t("quotes.knock")} {q.knock_count}</span>
             </div>
           </article>
         ))}
