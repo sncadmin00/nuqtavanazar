@@ -318,6 +318,11 @@ const en: Dict = {
   "home.streak.days.one": "{n} day in a row",
   "home.streak.days.few": "{n} days in a row",
   "home.streak.days.many": "{n} days in a row",
+  "week.thisWeek": "This week",
+  "week.mon": "Mon", "week.tue": "Tue", "week.wed": "Wed", "week.thu": "Thu",
+  "week.fri": "Fri", "week.sat": "Sat", "week.sun": "Sun",
+
+
 
   "hero.eyebrow": "Debate Day",
   "hero.untilNext": "Until next Debate Day · {day}",
