@@ -1,6 +1,7 @@
 import { MessagesSquare, Users, Play, Star, Clock } from "lucide-react";
 import { toast } from "sonner";
 import type { RoundtableCardState } from "@/lib/home.functions";
+import { useT } from "@/lib/i18n";
 
 const MONTHS = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
 function formatDate(iso: string) {
@@ -9,10 +10,11 @@ function formatDate(iso: string) {
 }
 
 export function RoundtableCard({ state }: { state: RoundtableCardState }) {
+  const t = useT();
   if (state.state === "empty") {
     return (
       <div className="rounded-[16px] bg-[color:var(--color-table)] p-4 text-[13px] text-foreground/70">
-        Круглый стол сейчас не идёт. Ближайший — скоро объявим.
+        {t("rt.emptyDesc")}
       </div>
     );
   }
@@ -22,18 +24,19 @@ export function RoundtableCard({ state }: { state: RoundtableCardState }) {
 }
 
 function LiveState({ rt }: { rt: Extract<RoundtableCardState, { state: "live" }>["roundtable"] }) {
+  const t = useT();
   return (
     <button
-      onClick={() => toast("Прослушивание скоро откроется")}
+      onClick={() => toast(t("rt.listenSoon"))}
       className="w-full rounded-[16px] bg-[color:var(--color-table)] p-4 text-left active:scale-[0.99]"
     >
       <div className="flex items-center gap-2">
         <span className="live-dot" />
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/80">Круглый стол идёт</span>
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/80">{t("rt.live")}</span>
       </div>
       <p className="mt-2 line-clamp-2 text-[14px] font-medium text-foreground">{rt.topic}</p>
       <div className="mt-2 text-[12px] text-foreground/70">
-        Модератор · <span className="text-foreground">{rt.moderator_name ?? "—"}</span>
+        {t("rt.moderator")} · <span className="text-foreground">{rt.moderator_name ?? "—"}</span>
       </div>
       <div className="mt-3 space-y-1.5">
         {rt.participants.slice(0, 3).map((p, i) => (
@@ -44,9 +47,9 @@ function LiveState({ rt }: { rt: Extract<RoundtableCardState, { state: "live" }>
         ))}
       </div>
       <div className="mt-3 flex items-center justify-between text-[11.5px] text-foreground/70">
-        <span className="tabular-nums">{rt.participants.length} участн.</span>
+        <span className="tabular-nums">{rt.participants.length} {t("rt.participants.short")}</span>
         <span className="flex items-center gap-2 font-mono tabular-nums">
-          <span>тук {rt.knock_count}</span>
+          <span>{t("clash.knock")} {rt.knock_count}</span>
           <span className="flex items-center gap-0.5"><Users className="h-3 w-3" />{rt.listeners}</span>
         </span>
       </div>
@@ -55,20 +58,21 @@ function LiveState({ rt }: { rt: Extract<RoundtableCardState, { state: "live" }>
 }
 
 function UpcomingState({ rt }: { rt: Extract<RoundtableCardState, { state: "upcoming" }>["roundtable"] }) {
+  const t = useT();
   return (
     <button
-      onClick={() => toast("Заявка на участие скоро откроется")}
+      onClick={() => toast(t("rt.applySoon"))}
       className="w-full rounded-[16px] bg-[color:var(--color-table)] p-4 text-left active:scale-[0.99]"
     >
       <div className="flex items-center gap-1.5">
         <MessagesSquare className="h-3.5 w-3.5 text-foreground/70" />
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/80">Ближайший круглый стол</span>
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/80">{t("rt.upcoming.title")}</span>
       </div>
       <p className="mt-2 line-clamp-2 text-[14.5px] font-medium text-foreground">{rt.topic}</p>
       <div className="mt-1 flex items-center gap-1.5 text-[12px] text-foreground/70">
         <Clock className="h-3 w-3" />
         <span className="tabular-nums">{formatDate(rt.starts_at)}</span>
-        <span>· модератор <span className="text-foreground">{rt.moderator_name ?? "—"}</span></span>
+        <span>· {t("rt.moderatorShort")} <span className="text-foreground">{rt.moderator_name ?? "—"}</span></span>
       </div>
       <div className="mt-3 space-y-1.5">
         {rt.participants.slice(0, 4).map((p, i) => (
@@ -80,15 +84,18 @@ function UpcomingState({ rt }: { rt: Extract<RoundtableCardState, { state: "upco
       </div>
       <div className="mt-3 flex items-center justify-between text-[11.5px]">
         <span className="text-foreground/70 tabular-nums">
-          {rt.seats_free > 0 ? `${rt.seats_free} свободн. мест из ${rt.capacity}` : "мест нет"}
+          {rt.seats_free > 0
+            ? t("rt.seatsFree").replace("{n}", String(rt.seats_free)).replace("{cap}", String(rt.capacity))
+            : t("rt.noSeats")}
         </span>
-        <span className="font-semibold text-primary">Подать заявку →</span>
+        <span className="font-semibold text-primary">{t("rt.apply")}</span>
       </div>
     </button>
   );
 }
 
 function PastState({ rt }: { rt: Extract<RoundtableCardState, { state: "past" }>["roundtable"] }) {
+  const t = useT();
   const shift = rt.opinion_before != null && rt.opinion_after != null
     ? `${rt.opinion_before}% → ${rt.opinion_after}%`
     : null;
@@ -96,15 +103,15 @@ function PastState({ rt }: { rt: Extract<RoundtableCardState, { state: "past" }>
     <div className="rounded-[16px] bg-[color:var(--color-table)] p-4">
       <div className="flex items-center gap-1.5">
         <MessagesSquare className="h-3.5 w-3.5 text-foreground/70" />
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/80">Прошедший круглый стол</span>
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-foreground/80">{t("rt.past.title")}</span>
       </div>
       <p className="mt-2 line-clamp-2 text-[14.5px] font-medium text-foreground">{rt.topic}</p>
       <div className="mt-1 text-[12px] text-foreground/70">
-        Модератор · <span className="text-foreground">{rt.moderator_name ?? "—"}</span>
+        {t("rt.moderator")} · <span className="text-foreground">{rt.moderator_name ?? "—"}</span>
       </div>
       {shift && (
         <div className="mt-3 rounded-[10px] bg-white/60 px-3 py-2 text-[12px]">
-          <span className="text-foreground/60">Сдвиг мнения · </span>
+          <span className="text-foreground/60">{t("rt.opinionShift")}</span>
           <span className="font-mono font-semibold tabular-nums">{shift}</span>
         </div>
       )}
@@ -122,12 +129,12 @@ function PastState({ rt }: { rt: Extract<RoundtableCardState, { state: "past" }>
         ))}
       </div>
       <div className="mt-3 flex items-center justify-between text-[11.5px] text-foreground/70">
-        <span className="flex items-center gap-0.5"><Users className="h-3 w-3" />{rt.listeners} слушали</span>
+        <span className="flex items-center gap-0.5"><Users className="h-3 w-3" />{rt.listeners} {t("rt.listened")}</span>
         <button
-          onClick={() => toast(rt.recording_url ? "Плеер скоро откроется" : "Запись пока недоступна")}
+          onClick={() => toast(rt.recording_url ? t("rt.playerSoon") : t("rt.recordUnavailable"))}
           className="flex items-center gap-1 font-semibold text-primary"
         >
-          <Play className="h-3.5 w-3.5" /> Слушать
+          <Play className="h-3.5 w-3.5" /> {t("rt.listen")}
         </button>
       </div>
     </div>

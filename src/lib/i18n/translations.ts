@@ -126,6 +126,34 @@ const ru: Dict = {
   "matches.watchSoon": "Просмотр скоро откроется",
 
   // Common
+  // Matches (game-day)
+  "matches.onAir": "Сейчас в эфире",
+  "matches.registered": "Записались на День дебатов",
+  "matches.themeWeek": "Тема недели · живые раунды идут прямо сейчас",
+  "matches.beforeStart": "До старта Дня дебатов — брони уже заявлены",
+  "matches.hiddenHint": "Тема откроется за 48 часов до старта",
+  "matches.rooms.one": "комната",
+  "matches.rooms.many": "комнат",
+  "matches.recorded.one": "матч записан",
+  "matches.recorded.many": "матчей записано",
+  "matches.listeners": "слушат.",
+  "matches.applySoon": "Заявки скоро откроются",
+
+  // Roundtable extra
+  "rt.upcoming.title": "Ближайший круглый стол",
+  "rt.past.title": "Прошедший круглый стол",
+  "rt.moderatorShort": "модератор",
+  "rt.seatsFree": "{n} свободн. мест из {cap}",
+  "rt.noSeats": "мест нет",
+  "rt.apply": "Подать заявку →",
+  "rt.applySoon": "Заявка на участие скоро откроется",
+  "rt.participants.short": "участн.",
+  "rt.opinionShift": "Сдвиг мнения · ",
+  "rt.listened": "слушали",
+  "rt.listen": "Слушать",
+  "rt.playerSoon": "Плеер скоро откроется",
+  "rt.recordUnavailable": "Запись пока недоступна",
+
   "common.dash": "—",
 };
 
@@ -230,6 +258,32 @@ const uz: Dict = {
   "matches.notReady": "Oʻyinlar Bahs kunida ochiladi",
   "matches.watchSoon": "Tomosha tez orada ochiladi",
 
+  "matches.onAir": "Hozir efirda",
+  "matches.registered": "Bahs kuniga yozildilar",
+  "matches.themeWeek": "Hafta mavzusi · jonli raundlar hozir bormoqda",
+  "matches.beforeStart": "Bahs kuniga qadar — bronlar eʼlon qilingan",
+  "matches.hiddenHint": "Mavzu boshlanishdan 48 soat oldin ochiladi",
+  "matches.rooms.one": "xona",
+  "matches.rooms.many": "xona",
+  "matches.recorded.one": "oʻyin yozildi",
+  "matches.recorded.many": "oʻyin yozildi",
+  "matches.listeners": "tinglovchi",
+  "matches.applySoon": "Arizalar tez orada ochiladi",
+
+  "rt.upcoming.title": "Yaqin davra suhbati",
+  "rt.past.title": "Oʻtgan davra suhbati",
+  "rt.moderatorShort": "moderator",
+  "rt.seatsFree": "{cap} tadan {n} joy bor",
+  "rt.noSeats": "joy yoʻq",
+  "rt.apply": "Ariza berish →",
+  "rt.applySoon": "Ishtirok arizasi tez orada ochiladi",
+  "rt.participants.short": "ishtirok.",
+  "rt.opinionShift": "Fikr oʻzgarishi · ",
+  "rt.listened": "tinglashdi",
+  "rt.listen": "Tinglash",
+  "rt.playerSoon": "Pleyer tez orada ochiladi",
+  "rt.recordUnavailable": "Yozuv hozircha mavjud emas",
+
   "common.dash": "—",
 };
 
@@ -333,6 +387,32 @@ const en: Dict = {
   "matches.upcoming": "Matches · today",
   "matches.notReady": "Matches open on Debate Day",
   "matches.watchSoon": "Viewing opens soon",
+
+  "matches.onAir": "On air now",
+  "matches.registered": "Signed up for Debate Day",
+  "matches.themeWeek": "Weekly motion · live rounds going on now",
+  "matches.beforeStart": "Before Debate Day — slots already claimed",
+  "matches.hiddenHint": "The motion opens 48 hours before start",
+  "matches.rooms.one": "room",
+  "matches.rooms.many": "rooms",
+  "matches.recorded.one": "match booked",
+  "matches.recorded.many": "matches booked",
+  "matches.listeners": "listen.",
+  "matches.applySoon": "Sign-ups open soon",
+
+  "rt.upcoming.title": "Next roundtable",
+  "rt.past.title": "Past roundtable",
+  "rt.moderatorShort": "moderator",
+  "rt.seatsFree": "{n} of {cap} seats free",
+  "rt.noSeats": "no seats",
+  "rt.apply": "Apply →",
+  "rt.applySoon": "Applications open soon",
+  "rt.participants.short": "part.",
+  "rt.opinionShift": "Opinion shift · ",
+  "rt.listened": "listened",
+  "rt.listen": "Listen",
+  "rt.playerSoon": "Player opens soon",
+  "rt.recordUnavailable": "Recording not available yet",
 
   "common.dash": "—",
 };
