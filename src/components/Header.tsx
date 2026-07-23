@@ -43,12 +43,8 @@ export function Header() {
             <circle cx="45.93" cy="42.58" r="10.69" fill="#F66434"/>
           </svg>
           <span aria-hidden="true" style={{ width: 1, height: 20, background: "#FFFFFF", opacity: 0.9 }} />
-          <span
-            className="text-[14px] leading-none"
-            style={{ fontFamily: "'Audiowide', system-ui, sans-serif", fontWeight: 400, color: "#FFFFFF", letterSpacing: "0.01em" }}
-          >
-            nuqta va nazar
-          </span>
+          <img src={wordmark} alt="nuqta va nazar" style={{ height: 14, width: "auto", display: "block" }} />
+
         </Link>
 
 
