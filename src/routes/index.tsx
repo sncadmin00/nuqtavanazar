@@ -16,6 +16,8 @@ import { VoiceOfTheWeek } from "@/components/home/discussion/VoiceOfTheWeek";
 import { WeekStrip } from "@/components/WeekStrip";
 import { getStreak, type StreakInfo } from "@/lib/streak";
 import { getHomeState, type HomeState, type WeekPublic } from "@/lib/home.functions";
+import { useI18n } from "@/lib/i18n";
+import { tPlural } from "@/lib/i18n/translations";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,6 +30,7 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
+
 function dayWord(n: number): string {
   const mod100 = n % 100;
   const mod10 = n % 10;
@@ -38,6 +41,7 @@ function dayWord(n: number): string {
 }
 
 function PrevWeekBanner({ week }: { week: WeekPublic }) {
+  const { t } = useI18n();
   if (!week.topic) return null;
   return (
     <Link
@@ -47,7 +51,7 @@ function PrevWeekBanner({ week }: { week: WeekPublic }) {
     >
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="formula-motif">Итоги прошлой недели</div>
+          <div className="formula-motif">{t("home.prevWeek.title")}</div>
           <div className="mt-1 truncate text-[13px] font-medium text-foreground">{week.topic}</div>
         </div>
         <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -57,12 +61,13 @@ function PrevWeekBanner({ week }: { week: WeekPublic }) {
         <div className="bg-[color:var(--color-ink)]/25" style={{ width: `${week.con_percent}%` }} />
       </div>
       <div className="mt-1.5 flex justify-between font-mono text-[11px] tabular-nums text-muted-foreground">
-        <span>За · {week.pro_percent}%</span>
-        <span>Против · {week.con_percent}%</span>
+        <span>{t("home.pro")} · {week.pro_percent}%</span>
+        <span>{t("home.con")} · {week.con_percent}%</span>
       </div>
     </Link>
   );
 }
+
 
 function HomePage() {
   const state = Route.useLoaderData() as HomeState;
