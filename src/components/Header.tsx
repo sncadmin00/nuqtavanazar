@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useT } from "@/lib/i18n";
 
 export function Header() {
   const { user } = useAuth();
+  const t = useT();
   const [rating, setRating] = useState<number | null>(null);
   const [name, setName] = useState<string>("");
 
@@ -29,7 +31,7 @@ export function Header() {
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4">
         <Link
           to="/"
-          aria-label="Nuqta va Nazar — на главную"
+          aria-label={t("header.brandAria")}
           className="flex items-center gap-2 rounded-[14px] bg-[#1A1A2E] pl-2 pr-3 py-1.5"
           style={{ border: "1.5px solid #F4F1EA" }}
         >
@@ -67,7 +69,7 @@ export function Header() {
               to="/auth"
               className="rounded-full bg-[color:var(--color-ink)] px-4 py-1.5 text-[13px] font-medium text-white"
             >
-              Войти
+              {t("header.signIn")}
             </Link>
           )}
         </div>

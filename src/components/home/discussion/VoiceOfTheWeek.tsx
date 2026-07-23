@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { getVisitorId } from "@/lib/visitor";
 import { createVoiceNote, knockVoiceNote, type VoiceNote } from "@/lib/home.functions";
+import { useI18n } from "@/lib/i18n";
+import { tPlural } from "@/lib/i18n/translations";
 
 const MAX_SEC = 60;
 
@@ -16,6 +18,7 @@ export function VoiceOfTheWeek({
   weekId: string;
   initial: VoiceNote[];
 }) {
+  const { t, lang } = useI18n();
   const [notes, setNotes] = useState<VoiceNote[]>(initial);
   const [knocked, setKnocked] = useState<Record<string, boolean>>({});
   const { user } = useAuth();
@@ -28,7 +31,7 @@ export function VoiceOfTheWeek({
       setNotes((ns) => ns.map((n) => (n.id === id ? { ...n, knock_count: next } : n)));
     } catch (e: any) {
       setKnocked((k) => ({ ...k, [id]: false }));
-      toast.error(e?.message ?? "Не получилось");
+      toast.error(e?.message ?? "—");
     }
   };
 
@@ -39,14 +42,12 @@ export function VoiceOfTheWeek({
   return (
     <section className="rounded-[16px] bg-white hairline p-4">
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-[15px] font-semibold text-foreground">Голос недели</h3>
+        <h3 className="text-[15px] font-semibold text-foreground">{t("voice.title")}</h3>
         <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
-          {notes.length} {plural(notes.length, "запись", "записи", "записей")}
+          {tPlural(lang, notes.length, "voice.records")}
         </span>
       </div>
-      <p className="mt-1 text-[12.5px] text-foreground/70">
-        Скажи, что думаешь по теме прошлой недели — до 60 секунд.
-      </p>
+      <p className="mt-1 text-[12.5px] text-foreground/70">{t("voice.subtitle")}</p>
 
       <div className="mt-3">
         {user ? (
@@ -56,7 +57,7 @@ export function VoiceOfTheWeek({
             to="/auth"
             className="flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-[13.5px] font-semibold text-white active:scale-[0.99]"
           >
-            <Mic className="h-4 w-4" /> Войди, чтобы записать голос
+            <Mic className="h-4 w-4" /> {t("voice.signInPrompt")}
           </Link>
         )}
       </div>
@@ -69,7 +70,7 @@ export function VoiceOfTheWeek({
                 <AudioPlayer url={n.audio_url} />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-[13px] text-foreground">
-                    {n.transcript_preview ?? "Голосовая реакция"}
+                    {n.transcript_preview ?? t("voice.fallbackTitle")}
                   </div>
                   <div className="mt-0.5 flex items-center gap-1.5 font-mono text-[11px] tabular-nums text-muted-foreground">
                     <span className="font-sans font-medium text-foreground/80">{n.author_name}</span>
@@ -138,6 +139,7 @@ function Recorder({
   weekId: string;
   onUploaded: (n: VoiceNote) => void;
 }) {
+  const { t } = useI18n();
   const [recording, setRecording] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [elapsed, setElapsed] = useState(0);
@@ -180,7 +182,7 @@ function Recorder({
         if (s >= MAX_SEC) stop();
       }, 200);
     } catch {
-      toast.error("Нужен доступ к микрофону");
+      toast.error(t("voice.needMic"));
     }
   };
 
@@ -196,7 +198,7 @@ function Recorder({
     try {
       const { data: sess } = await supabase.auth.getUser();
       const userId = sess.user?.id;
-      if (!userId) throw new Error("Требуется вход");
+      if (!userId) throw new Error("auth required");
       const ext = mime.includes("mp4") ? "m4a" : "webm";
       const path = `${userId}/${weekId}-${Date.now()}.${ext}`;
       const { error: upErr } = await supabase.storage.from("week-voice").upload(path, blob, {
@@ -208,9 +210,9 @@ function Recorder({
         data: { week_id: weekId, audio_path: path, duration_sec: duration },
       });
       onUploaded(note);
-      toast.success("Голос добавлен");
+      toast.success(t("voice.uploaded"));
     } catch (e: any) {
-      toast.error(e?.message ?? "Не удалось загрузить");
+      toast.error(e?.message ?? t("voice.uploadFail"));
     } finally {
       setUploading(false);
       setElapsed(0);
@@ -220,7 +222,7 @@ function Recorder({
   if (uploading) {
     return (
       <div className="flex items-center justify-center gap-2 rounded-full bg-muted px-4 py-3 text-[13.5px] font-semibold text-foreground/70">
-        <Loader2 className="h-4 w-4 animate-spin" /> Загружаем…
+        <Loader2 className="h-4 w-4 animate-spin" /> {t("voice.uploading")}
       </div>
     );
   }
@@ -232,7 +234,7 @@ function Recorder({
         className="flex w-full items-center justify-center gap-2 rounded-full bg-[color:var(--color-ink)] px-4 py-3 text-[13.5px] font-semibold text-white active:scale-[0.99]"
       >
         <Square className="h-4 w-4 fill-white" />
-        Остановить · <span className="font-mono tabular-nums">{elapsed}s / {MAX_SEC}s</span>
+        {t("voice.stop")} · <span className="font-mono tabular-nums">{elapsed}s / {MAX_SEC}s</span>
       </button>
     );
   }
@@ -242,7 +244,7 @@ function Recorder({
       onClick={start}
       className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-[13.5px] font-semibold text-white active:scale-[0.99]"
     >
-      <Mic className="h-4 w-4" /> Добавь свой голос — 60 сек
+      <Mic className="h-4 w-4" /> {t("voice.start")}
     </button>
   );
 }
@@ -251,13 +253,4 @@ function formatDur(s: number) {
   const m = Math.floor(s / 60);
   const r = s % 60;
   return m > 0 ? `${m}:${String(r).padStart(2, "0")}` : `${r}s`;
-}
-
-function plural(n: number, one: string, few: string, many: string) {
-  const mod100 = n % 100;
-  const mod10 = n % 10;
-  if (mod100 >= 11 && mod100 <= 14) return many;
-  if (mod10 === 1) return one;
-  if (mod10 >= 2 && mod10 <= 4) return few;
-  return many;
 }
