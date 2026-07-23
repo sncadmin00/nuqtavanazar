@@ -32,8 +32,8 @@ export function Header() {
         <Link
           to="/"
           aria-label={t("header.brandAria")}
-          className="flex items-center gap-2 rounded-[14px] pl-2 pr-3 py-1.5"
-          style={{ background: "#0A0E29", border: "1.5px solid #FFFFFF" }}
+          className="flex items-center gap-2.5 rounded-[12px] pl-2.5 pr-3 py-1.5"
+          style={{ background: "#0A0E29" }}
         >
           <svg viewBox="0 0 100 92" width="22" height="20.24" aria-hidden="true">
             <circle cx="14.81" cy="20.33" r="6.98" fill="#BEBBBC"/>
@@ -42,13 +42,15 @@ export function Header() {
             <circle cx="85.03" cy="69.16" r="7.88" fill="#FFFFFF"/>
             <circle cx="45.93" cy="42.58" r="10.69" fill="#F66434"/>
           </svg>
+          <span aria-hidden="true" style={{ width: 1, height: 20, background: "#FFFFFF", opacity: 0.9 }} />
           <span
-            className="text-[15px] leading-none"
-            style={{ fontFamily: "'Federo', serif", fontWeight: 400, color: "#FFFFFF" }}
+            className="text-[14px] leading-none"
+            style={{ fontFamily: "'Audiowide', system-ui, sans-serif", fontWeight: 400, color: "#FFFFFF", letterSpacing: "0.01em" }}
           >
             nuqta va nazar
           </span>
         </Link>
+
 
 
         <div className="flex items-center gap-1">
