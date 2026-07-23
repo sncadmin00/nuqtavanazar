@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export function Header() {
   const { user } = useAuth();
@@ -47,26 +48,29 @@ export function Header() {
           </span>
         </Link>
 
-        {user ? (
-          <Link
-            to="/profile"
-            className="flex items-center gap-2 rounded-full hairline bg-white pl-1 pr-3 py-1"
-          >
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-[color:var(--color-ink)] text-[11px] font-semibold text-white">
-              {initial}
-            </span>
-            <span className="font-mono text-[13px] font-medium tabular-nums text-foreground">
-              {rating ?? "—"}
-            </span>
-          </Link>
-        ) : (
-          <Link
-            to="/auth"
-            className="rounded-full bg-[color:var(--color-ink)] px-4 py-1.5 text-[13px] font-medium text-white"
-          >
-            Войти
-          </Link>
-        )}
+        <div className="flex items-center gap-1">
+          <LanguageSwitcher />
+          {user ? (
+            <Link
+              to="/profile"
+              className="flex items-center gap-2 rounded-full hairline bg-white pl-1 pr-3 py-1"
+            >
+              <span className="grid h-7 w-7 place-items-center rounded-full bg-[color:var(--color-ink)] text-[11px] font-semibold text-white">
+                {initial}
+              </span>
+              <span className="font-mono text-[13px] font-medium tabular-nums text-foreground">
+                {rating ?? "—"}
+              </span>
+            </Link>
+          ) : (
+            <Link
+              to="/auth"
+              className="rounded-full bg-[color:var(--color-ink)] px-4 py-1.5 text-[13px] font-medium text-white"
+            >
+              Войти
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );
