@@ -64,7 +64,7 @@ export type AdminRoundtable = {
   listeners: number;
   knock_count: number;
   recording_url: string | null;
-  participants: unknown;
+  participants: any;
 };
 
 export type WeekContent = {
@@ -132,7 +132,7 @@ export const upsertWeek = createServerFn({ method: "POST" })
     // topic_reveal_at = event_at - 48h (часовой пояс irrelevant для ISO)
     const eventAt = new Date(data.event_at);
     const reveal = new Date(eventAt.getTime() - 48 * 60 * 60 * 1000).toISOString();
-    const payload: Record<string, unknown> = {
+    const payload = {
       week_start: data.week_start,
       topic: data.topic ?? null,
       event_at: data.event_at,
@@ -141,7 +141,7 @@ export const upsertWeek = createServerFn({ method: "POST" })
       ai_summary: data.ai_summary ?? null,
       pro_percent: data.pro_percent ?? 0,
       con_percent: data.con_percent ?? 0,
-    };
+    } as any;
     let row: AdminWeek | null = null;
     if (data.id) {
       const { data: updated, error } = await context.supabase
@@ -440,8 +440,8 @@ export const upsertRoundtable = createServerFn({ method: "POST" })
       listeners: data.listeners ?? 0,
       knock_count: data.knock_count ?? 0,
       recording_url: data.recording_url ?? null,
-      participants: data.participants ?? [],
-    };
+      participants: (data.participants as any) ?? [],
+    } as any;
     let row: AdminRoundtable | null = null;
     if (data.id) {
       const { data: u, error } = await context.supabase
