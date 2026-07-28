@@ -11,9 +11,10 @@ export function Header() {
   const t = useT();
   const [rating, setRating] = useState<number | null>(null);
   const [name, setName] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (!user) { setRating(null); setName(""); return; }
+    if (!user) { setRating(null); setName(""); setIsAdmin(false); return; }
     supabase
       .from("player_ratings")
       .select("mastery, display_name, avatar_url")
@@ -23,6 +24,13 @@ export function Header() {
         setRating(data?.mastery ?? 1000);
         setName(data?.display_name ?? (user.email?.split("@")[0] ?? ""));
       });
+    supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .eq("role", "admin")
+      .maybeSingle()
+      .then(({ data }) => setIsAdmin(!!data));
   }, [user]);
 
   const initial = (name || user?.email || "?").slice(0, 1).toUpperCase();
@@ -44,6 +52,15 @@ export function Header() {
 
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="flex items-center gap-1 rounded-full bg-[color:var(--color-ink)] px-3 py-1.5 text-[12px] font-medium text-white"
+              aria-label="Админ-панель"
+            >
+              Админ
+            </Link>
+          )}
           {user ? (
             <Link
               to="/profile"
