@@ -52,6 +52,15 @@ export function Header() {
 
         <div className="flex items-center gap-1">
           <LanguageSwitcher />
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="flex items-center gap-1 rounded-full bg-[color:var(--color-ink)] px-3 py-1.5 text-[12px] font-medium text-white"
+              aria-label="Админ-панель"
+            >
+              Админ
+            </Link>
+          )}
           {user ? (
             <Link
               to="/profile"
