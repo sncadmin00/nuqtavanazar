@@ -196,6 +196,7 @@ function ArchivePage() {
             <p className="text-[13px] text-muted-foreground">Пока нет рефлексий.</p>
             <Link
               to="/case-builder"
+              search={{ side: undefined, topic: undefined }}
               className="mt-3 inline-flex items-center gap-2 rounded-full bg-[color:var(--color-ink)] px-4 py-2 text-[13px] font-semibold text-white"
             >
               Собрать кейс

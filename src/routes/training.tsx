@@ -159,7 +159,7 @@ function TrainingPage() {
     if (dice.status !== "ready") return;
     navigate({
       to: "/case-builder",
-      search: { topic: dice.motion },
+      search: { side: undefined, topic: dice.motion },
     });
   };
 
@@ -330,6 +330,7 @@ function TrainingPage() {
                     </button>
                     <Link
                       to="/case-builder"
+                      search={{ side: undefined, topic: undefined }}
                       className="text-[11.5px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
                     >
                       или впиши свою тему
@@ -346,7 +347,9 @@ function TrainingPage() {
                     <Link
                       to="/case-builder"
                       search={
-                        dice.status === "ready" ? { topic: dice.motion } : undefined
+                        dice.status === "ready"
+                          ? { side: undefined, topic: dice.motion }
+                          : { side: undefined, topic: undefined }
                       }
                       onClick={() => setCaseStarted(true)}
                       className="group inline-flex items-center gap-2"
