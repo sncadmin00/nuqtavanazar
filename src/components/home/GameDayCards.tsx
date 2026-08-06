@@ -43,12 +43,21 @@ export function GameDayCards({ state }: { state: HomeState }) {
     };
   }, [user]);
 
+  const duelWindow: HomeState["duel_window"] = state.duel_window ?? {
+    open: false,
+    week_id: null,
+    topic: null,
+    event_at: null,
+    event_ends_at: null,
+    reason: "no_week",
+  };
+
   return (
     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-      <DuelQueueCard window={state.duel_window} waiting={state.waiting_duels} />
+      <DuelQueueCard window={duelWindow} waiting={state.waiting_duels ?? 0} />
       <TeamBattleCard team={team} loading={teamLoading} />
-      <TournamentCard tournaments={state.active_tournaments} />
-      <AIWarmupCard topic={state.duel_window.topic} />
+      <TournamentCard tournaments={state.active_tournaments ?? []} />
+      <AIWarmupCard topic={duelWindow.topic} />
     </section>
   );
 }
