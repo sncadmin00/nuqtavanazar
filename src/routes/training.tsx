@@ -203,10 +203,7 @@ function TrainingPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-4 space-y-4">
       {/* 1. Header row */}
-      <div className="flex items-center justify-between">
-        <div className="text-[18px] font-semibold tracking-tight">
-          nuqta va na<span className="text-primary">z</span>ar
-        </div>
+      <div className="flex items-center justify-end">
         <div
           className={
             "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-semibold " +
