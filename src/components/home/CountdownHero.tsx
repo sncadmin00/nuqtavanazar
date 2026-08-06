@@ -24,7 +24,10 @@ export function CountdownHero({ week }: { week: WeekPublic | null }) {
   }, [eventAt]);
 
   const revealed = !!week?.topic;
-  const dayLabel = t(`day.${eventAt.getDay()}`);
+  const [dayIdx, setDayIdx] = useState<number | null>(null);
+  useEffect(() => setDayIdx(eventAt.getDay()), [eventAt]);
+  const dayLabel = dayIdx === null ? "" : t(`day.${dayIdx}`);
+
 
   const prevRevealed = useRef(revealed);
   const [revealTick, setRevealTick] = useState(0);

@@ -91,30 +91,34 @@ function HomePage() {
 
       {state.previous_week && <PrevWeekBanner week={state.previous_week} />}
 
-      <Link
-        to="/training"
-        className="block rounded-[16px] hairline bg-white p-4 active:scale-[0.99]"
-      >
-        <div className="flex items-center justify-between">
-          <div className="formula-motif !text-foreground/70">{t("home.training.title")}</div>
-          <span
-            className={
-              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold " +
-              (streak.current > 0
-                ? "bg-primary/15 text-primary"
-                : "bg-muted text-muted-foreground")
-            }
-          >
-            <Flame className="h-3.5 w-3.5" />
-            {streak.current > 0
-              ? tPlural(lang, streak.current, "home.streak.days")
-              : t("home.streak.none")}
-          </span>
-        </div>
-        <div className="mt-3">
-          <WeekStrip days={streak.weekDays} tone="light" />
-        </div>
-      </Link>
+      {state.phase !== "game_day" && (
+        <Link
+          to="/training"
+          className="block rounded-[16px] hairline bg-white p-4 active:scale-[0.99]"
+        >
+          <div className="flex items-center justify-between">
+            <div className="formula-motif !text-foreground/70">{t("home.training.title")}</div>
+            <span
+              className={
+                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-semibold " +
+                (streak.current > 0
+                  ? "bg-primary/15 text-primary"
+                  : "bg-muted text-muted-foreground")
+              }
+            >
+              <Flame className="h-3.5 w-3.5" />
+              {streak.current > 0
+                ? tPlural(lang, streak.current, "home.streak.days")
+                : t("home.streak.none")}
+            </span>
+          </div>
+          <div className="mt-3">
+            <WeekStrip days={streak.weekDays} tone="light" />
+          </div>
+        </Link>
+      )}
+
+
 
 
       <PrimaryActions />
