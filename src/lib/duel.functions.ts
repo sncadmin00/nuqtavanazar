@@ -592,17 +592,25 @@ export const getDuelRoomToken = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: duel } = await supabase
       .from("duels")
-      .select("id, room_name, pro_user_id, con_user_id, pro_name, con_name")
+      .select(
+        "id, room_name, pro_user_id, con_user_id, pro_user2_id, con_user2_id, pro_name, con_name, pro_name2, con_name2",
+      )
       .eq("id", data.duel_id)
       .maybeSingle();
     if (!duel) throw new Error("Дуэль не найдена");
-    if (duel.pro_user_id !== userId && duel.con_user_id !== userId) throw new Error("Вы не участник дуэли");
+    const seats: Record<string, string> = {};
+    if (duel.pro_user_id) seats[duel.pro_user_id] = duel.pro_name ?? "За";
+    if (duel.con_user_id) seats[duel.con_user_id] = duel.con_name ?? "Против";
+    if (duel.pro_user2_id) seats[duel.pro_user2_id] = duel.pro_name2 ?? "За 2";
+    if (duel.con_user2_id) seats[duel.con_user2_id] = duel.con_name2 ?? "Против 2";
+    if (!seats[userId]) throw new Error("Вы не участник дуэли");
 
     const { createRoomToken, livekitConfigured, livekitUrl } = await import("@/lib/livekit.server");
     if (!livekitConfigured()) return { unavailable: true };
 
     const room = duel.room_name ?? `duel-${duel.id}`;
-    const name = duel.pro_user_id === userId ? (duel.pro_name ?? "За") : (duel.con_name ?? "Против");
+    const name = seats[userId];
     const token = await createRoomToken(room, userId, name);
+
     return { url: livekitUrl(), token, room };
   });
