@@ -124,3 +124,38 @@ export async function applyDuelElo(winnerId: string, loserId: string, names: Rec
   );
   return delta;
 }
+
+const STT_URL = "https://ai.gateway.lovable.dev/v1/audio/transcriptions";
+const STT_MODEL = "openai/gpt-4o-mini-transcribe";
+
+/** Скачивает аудио-ход из публичного bucket и возвращает расшифровку. */
+export async function transcribeAudioFromStorage(audioPath: string): Promise<string> {
+  const key = process.env["LOVABLE_API_KEY"];
+  if (!key) throw new Error("LOVABLE_API_KEY missing");
+  const base = process.env["SUPABASE_URL"];
+  if (!base) throw new Error("SUPABASE_URL missing");
+
+  const fileUrl = `${base}/storage/v1/object/public/duel-audio/${audioPath}`;
+  const fileRes = await fetch(fileUrl);
+  if (!fileRes.ok) throw new Error("Не удалось получить аудио-запись хода");
+  const blob = await fileRes.blob();
+  if (blob.size < 2048) throw new Error("Запись слишком короткая");
+
+  const form = new FormData();
+  form.append("model", STT_MODEL);
+  form.append("file", blob, "turn.wav");
+
+  const res = await fetch(STT_URL, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${key}` },
+    body: form,
+  });
+  if (!res.ok) {
+    const txt = await res.text().catch(() => "");
+    if (res.status === 429) throw new Error("Слишком много запросов. Попробуйте через минуту.");
+    if (res.status === 402) throw new Error("Закончились AI-кредиты. Обратитесь к администратору.");
+    throw new Error(`Расшифровка недоступна (${res.status}): ${txt.slice(0, 160)}`);
+  }
+  const data = (await res.json()) as { text?: string };
+  return (data.text ?? "").trim();
+}
