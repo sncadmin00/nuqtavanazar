@@ -19,6 +19,14 @@ const ru: Dict = {
   // Bottom tabs
   "tabs.home": "Главная",
   "tabs.learn": "Обучение",
+  "learn.title": "Обучение",
+  "learn.subtitle": "Короткие модули: формула спора, критерии, форматы раундов и ораторское мастерство.",
+  "learn.module": "Модуль",
+  "learn.minutes": "мин",
+  "learn.back": "К списку модулей",
+  "learn.completed": "Пройдено",
+  "learn.markComplete": "Отметить пройденным",
+
   "tabs.debateDay": "День дебатов",
   "tabs.training": "Тренировка",
   "tabs.profile": "Профиль",
@@ -170,6 +178,14 @@ const uz: Dict = {
 
   "tabs.home": "Bosh sahifa",
   "tabs.learn": "Oʻqish",
+  "learn.title": "Oʻqish",
+  "learn.subtitle": "Qisqa modullar: bahs formulasi, mezonlar, raund formatlari va notiqlik sanʼati.",
+  "learn.module": "Modul",
+  "learn.minutes": "daq",
+  "learn.back": "Modullar roʻyxatiga",
+  "learn.completed": "Tugallandi",
+  "learn.markComplete": "Tugallandi deb belgilash",
+
   "tabs.debateDay": "Bahs kuni",
   "tabs.training": "Mashq",
   "tabs.profile": "Kabinet",
@@ -305,6 +321,14 @@ const en: Dict = {
 
   "tabs.home": "Home",
   "tabs.learn": "Learn",
+  "learn.title": "Learn",
+  "learn.subtitle": "Short modules: the argument formula, criteria, round formats and public speaking.",
+  "learn.module": "Module",
+  "learn.minutes": "min",
+  "learn.back": "Back to modules",
+  "learn.completed": "Completed",
+  "learn.markComplete": "Mark as complete",
+
   "tabs.debateDay": "Debate Day",
   "tabs.training": "Practice",
   "tabs.profile": "Profile",
