@@ -6,6 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchTopRatings } from "@/lib/debate-data";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { getStreak, type StreakInfo } from "@/lib/streak";
+import {
+  Avatar,
+  AchievementsCard,
+  BattleHistoryCard,
+  TeamHistoryCard,
+} from "@/components/profile/ProfileSections";
+
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
