@@ -151,6 +151,10 @@ function ProfilePage() {
         </Link>
       </section>
 
+      <AchievementsCard userId={user.id} teamIds={teamIds} />
+      <TeamHistoryCard userId={user.id} onTeams={setTeamIds} />
+      <BattleHistoryCard userId={user.id} />
+
 
       {/* Tabs */}
       <div className="flex gap-1 rounded-full hairline bg-white p-1">
