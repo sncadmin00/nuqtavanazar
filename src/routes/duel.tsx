@@ -226,7 +226,11 @@ function DuelPage() {
     }
     return (
       <Shell>
-        <Lobby win={win} busy={busy} onEnter={enter} />
+        <>
+          <Lobby win={win} busy={busy} onEnter={enter} />
+          <ChallengeHub />
+        </>
+
       </Shell>
     );
   }
