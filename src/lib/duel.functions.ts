@@ -1,13 +1,28 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
-  TOTAL_TURNS,
   PREP_SECONDS,
   MIN_TURN_CHARS,
   MAX_TURN_CHARS,
-  secondsForTurn,
-  sideForTurn,
+  totalTurns,
+  turnSpec,
+  type TurnSpec,
 } from "@/lib/duel-config";
+
+type DuelSeats = {
+  format: string;
+  pro_user_id: string;
+  con_user_id: string | null;
+  pro_user2_id: string | null;
+  con_user2_id: string | null;
+};
+
+/** Кто держит слово на этом ходу */
+function userForSpec(duel: DuelSeats, spec: TurnSpec): string | null {
+  if (spec.side === "pro") return spec.seat === 2 ? (duel.pro_user2_id ?? duel.pro_user_id) : duel.pro_user_id;
+  return spec.seat === 2 ? (duel.con_user2_id ?? duel.con_user_id) : duel.con_user_id;
+}
+
 
 export type DuelWindow = {
   open: boolean;
