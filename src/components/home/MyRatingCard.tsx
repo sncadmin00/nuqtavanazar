@@ -53,21 +53,30 @@ export function MyRatingCard() {
   const leagueLabel = t(`league.${data.league}`);
 
   return (
-    <Link to="/profile" className="flex items-center gap-3 rounded-[16px] hairline bg-white p-4">
-      <div className="grid h-11 w-11 place-items-center rounded-full bg-[color:var(--color-ink)] text-sm font-semibold text-white">
-        {name.slice(0, 1).toUpperCase()}
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-[14px] font-medium">{name}</div>
-        <div className="text-[12px] text-muted-foreground">{leagueLabel}</div>
-      </div>
-      <div className="text-right">
-        <div className="font-display text-[24px] leading-none tabular-nums">{data.mastery}</div>
-        <div className={`flex items-center justify-end gap-0.5 text-[11px] font-medium ${trendColor}`}>
-          <TrendIcon className="h-3 w-3" />
-          <span className="font-mono tabular-nums">{trend > 0 ? "+" : ""}{trend}</span>
+    <div className="rounded-[16px] hairline bg-white">
+      <Link to="/profile" className="flex items-center gap-3 p-4">
+        <div className="grid h-11 w-11 place-items-center rounded-full bg-[color:var(--color-ink)] text-sm font-semibold text-white">
+          {name.slice(0, 1).toUpperCase()}
         </div>
-      </div>
-    </Link>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[14px] font-medium">{name}</div>
+          <div className="text-[12px] text-muted-foreground">{leagueLabel}</div>
+        </div>
+        <div className="text-right">
+          <div className="font-display text-[24px] leading-none tabular-nums">{data.mastery}</div>
+          <div className={`flex items-center justify-end gap-0.5 text-[11px] font-medium ${trendColor}`}>
+            <TrendIcon className="h-3 w-3" />
+            <span className="font-mono tabular-nums">{trend > 0 ? "+" : ""}{trend}</span>
+          </div>
+        </div>
+      </Link>
+      <Link
+        to="/ratings"
+        className="block border-t border-[color:var(--color-border)] px-4 py-2.5 text-[12.5px] font-medium text-primary"
+      >
+        Таблица рейтинга →
+      </Link>
+    </div>
   );
 }
+

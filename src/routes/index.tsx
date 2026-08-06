@@ -14,6 +14,8 @@ import { RetroPoll } from "@/components/home/discussion/RetroPoll";
 import { WeekRankingFull } from "@/components/home/discussion/WeekRankingFull";
 import { VoiceOfTheWeek } from "@/components/home/discussion/VoiceOfTheWeek";
 import { WeekStrip } from "@/components/WeekStrip";
+import { ChallengeHub } from "@/components/challenge/ChallengeHub";
+
 import { getStreak, type StreakInfo } from "@/lib/streak";
 import { getHomeState, type HomeState, type WeekPublic } from "@/lib/home.functions";
 import { useI18n } from "@/lib/i18n";
@@ -120,12 +122,14 @@ function HomePage() {
 
       {state.phase === "game_day" ? (
         <>
+          <ChallengeHub />
           <MatchesStatus matches={state.matches} revealed={revealed} />
           <RoundtableCard state={state.roundtable} />
         </>
       ) : (
         <DiscussionMode state={state} />
       )}
+
     </div>
   );
 }

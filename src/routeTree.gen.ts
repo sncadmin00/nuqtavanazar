@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrainingRouteImport } from './routes/training'
 import { Route as SparringRouteImport } from './routes/sparring'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RatingsRouteImport } from './routes/ratings'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as FreeTalkRouteImport } from './routes/free-talk'
@@ -44,6 +45,11 @@ const SparringRoute = SparringRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RatingsRoute = RatingsRouteImport.update({
+  id: '/ratings',
+  path: '/ratings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -149,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/free-talk': typeof FreeTalkRoute
   '/learn': typeof LearnRouteWithChildren
   '/profile': typeof ProfileRouteWithChildren
+  '/ratings': typeof RatingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sparring': typeof SparringRoute
   '/training': typeof TrainingRoute
@@ -170,6 +177,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/free-talk': typeof FreeTalkRoute
   '/profile': typeof ProfileRouteWithChildren
+  '/ratings': typeof RatingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sparring': typeof SparringRoute
   '/training': typeof TrainingRoute
@@ -194,6 +202,7 @@ export interface FileRoutesById {
   '/free-talk': typeof FreeTalkRoute
   '/learn': typeof LearnRouteWithChildren
   '/profile': typeof ProfileRouteWithChildren
+  '/ratings': typeof RatingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sparring': typeof SparringRoute
   '/training': typeof TrainingRoute
@@ -218,6 +227,7 @@ export interface FileRouteTypes {
     | '/free-talk'
     | '/learn'
     | '/profile'
+    | '/ratings'
     | '/sitemap.xml'
     | '/sparring'
     | '/training'
@@ -239,6 +249,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/free-talk'
     | '/profile'
+    | '/ratings'
     | '/sitemap.xml'
     | '/sparring'
     | '/training'
@@ -262,6 +273,7 @@ export interface FileRouteTypes {
     | '/free-talk'
     | '/learn'
     | '/profile'
+    | '/ratings'
     | '/sitemap.xml'
     | '/sparring'
     | '/training'
@@ -286,6 +298,7 @@ export interface RootRouteChildren {
   FreeTalkRoute: typeof FreeTalkRoute
   LearnRoute: typeof LearnRouteWithChildren
   ProfileRoute: typeof ProfileRouteWithChildren
+  RatingsRoute: typeof RatingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SparringRoute: typeof SparringRoute
   TrainingRoute: typeof TrainingRoute
@@ -313,6 +326,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ratings': {
+      id: '/ratings'
+      path: '/ratings'
+      fullPath: '/ratings'
+      preLoaderRoute: typeof RatingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -492,6 +512,7 @@ const rootRouteChildren: RootRouteChildren = {
   FreeTalkRoute: FreeTalkRoute,
   LearnRoute: LearnRouteWithChildren,
   ProfileRoute: ProfileRouteWithChildren,
+  RatingsRoute: RatingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SparringRoute: SparringRoute,
   TrainingRoute: TrainingRoute,
@@ -500,13 +521,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

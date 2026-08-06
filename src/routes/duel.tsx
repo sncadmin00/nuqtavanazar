@@ -14,6 +14,8 @@ import {
   getDuelRoomToken,
 } from "@/lib/duel.functions";
 import { startWavRecording, type WavRecorder } from "@/lib/audioRecorder";
+import { ChallengeHub } from "@/components/challenge/ChallengeHub";
+
 import {
   TOTAL_TURNS,
   PREP_SECONDS,
@@ -226,7 +228,11 @@ function DuelPage() {
     }
     return (
       <Shell>
-        <Lobby win={win} busy={busy} onEnter={enter} />
+        <>
+          <Lobby win={win} busy={busy} onEnter={enter} />
+          <ChallengeHub />
+        </>
+
       </Shell>
     );
   }

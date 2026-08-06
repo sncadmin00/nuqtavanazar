@@ -130,6 +130,69 @@ export type Database = {
         }
         Relationships: []
       }
+      duel_challenges: {
+        Row: {
+          created_at: string
+          duel_id: string | null
+          expires_at: string | null
+          from_name: string
+          from_user_id: string
+          id: string
+          kind: string
+          responded_at: string | null
+          status: string
+          to_name: string
+          to_user_id: string
+          updated_at: string
+          week_id: string
+        }
+        Insert: {
+          created_at?: string
+          duel_id?: string | null
+          expires_at?: string | null
+          from_name?: string
+          from_user_id: string
+          id?: string
+          kind?: string
+          responded_at?: string | null
+          status?: string
+          to_name?: string
+          to_user_id: string
+          updated_at?: string
+          week_id: string
+        }
+        Update: {
+          created_at?: string
+          duel_id?: string | null
+          expires_at?: string | null
+          from_name?: string
+          from_user_id?: string
+          id?: string
+          kind?: string
+          responded_at?: string | null
+          status?: string
+          to_name?: string
+          to_user_id?: string
+          updated_at?: string
+          week_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duel_challenges_duel_id_fkey"
+            columns: ["duel_id"]
+            isOneToOne: false
+            referencedRelation: "duels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duel_challenges_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       duel_turns: {
         Row: {
           audio_path: string | null
@@ -920,6 +983,7 @@ export type Database = {
         Args: { _visitor_id: string; _voice_note_id: string }
         Returns: number
       }
+      start_challenge_duel: { Args: { _challenge_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "user"
