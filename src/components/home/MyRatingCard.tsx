@@ -70,12 +70,18 @@ export function MyRatingCard() {
           </div>
         </div>
       </Link>
-      <Link
-        to="/ratings"
-        className="block border-t border-[color:var(--color-border)] px-4 py-2.5 text-[12.5px] font-medium text-primary"
-      >
-        Таблица рейтинга →
-      </Link>
+      <div className="grid grid-cols-2 border-t border-[color:var(--color-border)]">
+        <Link to="/ratings" className="px-4 py-2.5 text-[12.5px] font-medium text-primary">
+          Таблица рейтинга →
+        </Link>
+        <Link
+          to="/tournaments"
+          className="border-l border-[color:var(--color-border)] px-4 py-2.5 text-[12.5px] font-medium text-primary"
+        >
+          Турниры →
+        </Link>
+      </div>
+
     </div>
   );
 }

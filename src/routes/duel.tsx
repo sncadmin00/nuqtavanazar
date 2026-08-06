@@ -15,6 +15,7 @@ import {
 } from "@/lib/duel.functions";
 import { startWavRecording, type WavRecorder } from "@/lib/audioRecorder";
 import { ChallengeHub } from "@/components/challenge/ChallengeHub";
+import { syncTournamentMatch } from "@/lib/tournaments.functions";
 
 import {
   TOTAL_TURNS,
@@ -61,6 +62,7 @@ type Duel = {
   prep_ends_at: string | null;
   verdict: any;
   winner_user_id: string | null;
+  tournament_match_id: string | null;
 };
 
 type Turn = { id: string; idx: number; side: string; text: string; user_id: string; duration_sec: number | null };
@@ -103,7 +105,9 @@ function DuelPage() {
         .from("duels")
         .select("id")
         .in("status", ["waiting", "live", "judging"])
-        .or(`pro_user_id.eq.${user.id},con_user_id.eq.${user.id}`)
+        .or(
+          `pro_user_id.eq.${user.id},con_user_id.eq.${user.id},pro_user2_id.eq.${user.id},con_user2_id.eq.${user.id}`,
+        )
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -113,6 +117,7 @@ function DuelPage() {
       }
     })();
   }, [user, load]);
+
 
   useEffect(() => {
     if (!duelId) return;
@@ -139,12 +144,18 @@ function DuelPage() {
     if (!duel || duel.status !== "judging" || judgingRef.current) return;
     judgingRef.current = true;
     finishDuel({ data: { duel_id: duel.id } })
-      .then(() => load(duel.id))
+      .then(async () => {
+        if (duel.tournament_match_id) {
+          await syncTournamentMatch({ data: { match_id: duel.tournament_match_id } }).catch(() => {});
+        }
+        await load(duel.id);
+      })
       .catch((e: any) => toast.error(e?.message ?? "Судья недоступен"))
       .finally(() => {
         judgingRef.current = false;
       });
   }, [duel, load]);
+
 
   const enter = async () => {
     setBusy(true);

@@ -29,6 +29,7 @@ import {
 } from "@/lib/admin.functions";
 import { Header } from "@/components/Header";
 import { AchievementsTab } from "@/components/admin/AchievementsTab";
+import { TournamentsTab } from "@/components/admin/TournamentsTab";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -40,7 +41,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-type Tab = "weeks" | "cadence" | "content" | "roundtables" | "awards" | "stats";
+type Tab = "weeks" | "cadence" | "content" | "roundtables" | "tournaments" | "awards" | "stats";
 
 function AdminPage() {
   const [role, setRole] = useState<"admin" | "user" | "loading">("loading");
@@ -102,6 +103,7 @@ function AdminPage() {
             ["cadence", "Каденс"],
             ["content", "Контент"],
             ["roundtables", "Столы"],
+            ["tournaments", "Турниры"],
             ["awards", "Награды"],
             ["stats", "Сводка"],
           ] as [Tab, string][]).map(([id, label]) => (
@@ -124,6 +126,7 @@ function AdminPage() {
           {tab === "cadence" && <CadenceTab />}
           {tab === "content" && <ContentTab />}
           {tab === "roundtables" && <RoundtablesTab />}
+          {tab === "tournaments" && <TournamentsTab />}
           {tab === "awards" && <AchievementsTab />}
           {tab === "stats" && <StatsTab />}
         </div>
