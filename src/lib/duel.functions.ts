@@ -132,6 +132,7 @@ export const enterDuel = createServerFn({ method: "POST" })
       .from("duels")
       .select("id, pro_user_id, pro_name, room_name")
       .eq("status", "waiting")
+      .eq("format", "1v1")
       .eq("week_id", win.week_id)
       .neq("pro_user_id", userId)
       .order("created_at", { ascending: true })
@@ -142,7 +143,8 @@ export const enterDuel = createServerFn({ method: "POST" })
       // Кубик: кто получает сторону «За»
       const joinerIsPro = Math.random() < 0.5;
       const prepEnds = new Date(Date.now() + PREP_SECONDS * 1000);
-      const firstTurnEnds = new Date(prepEnds.getTime() + secondsForTurn(1) * 1000);
+      const firstTurnEnds = new Date(prepEnds.getTime() + turnSpec("1v1", 1).seconds * 1000);
+
 
       const proId = joinerIsPro ? userId : open.pro_user_id;
       const proName = joinerIsPro ? myName : (open.pro_name ?? "Спикер");
