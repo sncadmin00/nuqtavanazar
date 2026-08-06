@@ -1,33 +1,42 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Dice5, Gavel, Loader2, Send, Swords, Trophy, Users } from "lucide-react";
+import { ArrowLeft, CalendarClock, Gavel, Loader2, Mic, Square, Swords, Trophy, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
-import { generateMotion } from "@/lib/ai.functions";
-import { findOrCreateDuel, cancelDuel, submitDuelTurn, finishDuel } from "@/lib/duel.functions";
+import {
+  getDuelWindow,
+  enterDuel,
+  cancelDuel,
+  submitDuelTurn,
+  transcribeDuelAudio,
+  finishDuel,
+  getDuelRoomToken,
+} from "@/lib/duel.functions";
+import { startWavRecording, type WavRecorder } from "@/lib/audioRecorder";
 import {
   TOTAL_TURNS,
-  TURN_SECONDS,
-  MIN_TURN_CHARS,
-  MAX_TURN_CHARS,
+  PREP_SECONDS,
+  MIN_TURN_AUDIO_SEC,
   TURN_LABELS_RU,
+  TURN_HINTS_RU,
+  secondsForTurn,
   sideForTurn,
 } from "@/lib/duel-config";
 
 export const Route = createFileRoute("/duel")({
   head: () => ({
     meta: [
-      { title: "Живой батл 1×1 — Nuqta va Nazar" },
+      { title: "Аудио-батл 1×1 — Nuqta va Nazar" },
       {
         name: "description",
         content:
-          "Найди живого соперника и проведи структурированный раунд 1×1: шесть ходов по очереди, решение AI-судьи и рейтинг Elo.",
+          "Голосовой раунд 1×1 в день дебатов: тема недели, 120 секунд подготовки, шесть аудио-ходов и решение AI-судьи.",
       },
-      { property: "og:title", content: "Живой батл 1×1 — Nuqta va Nazar" },
+      { property: "og:title", content: "Аудио-батл 1×1 — Nuqta va Nazar" },
       {
         property: "og:description",
-        content: "Раунд 1×1 с живым соперником, таймером ходов и решением AI-судьи.",
+        content: "Живой аудио-раунд по теме дня с расшифровкой речи и решением AI-судьи.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -47,33 +56,44 @@ type Duel = {
   turn_index: number;
   turn_user_id: string | null;
   turn_ends_at: string | null;
+  prep_ends_at: string | null;
   verdict: any;
   winner_user_id: string | null;
 };
 
-type Turn = { id: string; idx: number; side: string; text: string; user_id: string };
+type Turn = { id: string; idx: number; side: string; text: string; user_id: string; duration_sec: number | null };
+type Win = Awaited<ReturnType<typeof getDuelWindow>>;
 
 function DuelPage() {
   const { user, loading } = useAuth();
+  const [win, setWin] = useState<Win | null>(null);
   const [duelId, setDuelId] = useState<string | null>(null);
   const [duel, setDuel] = useState<Duel | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
-  const [motion, setMotion] = useState("");
   const [busy, setBusy] = useState(false);
-  const [dicing, setDicing] = useState(false);
-  const [text, setText] = useState("");
   const judgingRef = useRef(false);
+
+  useEffect(() => {
+    getDuelWindow().then(setWin).catch(() => setWin(null));
+    const id = setInterval(() => {
+      getDuelWindow().then(setWin).catch(() => {});
+    }, 60000);
+    return () => clearInterval(id);
+  }, []);
 
   const load = useCallback(async (id: string) => {
     const [{ data: d }, { data: t }] = await Promise.all([
       supabase.from("duels").select("*").eq("id", id).maybeSingle(),
-      supabase.from("duel_turns").select("id, idx, side, text, user_id").eq("duel_id", id).order("idx"),
+      supabase
+        .from("duel_turns")
+        .select("id, idx, side, text, user_id, duration_sec")
+        .eq("duel_id", id)
+        .order("idx"),
     ]);
     if (d) setDuel(d as Duel);
     setTurns((t ?? []) as Turn[]);
   }, []);
 
-  // восстановить активную дуэль
   useEffect(() => {
     if (!user) return;
     (async () => {
@@ -92,7 +112,6 @@ function DuelPage() {
     })();
   }, [user, load]);
 
-  // realtime
   useEffect(() => {
     if (!duelId) return;
     load(duelId);
@@ -114,7 +133,6 @@ function DuelPage() {
     };
   }, [duelId, load]);
 
-  // авто-судейство
   useEffect(() => {
     if (!duel || duel.status !== "judging" || judgingRef.current) return;
     judgingRef.current = true;
@@ -126,26 +144,18 @@ function DuelPage() {
       });
   }, [duel, load]);
 
-  const rollDice = async () => {
-    setDicing(true);
-    try {
-      const res = await generateMotion({ data: { difficulty: "medium" } });
-      setMotion(res.motion);
-    } catch (e: any) {
-      toast.error(e?.message ?? "Не удалось сгенерировать тему");
-    } finally {
-      setDicing(false);
-    }
-  };
-
-  const search = async () => {
+  const enter = async () => {
     setBusy(true);
     try {
-      const res = await findOrCreateDuel({ data: { motion: motion.trim() } });
+      const res = await enterDuel();
       setDuelId(res.duel_id);
-      toast.success(res.matched ? "Соперник найден — раунд начался!" : "Ждём соперника…");
+      toast.success(
+        res.matched
+          ? `Соперник найден. Ваша сторона: ${res.role === "pro" ? "За" : "Против"}`
+          : "Ждём соперника…",
+      );
     } catch (e: any) {
-      toast.error(e?.message ?? "Не получилось начать поиск");
+      toast.error(e?.message ?? "Не получилось войти в батл");
     } finally {
       setBusy(false);
     }
@@ -166,22 +176,14 @@ function DuelPage() {
     }
   };
 
-  const send = async () => {
-    if (!duel) return;
-    setBusy(true);
-    try {
-      await submitDuelTurn({ data: { duel_id: duel.id, text: text.trim() } });
-      setText("");
-      await load(duel.id);
-    } catch (e: any) {
-      toast.error(e?.message ?? "Не удалось отправить реплику");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   if (loading) {
-    return <Shell><div className="p-6 text-center text-muted-foreground"><Loader2 className="mx-auto h-5 w-5 animate-spin" /></div></Shell>;
+    return (
+      <Shell>
+        <div className="p-6 text-center text-muted-foreground">
+          <Loader2 className="mx-auto h-5 w-5 animate-spin" />
+        </div>
+      </Shell>
+    );
   }
 
   if (!user) {
@@ -189,9 +191,9 @@ function DuelPage() {
       <Shell>
         <div className="rounded-[16px] hairline bg-white p-5 text-center">
           <Swords className="mx-auto h-7 w-7 text-primary" />
-          <h2 className="mt-2 font-display text-[20px]">Живой батл 1×1</h2>
+          <h2 className="mt-2 font-display text-[20px]">Аудио-батл 1×1</h2>
           <p className="mt-1.5 text-[13px] text-muted-foreground">
-            Чтобы искать соперника и получать рейтинг, войдите в аккаунт.
+            Чтобы выйти в раунд дня и получать рейтинг, войдите в аккаунт.
           </p>
           <Link
             to="/auth"
@@ -205,55 +207,35 @@ function DuelPage() {
   }
 
   // ЛОББИ
-  if (!duel || duel.status === "cancelled") {
+  if (!duel || duel.status === "cancelled" || duel.status === "finished") {
+    if (duel?.status === "finished" && duel.verdict) {
+      return (
+        <Shell>
+          <Verdict
+            verdict={duel.verdict}
+            duel={duel}
+            meWon={duel.winner_user_id === user.id}
+            onExit={() => {
+              setDuelId(null);
+              setDuel(null);
+              setTurns([]);
+            }}
+          />
+        </Shell>
+      );
+    }
     return (
       <Shell>
-        <div className="rounded-[16px] hairline bg-white p-4">
-          <div className="flex items-center gap-2">
-            <Swords className="h-4.5 w-4.5 text-primary" />
-            <h2 className="font-display text-[19px]">Найти соперника</h2>
-          </div>
-          <p className="mt-1 text-[12.5px] text-muted-foreground">
-            Шесть ходов по очереди, {TURN_SECONDS} секунд на реплику. В конце — решение AI-судьи и очки Elo.
-          </p>
-          <textarea
-            value={motion}
-            onChange={(e) => setMotion(e.target.value)}
-            rows={3}
-            placeholder="Эта палата…"
-            className="mt-3 w-full resize-none rounded-[12px] hairline bg-background p-3 text-[14px] outline-none focus:ring-1 focus:ring-primary"
-          />
-          <div className="mt-2 flex gap-2">
-            <button
-              onClick={rollDice}
-              disabled={dicing}
-              className="flex items-center justify-center gap-1.5 rounded-[12px] hairline bg-background px-3 py-2.5 text-[13px] font-semibold"
-            >
-              {dicing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Dice5 className="h-4 w-4" />}
-              Кубик
-            </button>
-            <button
-              onClick={search}
-              disabled={busy || motion.trim().length < 8}
-              className="flex flex-1 items-center justify-center gap-2 rounded-[12px] bg-primary py-2.5 text-[14px] font-semibold text-primary-foreground disabled:opacity-50"
-            >
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
-              Искать соперника
-            </button>
-          </div>
-          <p className="mt-2 text-[11.5px] text-muted-foreground">
-            Если кто-то уже ждёт — вы попадёте в его раунд стороной «Против». Если нет — ваша тема встанет в очередь, а вы будете «За».
-          </p>
-        </div>
+        <Lobby win={win} busy={busy} onEnter={enter} />
       </Shell>
     );
   }
 
   const isPro = duel.pro_user_id === user.id;
   const mySide: "pro" | "con" = isPro ? "pro" : "con";
-  const myTurn = duel.status === "live" && duel.turn_user_id === user.id;
+  const prepping = Boolean(duel.prep_ends_at && new Date(duel.prep_ends_at) > new Date());
+  const myTurn = duel.status === "live" && duel.turn_user_id === user.id && !prepping;
 
-  // ОЖИДАНИЕ
   if (duel.status === "waiting") {
     return (
       <Shell>
@@ -261,13 +243,15 @@ function DuelPage() {
           <Loader2 className="mx-auto h-6 w-6 animate-spin text-primary" />
           <h2 className="mt-3 font-display text-[19px]">Ищем соперника…</h2>
           <p className="mt-1.5 text-[13px] text-muted-foreground">«{duel.motion}»</p>
-          <p className="mt-1 text-[12px] text-muted-foreground">Ваша сторона: За</p>
+          <p className="mt-1 text-[12px] text-muted-foreground">
+            Сторону назначит кубик, когда соперник войдёт в раунд.
+          </p>
           <button
             onClick={cancel}
             disabled={busy}
             className="mt-4 rounded-[12px] hairline bg-background px-4 py-2 text-[13px] font-semibold"
           >
-            Отменить
+            Выйти из очереди
           </button>
         </div>
       </Shell>
@@ -278,7 +262,7 @@ function DuelPage() {
     <Shell>
       <div className="rounded-[16px] hairline bg-white p-4">
         <div className="flex items-center justify-between text-[11.5px] uppercase tracking-wide text-muted-foreground">
-          <span>Раунд 1×1</span>
+          <span>Аудио-раунд дня</span>
           <span>
             ход {Math.min(duel.turn_index, TOTAL_TURNS)} / {TOTAL_TURNS}
           </span>
@@ -293,10 +277,27 @@ function DuelPage() {
             me={!isPro}
           />
         </div>
-        {duel.status === "live" && (
-          <TurnTimer endsAt={duel.turn_ends_at} myTurn={myTurn} idx={duel.turn_index} />
+        {duel.status === "live" && prepping && (
+          <Countdown endsAt={duel.prep_ends_at} label={`Подготовка · ${PREP_SECONDS} сек`} />
+        )}
+        {duel.status === "live" && !prepping && (
+          <Countdown endsAt={duel.turn_ends_at} label={myTurn ? "Ваше время" : "Время соперника"} />
         )}
       </div>
+
+      {duel.status === "live" && <AudioRoom duelId={duel.id} muted={!myTurn} />}
+
+      {duel.status === "live" && prepping && (
+        <div className="mt-3 rounded-[16px] hairline bg-white p-4">
+          <div className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Что успеть за подготовку
+          </div>
+          <p className="mt-1.5 text-[13.5px] leading-relaxed">
+            Сформулируйте позицию и критерий, наметьте два аргумента по AREA и заранее подумайте, чем ответите
+            сопернику. Микрофон включится автоматически на вашем ходу.
+          </p>
+        </div>
+      )}
 
       <div className="mt-3 space-y-2.5">
         {turns.map((t) => (
@@ -304,51 +305,29 @@ function DuelPage() {
             key={t.id}
             className={`rounded-[14px] hairline p-3.5 ${t.side === mySide ? "bg-white" : "bg-background"}`}
           >
-            <div className="text-[11px] font-semibold uppercase tracking-wide text-primary">
-              {TURN_LABELS_RU[t.idx - 1] ?? `Ход ${t.idx}`}
+            <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-primary">
+              <span>{TURN_LABELS_RU[t.idx - 1] ?? `Ход ${t.idx}`}</span>
+              {t.duration_sec ? <span className="text-muted-foreground">{t.duration_sec} сек</span> : null}
             </div>
-            <p className="mt-1.5 whitespace-pre-wrap text-[14px] leading-relaxed">{t.text}</p>
+            <p className="mt-1.5 whitespace-pre-wrap text-[14px] leading-relaxed">
+              {t.text || "— расшифровка недоступна —"}
+            </p>
           </div>
         ))}
-        {turns.length === 0 && (
+        {turns.length === 0 && !prepping && (
           <p className="px-1 text-[13px] text-muted-foreground">Раунд начался. Первым говорит сторона «За».</p>
         )}
       </div>
 
-      {duel.status === "live" && (
-        <div className="mt-3 rounded-[16px] hairline bg-white p-3.5">
-          {myTurn ? (
-            <>
-              <div className="text-[12px] font-semibold">
-                Ваш ход — {TURN_LABELS_RU[duel.turn_index - 1] ?? `ход ${duel.turn_index}`}
-              </div>
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value.slice(0, MAX_TURN_CHARS))}
-                rows={6}
-                placeholder="Идея → критерий → аргумент → доказательство"
-                className="mt-2 w-full resize-none rounded-[12px] hairline bg-background p-3 text-[14px] outline-none focus:ring-1 focus:ring-primary"
-              />
-              <div className="mt-2 flex items-center justify-between">
-                <span className="text-[11.5px] text-muted-foreground">
-                  {text.trim().length}/{MAX_TURN_CHARS} · минимум {MIN_TURN_CHARS}
-                </span>
-                <button
-                  onClick={send}
-                  disabled={busy || text.trim().length < MIN_TURN_CHARS}
-                  className="flex items-center gap-1.5 rounded-[12px] bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground disabled:opacity-50"
-                >
-                  {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                  Отправить
-                </button>
-              </div>
-            </>
-          ) : (
-            <p className="text-center text-[13px] text-muted-foreground">
-              Ход соперника ({sideForTurn(duel.turn_index) === "pro" ? duel.pro_name : duel.con_name}). Ждём…
-            </p>
-          )}
-        </div>
+      {duel.status === "live" && !prepping && (
+        <TurnRecorder
+          key={duel.turn_index}
+          duelId={duel.id}
+          idx={duel.turn_index}
+          myTurn={myTurn}
+          waitingFor={sideForTurn(duel.turn_index) === "pro" ? duel.pro_name : (duel.con_name ?? "соперник")}
+          onSubmitted={() => load(duel.id)}
+        />
       )}
 
       {duel.status === "judging" && (
@@ -357,11 +336,230 @@ function DuelPage() {
           <p className="mt-2 text-[14px] font-semibold">AI-судья изучает стенограмму…</p>
         </div>
       )}
-
-      {duel.status === "finished" && duel.verdict && (
-        <Verdict verdict={duel.verdict} duel={duel} meWon={duel.winner_user_id === user.id} onExit={() => { setDuelId(null); setDuel(null); setTurns([]); }} />
-      )}
     </Shell>
+  );
+}
+
+function Lobby({ win, busy, onEnter }: { win: Win | null; busy: boolean; onEnter: () => void }) {
+  if (!win) {
+    return (
+      <div className="rounded-[16px] hairline bg-white p-6 text-center text-muted-foreground">
+        <Loader2 className="mx-auto h-5 w-5 animate-spin" />
+      </div>
+    );
+  }
+  const when = win.event_at
+    ? new Date(win.event_at).toLocaleString("ru-RU", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })
+    : null;
+
+  return (
+    <div className="rounded-[16px] hairline bg-white p-4">
+      <div className="flex items-center gap-2">
+        <Swords className="h-4.5 w-4.5 text-primary" />
+        <h2 className="font-display text-[19px]">Аудио-батл 1×1</h2>
+      </div>
+      <p className="mt-1 text-[12.5px] text-muted-foreground">
+        Тема одна для всех — её задаёт клуб перед днём дебатов. Сторону назначает кубик. {PREP_SECONDS} секунд на
+        подготовку, затем шесть голосовых ходов: {secondsForTurn(1)}/{secondsForTurn(3)}/{secondsForTurn(5)} секунд.
+      </p>
+
+      <div className="mt-3 rounded-[12px] bg-background p-3">
+        <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Тема дня</div>
+        <div className="mt-1 text-[15px] font-semibold leading-snug">
+          {win.topic ?? "Тема будет объявлена перед событием"}
+        </div>
+        {when && (
+          <div className="mt-2 flex items-center gap-1.5 text-[12px] text-muted-foreground">
+            <CalendarClock className="h-3.5 w-3.5" />
+            {when}
+          </div>
+        )}
+      </div>
+
+      {win.open ? (
+        <button
+          onClick={onEnter}
+          disabled={busy}
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-[12px] bg-primary py-3 text-[14px] font-semibold text-primary-foreground disabled:opacity-50"
+        >
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Users className="h-4 w-4" />}
+          Войти в батл дня
+        </button>
+      ) : (
+        <div className="mt-3 rounded-[12px] hairline bg-background p-3 text-center text-[13px] text-muted-foreground">
+          {win.reason === "before" && "Батлы откроются в день дебатов, когда начнётся событие."}
+          {win.reason === "after" && "День дебатов завершён. Следующий раунд — на новой неделе."}
+          {win.reason === "no_topic" && "Тема ещё не объявлена клубом."}
+          {win.reason === "no_week" && "Ближайший день дебатов пока не назначен."}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TurnRecorder({
+  duelId,
+  idx,
+  myTurn,
+  waitingFor,
+  onSubmitted,
+}: {
+  duelId: string;
+  idx: number;
+  myTurn: boolean;
+  waitingFor: string;
+  onSubmitted: () => void;
+}) {
+  const [recorder, setRecorder] = useState<WavRecorder | null>(null);
+  const [phase, setPhase] = useState<"idle" | "recording" | "sending">("idle");
+
+  useEffect(() => {
+    return () => recorder?.cancel();
+  }, [recorder]);
+
+  if (!myTurn) {
+    return (
+      <div className="mt-3 rounded-[16px] hairline bg-white p-3.5 text-center text-[13px] text-muted-foreground">
+        Говорит {waitingFor}. Ваш микрофон выключен.
+      </div>
+    );
+  }
+
+  const start = async () => {
+    try {
+      const r = await startWavRecording();
+      setRecorder(r);
+      setPhase("recording");
+    } catch {
+      toast.error("Нужен доступ к микрофону");
+    }
+  };
+
+  const stop = async () => {
+    if (!recorder) return;
+    setPhase("sending");
+    try {
+      const { blob, durationSec } = await recorder.stop();
+      setRecorder(null);
+      if (durationSec < MIN_TURN_AUDIO_SEC) {
+        toast.error(`Реплика слишком короткая (минимум ${MIN_TURN_AUDIO_SEC} сек)`);
+        setPhase("idle");
+        return;
+      }
+      const path = `${duelId}/${idx}-${Date.now()}.wav`;
+      const { error: upErr } = await supabase.storage
+        .from("duel-audio")
+        .upload(path, blob, { contentType: "audio/wav", upsert: true });
+      if (upErr) throw new Error(upErr.message);
+
+      let text = "";
+      try {
+        const res = await transcribeDuelAudio({ data: { audio_path: path } });
+        text = res.text;
+      } catch (e: any) {
+        toast.warning("Расшифровка не удалась, ход засчитан как аудио");
+      }
+
+      await submitDuelTurn({ data: { duel_id: duelId, text, audio_path: path, duration_sec: durationSec } });
+      onSubmitted();
+      toast.success("Реплика записана");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Не удалось отправить реплику");
+    } finally {
+      setPhase("idle");
+    }
+  };
+
+  return (
+    <div className="mt-3 rounded-[16px] hairline bg-white p-4">
+      <div className="text-[12px] font-semibold">Ваш ход — {TURN_LABELS_RU[idx - 1] ?? `ход ${idx}`}</div>
+      <p className="mt-1 text-[12.5px] text-muted-foreground">{TURN_HINTS_RU[idx - 1] ?? ""}</p>
+      <button
+        onClick={phase === "recording" ? stop : start}
+        disabled={phase === "sending"}
+        className={`mt-3 flex w-full items-center justify-center gap-2 rounded-[12px] py-3 text-[14px] font-semibold disabled:opacity-50 ${
+          phase === "recording"
+            ? "bg-foreground text-background"
+            : "bg-primary text-primary-foreground"
+        }`}
+      >
+        {phase === "sending" ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : phase === "recording" ? (
+          <Square className="h-4 w-4" />
+        ) : (
+          <Mic className="h-4 w-4" />
+        )}
+        {phase === "sending" ? "Отправляем…" : phase === "recording" ? "Закончить реплику" : "Говорить"}
+      </button>
+      <p className="mt-2 text-[11.5px] text-muted-foreground">
+        До {secondsForTurn(idx)} секунд. Речь автоматически расшифруется для судьи и стенограммы.
+      </p>
+    </div>
+  );
+}
+
+function AudioRoom({ duelId, muted }: { duelId: string; muted: boolean }) {
+  const [state, setState] = useState<"connecting" | "live" | "off">("connecting");
+  const roomRef = useRef<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    let room: any = null;
+
+    (async () => {
+      try {
+        const res = await getDuelRoomToken({ data: { duel_id: duelId } });
+        if (cancelled) return;
+        if ("unavailable" in res) {
+          setState("off");
+          return;
+        }
+        const { Room, RoomEvent } = await import("livekit-client");
+        room = new Room();
+        roomRef.current = room;
+        room.on(RoomEvent.TrackSubscribed, (track: any) => {
+          if (track.kind === "audio") {
+            const el = track.attach();
+            el.autoplay = true;
+            document.body.appendChild(el);
+          }
+        });
+        await room.connect(res.url, res.token);
+        if (cancelled) {
+          await room.disconnect();
+          return;
+        }
+        setState("live");
+      } catch {
+        if (!cancelled) setState("off");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      roomRef.current?.disconnect();
+      roomRef.current = null;
+    };
+  }, [duelId]);
+
+  useEffect(() => {
+    const room = roomRef.current;
+    if (!room || state !== "live") return;
+    room.localParticipant.setMicrophoneEnabled(!muted).catch(() => {});
+  }, [muted, state]);
+
+  if (state === "off") return null;
+
+  return (
+    <div className="mt-3 flex items-center justify-between rounded-[16px] hairline bg-white px-4 py-3">
+      <span className="text-[12.5px] text-muted-foreground">
+        {state === "connecting" ? "Подключаем аудио-комнату…" : "Аудио-комната активна"}
+      </span>
+      <span className={`text-[12px] font-semibold ${muted ? "text-muted-foreground" : "text-primary"}`}>
+        {muted ? "Микрофон выключен" : "Микрофон включён"}
+      </span>
+    </div>
   );
 }
 
@@ -379,9 +577,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 
 function PlayerChip({ name, label, active, me }: { name: string; label: string; active: boolean; me: boolean }) {
   return (
-    <div
-      className={`rounded-[12px] p-2.5 hairline ${active ? "bg-primary/10 ring-1 ring-primary" : "bg-background"}`}
-    >
+    <div className={`rounded-[12px] p-2.5 hairline ${active ? "bg-primary/10 ring-1 ring-primary" : "bg-background"}`}>
       <div className="text-[10.5px] uppercase tracking-wide text-muted-foreground">
         {label}
         {me ? " · вы" : ""}
@@ -391,7 +587,7 @@ function PlayerChip({ name, label, active, me }: { name: string; label: string; 
   );
 }
 
-function TurnTimer({ endsAt, myTurn, idx }: { endsAt: string | null; myTurn: boolean; idx: number }) {
+function Countdown({ endsAt, label }: { endsAt: string | null; label: string }) {
   const [left, setLeft] = useState(0);
   useEffect(() => {
     if (!endsAt) return;
@@ -399,13 +595,13 @@ function TurnTimer({ endsAt, myTurn, idx }: { endsAt: string | null; myTurn: boo
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [endsAt, idx]);
+  }, [endsAt]);
   if (!endsAt) return null;
   const mm = Math.floor(left / 60);
   const ss = String(left % 60).padStart(2, "0");
   return (
     <div className="mt-3 flex items-center justify-between rounded-[12px] bg-background px-3 py-2">
-      <span className="text-[12px] text-muted-foreground">{myTurn ? "Ваше время" : "Время соперника"}</span>
+      <span className="text-[12px] text-muted-foreground">{label}</span>
       <span className={`font-display text-[20px] tabular-nums ${left <= 20 ? "text-primary" : ""}`}>
         {mm}:{ss}
       </span>
@@ -433,7 +629,7 @@ function Verdict({
     delivery: "Подача",
   };
   return (
-    <div className="mt-3 space-y-3">
+    <div className="space-y-3">
       <div className="rounded-[16px] hairline bg-white p-5 text-center">
         <Trophy className="mx-auto h-7 w-7 text-primary" />
         <h3 className="mt-2 font-display text-[20px]">{meWon ? "Победа" : "Поражение"}</h3>
@@ -484,7 +680,7 @@ function Verdict({
         onClick={onExit}
         className="w-full rounded-[14px] bg-primary py-3 text-[14px] font-semibold text-primary-foreground"
       >
-        Новый батл
+        Вернуться в лобби
       </button>
     </div>
   );

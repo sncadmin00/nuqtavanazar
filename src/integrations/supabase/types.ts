@@ -132,8 +132,10 @@ export type Database = {
       }
       duel_turns: {
         Row: {
+          audio_path: string | null
           created_at: string
           duel_id: string
+          duration_sec: number
           id: string
           idx: number
           side: string
@@ -141,17 +143,21 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          audio_path?: string | null
           created_at?: string
           duel_id: string
+          duration_sec?: number
           id?: string
           idx: number
           side: string
-          text: string
+          text?: string
           user_id: string
         }
         Update: {
+          audio_path?: string | null
           created_at?: string
           duel_id?: string
+          duration_sec?: number
           id?: string
           idx?: number
           side?: string
@@ -175,14 +181,18 @@ export type Database = {
           created_at: string
           id: string
           motion: string
+          prep_ends_at: string | null
           pro_name: string
           pro_user_id: string
+          recording_url: string | null
+          room_name: string | null
           status: string
           turn_ends_at: string | null
           turn_index: number
           turn_user_id: string | null
           updated_at: string
           verdict: Json | null
+          week_id: string | null
           winner_user_id: string | null
         }
         Insert: {
@@ -191,14 +201,18 @@ export type Database = {
           created_at?: string
           id?: string
           motion: string
+          prep_ends_at?: string | null
           pro_name?: string
           pro_user_id: string
+          recording_url?: string | null
+          room_name?: string | null
           status?: string
           turn_ends_at?: string | null
           turn_index?: number
           turn_user_id?: string | null
           updated_at?: string
           verdict?: Json | null
+          week_id?: string | null
           winner_user_id?: string | null
         }
         Update: {
@@ -207,17 +221,29 @@ export type Database = {
           created_at?: string
           id?: string
           motion?: string
+          prep_ends_at?: string | null
           pro_name?: string
           pro_user_id?: string
+          recording_url?: string | null
+          room_name?: string | null
           status?: string
           turn_ends_at?: string | null
           turn_index?: number
           turn_user_id?: string | null
           updated_at?: string
           verdict?: Json | null
+          week_id?: string | null
           winner_user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "duels_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events: {
         Row: {
