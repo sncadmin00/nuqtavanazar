@@ -229,7 +229,9 @@ export const submitDuelTurn = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: duel, error } = await supabase
       .from("duels")
-      .select("id, status, turn_index, turn_user_id, pro_user_id, con_user_id, prep_ends_at")
+      .select(
+        "id, status, format, turn_index, turn_user_id, pro_user_id, con_user_id, pro_user2_id, con_user2_id, prep_ends_at",
+      )
       .eq("id", data.duel_id)
       .maybeSingle();
     if (error || !duel) throw new Error("Дуэль не найдена");
@@ -237,22 +239,25 @@ export const submitDuelTurn = createServerFn({ method: "POST" })
     if (duel.turn_user_id !== userId) throw new Error("Сейчас не ваш ход");
     if (duel.prep_ends_at && new Date(duel.prep_ends_at) > new Date()) throw new Error("Идёт подготовка");
 
+    const fmt = duel.format ?? "1v1";
     const idx = duel.turn_index;
-    const side = sideForTurn(idx);
+    const spec = turnSpec(fmt, idx);
     const { error: insErr } = await supabase.from("duel_turns").insert({
       duel_id: duel.id,
       idx,
       user_id: userId,
-      side,
+      side: spec.side,
+      kind: spec.kind,
       text: data.text,
       audio_path: data.audio_path,
       duration_sec: data.duration_sec,
     });
     if (insErr) throw new Error(insErr.message);
 
-    const isLast = idx >= TOTAL_TURNS;
+    const isLast = idx >= totalTurns(fmt);
     const nextIdx = idx + 1;
-    const nextUser = sideForTurn(nextIdx) === "pro" ? duel.pro_user_id : duel.con_user_id;
+    const nextSpec = isLast ? null : turnSpec(fmt, nextIdx);
+    const nextUser = nextSpec ? userForSpec(duel as DuelSeats, nextSpec) : null;
     await supabase
       .from("duels")
       .update(
@@ -261,11 +266,12 @@ export const submitDuelTurn = createServerFn({ method: "POST" })
           : {
               turn_index: nextIdx,
               turn_user_id: nextUser,
-              turn_ends_at: new Date(Date.now() + secondsForTurn(nextIdx) * 1000).toISOString(),
+              turn_ends_at: new Date(Date.now() + (nextSpec?.seconds ?? 60) * 1000).toISOString(),
               updated_at: new Date().toISOString(),
             },
       )
       .eq("id", duel.id);
+
 
     return { ok: true, finished: isLast };
   });
