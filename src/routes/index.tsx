@@ -120,12 +120,14 @@ function HomePage() {
 
       {state.phase === "game_day" ? (
         <>
+          <ChallengeHub />
           <MatchesStatus matches={state.matches} revealed={revealed} />
           <RoundtableCard state={state.roundtable} />
         </>
       ) : (
         <DiscussionMode state={state} />
       )}
+
     </div>
   );
 }
