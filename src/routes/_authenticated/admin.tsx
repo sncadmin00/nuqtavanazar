@@ -102,6 +102,7 @@ function AdminPage() {
             ["cadence", "Каденс"],
             ["content", "Контент"],
             ["roundtables", "Столы"],
+            ["awards", "Награды"],
             ["stats", "Сводка"],
           ] as [Tab, string][]).map(([id, label]) => (
             <button
