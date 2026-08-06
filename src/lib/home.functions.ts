@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { DuelWindow } from "@/lib/duel.functions";
 
 function isNewSupabaseApiKey(v: string) {
   return v.startsWith("sb_publishable_") || v.startsWith("sb_secret_");
@@ -129,6 +130,15 @@ type PastRT = {
 
 export type RetroPollStats = { pro: number; con: number; total: number };
 
+export type ActiveTournament = {
+  id: string;
+  title: string;
+  status: string;
+  format: string;
+  day1_at: string;
+  day2_at: string;
+};
+
 export type HomeState = {
   phase: HomePhase;
   now: string;
@@ -136,6 +146,9 @@ export type HomeState = {
   previous_week: WeekPublic | null;
   matches: MatchesStatus;
   roundtable: RoundtableCardState;
+  duel_window: DuelWindow;
+  waiting_duels: number;
+  active_tournaments: ActiveTournament[];
   discussion?: {
     arguments_pro: IdeaArgument[];
     arguments_con: IdeaArgument[];
@@ -285,6 +298,62 @@ async function loadMatches(sb: ReturnType<typeof makeServerPublicClient>, week: 
   };
 }
 
+async function loadDuelWindow(sb: ReturnType<typeof makeServerPublicClient>): Promise<DuelWindow> {
+  const now = new Date();
+  const { data: rows } = await sb
+    .from("debate_weeks")
+    .select("id, topic, event_at, event_ends_at")
+    .order("event_at", { ascending: false })
+    .limit(12);
+
+  const weeks = (rows ?? []) as { id: string; topic: string | null; event_at: string; event_ends_at: string | null }[];
+  if (!weeks.length) {
+    return { open: false, week_id: null, topic: null, event_at: null, event_ends_at: null, reason: "no_week" };
+  }
+
+  const upcoming = [...weeks].reverse().find((w) => {
+    const end = new Date(w.event_ends_at ?? new Date(new Date(w.event_at).getTime() + 3 * 3600_000).toISOString());
+    return end >= now;
+  });
+  const week = upcoming ?? weeks[0];
+  const start = new Date(week.event_at);
+  const end = new Date(week.event_ends_at ?? new Date(start.getTime() + 3 * 3600_000).toISOString());
+
+  const base = {
+    week_id: week.id,
+    topic: week.topic,
+    event_at: week.event_at,
+    event_ends_at: end.toISOString(),
+  };
+
+  if (!week.topic) return { ...base, open: false, reason: "no_topic" };
+  if (now < start) return { ...base, open: false, reason: "before" };
+  if (now > end) return { ...base, open: false, reason: "after" };
+  return { ...base, open: true, reason: "open" };
+}
+
+async function loadWaitingDuels(sb: ReturnType<typeof makeServerPublicClient>, weekId?: string): Promise<number> {
+  if (!weekId) return 0;
+  const { count, error } = await sb
+    .from("duels")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "waiting")
+    .eq("format", "1v1")
+    .eq("week_id", weekId);
+  if (error) return 0;
+  return count ?? 0;
+}
+
+async function loadActiveTournaments(sb: ReturnType<typeof makeServerPublicClient>): Promise<ActiveTournament[]> {
+  const { data } = await sb
+    .from("tournaments")
+    .select("id, title, status, format, day1_at, day2_at")
+    .in("status", ["registration", "day1", "day2"])
+    .order("day1_at", { ascending: true })
+    .limit(3);
+  return (data ?? []) as ActiveTournament[];
+}
+
 export const getHomeState = createServerFn({ method: "GET" }).handler(async (): Promise<HomeState> => {
   const sb = makeServerPublicClient();
   const now = new Date();
@@ -328,9 +397,12 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
   const currentPub = current ? stripSecrets(current, revealed, eventOver) : null;
   const previousPub = previous ? stripSecrets(previous, true, true) : null;
 
-  const [matches, roundtable] = await Promise.all([
+  const [matches, roundtable, duelWindow, waitingDuels, activeTournaments] = await Promise.all([
     current && eventAt ? loadMatches(sb, current, now, eventAt) : Promise.resolve<MatchesStatus>({ mode: "bookings", one_v_one: 0, two_v_two: 0, listeners_one: 0, listeners_two: 0 }),
     loadRoundtableCard(sb, phase),
+    loadDuelWindow(sb),
+    loadWaitingDuels(sb, current?.id),
+    loadActiveTournaments(sb),
   ]);
 
   let discussion: HomeState["discussion"];
@@ -380,6 +452,9 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
     previous_week: previousPub,
     matches,
     roundtable,
+    duel_window: duelWindow,
+    waiting_duels: waitingDuels,
+    active_tournaments: activeTournaments,
     discussion,
   };
 });
