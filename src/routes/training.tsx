@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Dice5,
+  Swords,
+  Brain,
+
   Mic,
   Lock,
   ListChecks,
@@ -232,42 +235,7 @@ function TrainingPage() {
         </div>
       </section>
 
-      {/* 3. Level selector */}
-      <div className="rounded-[16px] hairline bg-white p-4">
-        <div className="flex items-center justify-between">
-          <div className="formula-motif !text-foreground/70">Длительность</div>
-          <div className="text-[11px] text-muted-foreground">
-            {progress.attempts[level]}/{UNLOCK_AT} до следующего
-          </div>
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {LEVELS.map((l) => {
-            const active = l === level;
-            const locked = !progress.unlocked[l];
-            return (
-              <button
-                key={l}
-                onClick={() => chooseLevel(l)}
-                className={
-                  "rounded-full px-3 py-2 text-[13px] font-semibold transition " +
-                  (active
-                    ? "bg-[color:var(--color-ink)] text-white"
-                    : locked
-                      ? "bg-muted text-muted-foreground hover:bg-muted/80"
-                      : "bg-accent text-foreground hover:bg-accent/80")
-                }
-              >
-                <span className="inline-flex items-center gap-1.5">
-                  {locked && <Lock className="h-3 w-3" />}
-                  {l} сек
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 4. Твой путь сегодня — timeline stepper */}
+      {/* CARD 1 — Тренировка по секундам (уровни + путь) */}
       {(() => {
         const step1Done = dice.status === "ready";
         const step2Done = caseStarted;
@@ -297,14 +265,54 @@ function TrainingPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AnimatedLogo size={22} mode="pulse" trigger={activeIdx} />
-                <div className="formula-motif !text-foreground/70">Твой путь сегодня</div>
+                <div>
+                  <div className="text-[14px] font-semibold leading-tight">
+                    1 · Тренировка по секундам
+                  </div>
+                  <div className="text-[11.5px] text-muted-foreground">
+                    Тема → кейс → запись
+                  </div>
+                </div>
               </div>
-              <div className="text-[11px] text-muted-foreground">
-                {activeIdx + 1}/3
-              </div>
+              <div className="text-[11px] text-muted-foreground">{activeIdx + 1}/3</div>
             </div>
 
-            <ol className="relative mt-3 space-y-3">
+            {/* Уровни */}
+            <div className="mt-4 flex items-center justify-between">
+              <div className="formula-motif !text-foreground/70">Длительность</div>
+              <div className="text-[11px] text-muted-foreground">
+                {progress.attempts[level]}/{UNLOCK_AT} до следующего
+              </div>
+            </div>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {LEVELS.map((l) => {
+                const active = l === level;
+                const locked = !progress.unlocked[l];
+                return (
+                  <button
+                    key={l}
+                    onClick={() => chooseLevel(l)}
+                    className={
+                      "rounded-full px-3 py-2 text-[13px] font-semibold transition " +
+                      (active
+                        ? "bg-[color:var(--color-ink)] text-white"
+                        : locked
+                          ? "bg-muted text-muted-foreground hover:bg-muted/80"
+                          : "bg-accent text-foreground hover:bg-accent/80")
+                    }
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      {locked && <Lock className="h-3 w-3" />}
+                      {l} сек
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="my-4 h-px bg-border" />
+
+            <ol className="relative space-y-3">
               <span
                 aria-hidden
                 className="absolute left-[13px] top-4 bottom-4 w-px bg-border"
@@ -403,6 +411,7 @@ function TrainingPage() {
         );
       })()}
 
+
       {/* Dice result */}
       {dice.status === "ready" && (
         <section className="rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white">
@@ -490,31 +499,74 @@ function TrainingPage() {
         </div>
       )}
 
-      {/* "или" divider */}
-      <div className="py-1 text-center text-[12px] uppercase tracking-[0.18em] text-muted-foreground">
-        или
-      </div>
+      {/* CARD 2 — Батл с AI */}
+      <Link
+        to="/sparring"
+        search={{ topic: dice.status === "ready" ? dice.motion : undefined }}
+        className="block rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white active:scale-[0.99] transition"
+      >
+        <div className="flex items-start gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/20">
+            <Swords className="h-5 w-5 text-primary" />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="flex items-center gap-2">
+              <span className="text-[15px] font-semibold">2 · Батл с AI</span>
+              <span className="shrink-0 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                AI-судья
+              </span>
+            </span>
+            <span className="mt-1 block text-[12.5px] text-white/70">
+              Давай подебатируем: AI держит противоположную сторону, а в конце раунда даёт
+              дополнительные оценки по пяти критериям.
+            </span>
+          </span>
+        </div>
+      </Link>
 
-      {/* Free-talk — visually distinct parallel mode */}
+      {/* CARD 3 — AI-тьютор (брейншторм) */}
+      <Link
+        to="/brainstorm"
+        search={{ topic: dice.status === "ready" ? dice.motion : undefined }}
+        className="flex items-start gap-3 rounded-[18px] hairline bg-white p-4 text-left active:scale-[0.99] transition hover:bg-accent/40"
+      >
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10">
+          <Brain className="h-5 w-5 text-primary" />
+        </span>
+        <span className="flex-1 min-w-0">
+          <span className="flex items-center gap-2">
+            <span className="text-[15px] font-semibold">3 · AI-тьютор</span>
+            <span className="shrink-0 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground/70">
+              Брейншторм
+            </span>
+          </span>
+          <span className="mt-1 block text-[12.5px] text-foreground/60">
+            Обмен критериями, идеями и аргументами. Никаких текстов и речей — только твоя мысль.
+          </span>
+        </span>
+      </Link>
+
+      {/* CARD 4 — Свободные мысли */}
       <Link
         to="/free-talk"
-        className="flex items-start gap-3 rounded-[16px] p-4 text-left active:scale-[0.99] bg-[#EEEDFE] hover:bg-[#E6E4FB] transition"
+        className="flex items-start gap-3 rounded-[18px] p-4 text-left active:scale-[0.99] bg-[#EEEDFE] hover:bg-[#E6E4FB] transition"
       >
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/70">
           <Waves className="h-5 w-5 text-foreground" />
         </span>
         <span className="flex-1 min-w-0">
           <span className="flex items-center gap-2">
-            <span className="truncate text-[14px] font-semibold">Свободные мысли</span>
+            <span className="text-[15px] font-semibold">4 · Свободные мысли</span>
             <span className="shrink-0 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
               Приватно
             </span>
           </span>
-          <span className="mt-0.5 block truncate text-[12px] text-foreground/60">
-            Без темы, без таймера, без оценки
+          <span className="mt-1 block text-[12.5px] text-foreground/60">
+            Без темы, без таймера, без AI и без оценки
           </span>
         </span>
       </Link>
+
 
       {/* Quiet link to Learn */}
       <div className="pt-1 text-center">

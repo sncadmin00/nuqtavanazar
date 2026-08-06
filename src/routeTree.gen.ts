@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrainingRouteImport } from './routes/training'
+import { Route as SparringRouteImport } from './routes/sparring'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LearnRouteImport } from './routes/learn'
@@ -17,6 +18,7 @@ import { Route as FreeTalkRouteImport } from './routes/free-talk'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DebateDayRouteImport } from './routes/debate-day'
 import { Route as CaseBuilderRouteImport } from './routes/case-builder'
+import { Route as BrainstormRouteImport } from './routes/brainstorm'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as AboutRouteImport } from './routes/about'
@@ -31,6 +33,11 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 const TrainingRoute = TrainingRouteImport.update({
   id: '/training',
   path: '/training',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SparringRoute = SparringRouteImport.update({
+  id: '/sparring',
+  path: '/sparring',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -66,6 +73,11 @@ const DebateDayRoute = DebateDayRouteImport.update({
 const CaseBuilderRoute = CaseBuilderRouteImport.update({
   id: '/case-builder',
   path: '/case-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrainstormRoute = BrainstormRouteImport.update({
+  id: '/brainstorm',
+  path: '/brainstorm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -123,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
+  '/brainstorm': typeof BrainstormRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
@@ -130,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/learn': typeof LearnRouteWithChildren
   '/profile': typeof ProfileRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sparring': typeof SparringRoute
   '/training': typeof TrainingRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
@@ -142,12 +156,14 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
+  '/brainstorm': typeof BrainstormRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
   '/free-talk': typeof FreeTalkRoute
   '/profile': typeof ProfileRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sparring': typeof SparringRoute
   '/training': typeof TrainingRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
@@ -162,6 +178,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
+  '/brainstorm': typeof BrainstormRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
@@ -169,6 +186,7 @@ export interface FileRoutesById {
   '/learn': typeof LearnRouteWithChildren
   '/profile': typeof ProfileRouteWithChildren
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sparring': typeof SparringRoute
   '/training': typeof TrainingRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
@@ -183,6 +201,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/archive'
     | '/auth'
+    | '/brainstorm'
     | '/case-builder'
     | '/debate-day'
     | '/events'
@@ -190,6 +209,7 @@ export interface FileRouteTypes {
     | '/learn'
     | '/profile'
     | '/sitemap.xml'
+    | '/sparring'
     | '/training'
     | '/admin'
     | '/learn/$moduleId'
@@ -202,12 +222,14 @@ export interface FileRouteTypes {
     | '/about'
     | '/archive'
     | '/auth'
+    | '/brainstorm'
     | '/case-builder'
     | '/debate-day'
     | '/events'
     | '/free-talk'
     | '/profile'
     | '/sitemap.xml'
+    | '/sparring'
     | '/training'
     | '/admin'
     | '/learn/$moduleId'
@@ -221,6 +243,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/archive'
     | '/auth'
+    | '/brainstorm'
     | '/case-builder'
     | '/debate-day'
     | '/events'
@@ -228,6 +251,7 @@ export interface FileRouteTypes {
     | '/learn'
     | '/profile'
     | '/sitemap.xml'
+    | '/sparring'
     | '/training'
     | '/_authenticated/admin'
     | '/learn/$moduleId'
@@ -242,6 +266,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ArchiveRoute: typeof ArchiveRoute
   AuthRoute: typeof AuthRoute
+  BrainstormRoute: typeof BrainstormRoute
   CaseBuilderRoute: typeof CaseBuilderRoute
   DebateDayRoute: typeof DebateDayRoute
   EventsRoute: typeof EventsRoute
@@ -249,6 +274,7 @@ export interface RootRouteChildren {
   LearnRoute: typeof LearnRouteWithChildren
   ProfileRoute: typeof ProfileRouteWithChildren
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SparringRoute: typeof SparringRoute
   TrainingRoute: typeof TrainingRoute
   WeekWeekIdRoute: typeof WeekWeekIdRoute
 }
@@ -260,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/training'
       fullPath: '/training'
       preLoaderRoute: typeof TrainingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sparring': {
+      id: '/sparring'
+      path: '/sparring'
+      fullPath: '/sparring'
+      preLoaderRoute: typeof SparringRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -309,6 +342,13 @@ declare module '@tanstack/react-router' {
       path: '/case-builder'
       fullPath: '/case-builder'
       preLoaderRoute: typeof CaseBuilderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brainstorm': {
+      id: '/brainstorm'
+      path: '/brainstorm'
+      fullPath: '/brainstorm'
+      preLoaderRoute: typeof BrainstormRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -424,6 +464,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ArchiveRoute: ArchiveRoute,
   AuthRoute: AuthRoute,
+  BrainstormRoute: BrainstormRoute,
   CaseBuilderRoute: CaseBuilderRoute,
   DebateDayRoute: DebateDayRoute,
   EventsRoute: EventsRoute,
@@ -431,6 +472,7 @@ const rootRouteChildren: RootRouteChildren = {
   LearnRoute: LearnRouteWithChildren,
   ProfileRoute: ProfileRouteWithChildren,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SparringRoute: SparringRoute,
   TrainingRoute: TrainingRoute,
   WeekWeekIdRoute: WeekWeekIdRoute,
 }
