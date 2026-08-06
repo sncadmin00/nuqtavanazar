@@ -1,4 +1,4 @@
-import { TURN_LABELS_RU } from "./duel-config";
+import { turnSpec } from "./duel-config";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const JUDGE_MODEL = "google/gemini-2.5-pro";
@@ -19,25 +19,22 @@ export async function judgeDuelTranscript(
   proName: string,
   conName: string,
   turns: DuelTurnRow[],
+  format: string = "1v1",
 ): Promise<DuelVerdict> {
   const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new Error("LOVABLE_API_KEY missing");
 
   const transcript = turns
     .sort((a, b) => a.idx - b.idx)
-    .map((t) => `[${TURN_LABELS_RU[t.idx - 1] ?? `Ход ${t.idx}`} — ${t.side === "pro" ? proName : conName}]\n${t.text}`)
+    .map(
+      (t) =>
+        `[${turnSpec(format, t.idx).label} — ${t.side === "pro" ? proName : conName}]\n${t.text}`,
+    )
     .join("\n\n");
 
-  const prompt = `Ты — судья живого раунда Nuqta va Nazar 1×1. Оцени полную стенограмму дуэли и вынеси решение.
+  const prompt = `Ты — судья живого раунда Nuqta va Nazar (${format === "2v2" ? "командный формат 2×2, парламентские правила" : "формат 1×1"}). Оцени полную стенограмму и вынеси решение.
+Учитывай перекрёстные вопросы: качество вопросов и ответов влияет на оценку опровержения.
 
-ТЕМА: "${motion}"
-СТОРОНА «ЗА»: ${proName}
-СТОРОНА «ПРОТИВ»: ${conName}
-
-СТЕНОГРАММА:
-"""
-${transcript}
-"""
 
 Оцени каждого спикера по 5 критериям (0-10): structure, argumentation, evidence, rebuttal, delivery.
 Верни СТРОГО валидный JSON без markdown:
