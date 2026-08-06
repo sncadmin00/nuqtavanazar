@@ -564,26 +564,6 @@ function TrainingPage() {
         </span>
       </Link>
 
-      {/* CARD 5 — Живой батл 1×1 */}
-      <Link
-        to="/duel"
-        className="flex items-start gap-3 rounded-[18px] hairline bg-white p-4 text-left active:scale-[0.99] transition hover:bg-accent/40"
-      >
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10">
-          <Swords className="h-5 w-5 text-primary" />
-        </span>
-        <span className="flex-1 min-w-0">
-          <span className="flex items-center gap-2">
-            <span className="text-[15px] font-semibold">5 · Живой батл 1×1</span>
-            <span className="shrink-0 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-              Elo
-            </span>
-          </span>
-          <span className="mt-1 block text-[12.5px] text-foreground/60">
-            Живой соперник, шесть ходов по очереди, решение AI-судьи и очки рейтинга.
-          </span>
-        </span>
-      </Link>
 
 
 
