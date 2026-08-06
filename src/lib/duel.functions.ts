@@ -370,11 +370,12 @@ export const finishDuel = createServerFn({ method: "POST" })
         verdict.winner === "pro" ? [duel.con_user_id, duel.con_user2_id] : [duel.pro_user_id, duel.pro_user2_id]
       ).filter(Boolean) as string[];
       for (const w of winners) {
-        for (const l of losers) {
+        for (const [j, l] of losers.entries()) {
           // индивидуальный Elo каждого спикера против каждого соперника (половинный вес)
-          await applyDuelElo(w, l, names, 12);
+          await applyDuelElo(w, l, names, 12, j === 0);
         }
       }
+
       const winTeam = verdict.winner === "pro" ? duel.pro_team_id : duel.con_team_id;
       const loseTeam = verdict.winner === "pro" ? duel.con_team_id : duel.pro_team_id;
       if (winTeam && loseTeam) await applyTeamElo(winTeam, loseTeam);
