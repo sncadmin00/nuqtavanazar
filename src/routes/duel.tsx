@@ -103,7 +103,9 @@ function DuelPage() {
         .from("duels")
         .select("id")
         .in("status", ["waiting", "live", "judging"])
-        .or(`pro_user_id.eq.${user.id},con_user_id.eq.${user.id}`)
+        .or(
+          `pro_user_id.eq.${user.id},con_user_id.eq.${user.id},pro_user2_id.eq.${user.id},con_user2_id.eq.${user.id}`,
+        )
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -113,6 +115,7 @@ function DuelPage() {
       }
     })();
   }, [user, load]);
+
 
   useEffect(() => {
     if (!duelId) return;
