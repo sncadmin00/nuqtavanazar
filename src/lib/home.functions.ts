@@ -341,9 +341,12 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
   const currentPub = current ? stripSecrets(current, revealed, eventOver) : null;
   const previousPub = previous ? stripSecrets(previous, true, true) : null;
 
-  const [matches, roundtable] = await Promise.all([
+  const [matches, roundtable, duelWindow, waitingDuels, activeTournaments] = await Promise.all([
     current && eventAt ? loadMatches(sb, current, now, eventAt) : Promise.resolve<MatchesStatus>({ mode: "bookings", one_v_one: 0, two_v_two: 0, listeners_one: 0, listeners_two: 0 }),
     loadRoundtableCard(sb, phase),
+    loadDuelWindow(sb),
+    loadWaitingDuels(sb, current?.id),
+    loadActiveTournaments(sb),
   ]);
 
   let discussion: HomeState["discussion"];
@@ -393,6 +396,9 @@ export const getHomeState = createServerFn({ method: "GET" }).handler(async (): 
     previous_week: previousPub,
     matches,
     roundtable,
+    duel_window: duelWindow,
+    waiting_duels: waitingDuels,
+    active_tournaments: activeTournaments,
     discussion,
   };
 });
