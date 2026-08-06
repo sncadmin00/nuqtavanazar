@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Swords } from "lucide-react";
 import { toast } from "sonner";
 import type { MatchesStatus as MatchesStatusT } from "@/lib/home.functions";
