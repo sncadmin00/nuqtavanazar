@@ -6,6 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { getDuelWindow } from "@/lib/duel.functions";
 import { resolveMyName, sendChallenge } from "@/lib/challenges";
+import {
+  Avatar,
+  AchievementsCard,
+  BattleHistoryCard,
+  TeamHistoryCard,
+} from "@/components/profile/ProfileSections";
 
 export const Route = createFileRoute("/profile/$userId")({
   head: () => ({
@@ -24,6 +30,8 @@ function PublicProfilePage() {
   const [revealed, setRevealed] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [teamIds, setTeamIds] = useState<string[]>([]);
+
 
   useEffect(() => {
     supabase
@@ -61,9 +69,7 @@ function PublicProfilePage() {
 
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="grid h-14 w-14 place-items-center rounded-full bg-[color:var(--color-ink)] text-lg font-semibold text-white">
-            {name.slice(0, 1).toUpperCase()}
-          </div>
+          <Avatar name={name} url={p.avatar_url} size={56} />
           <div>
             <div className="text-[17px] font-semibold leading-tight">{name}</div>
             <div className="mt-0.5 text-[12.5px] text-muted-foreground">
@@ -115,6 +121,10 @@ function PublicProfilePage() {
       <div className="rounded-[16px] hairline bg-white p-4 text-[13px] text-muted-foreground">
         Матчей сыграно: <span className="font-mono tabular-nums text-foreground">{p.matches_played}</span>
       </div>
+
+      <AchievementsCard userId={userId} teamIds={teamIds} />
+      <TeamHistoryCard userId={userId} onTeams={setTeamIds} />
+      <BattleHistoryCard userId={userId} />
     </div>
   );
 }

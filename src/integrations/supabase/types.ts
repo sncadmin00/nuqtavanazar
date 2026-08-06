@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          awarded_at: string
+          created_at: string
+          event_name: string | null
+          id: string
+          kind: string
+          note: string | null
+          place: number | null
+          team_id: string | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          awarded_at?: string
+          created_at?: string
+          event_name?: string | null
+          id?: string
+          kind?: string
+          note?: string | null
+          place?: number | null
+          team_id?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          awarded_at?: string
+          created_at?: string
+          event_name?: string | null
+          id?: string
+          kind?: string
+          note?: string | null
+          place?: number | null
+          team_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievements_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenge_bookings: {
         Row: {
           challenger_id: string | null
@@ -768,6 +818,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "team_invites_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_memberships: {
+        Row: {
+          created_at: string
+          id: string
+          joined_at: string
+          left_at: string | null
+          role: string
+          team_id: string
+          team_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          role?: string
+          team_id: string
+          team_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          joined_at?: string
+          left_at?: string | null
+          role?: string
+          team_id?: string
+          team_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_memberships_team_id_fkey"
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"

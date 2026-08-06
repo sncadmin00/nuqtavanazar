@@ -6,6 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchTopRatings } from "@/lib/debate-data";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { getStreak, type StreakInfo } from "@/lib/streak";
+import {
+  Avatar,
+  AchievementsCard,
+  BattleHistoryCard,
+  TeamHistoryCard,
+} from "@/components/profile/ProfileSections";
+
 
 export const Route = createFileRoute("/profile")({
   head: () => ({
@@ -31,11 +38,14 @@ type Rating = {
   matches_played: number;
   league: string;
   display_name: string | null;
+  avatar_url?: string | null;
 };
 
 function ProfilePage() {
   const { user, signOut, loading } = useAuth();
   const [me, setMe] = useState<Rating | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [teamIds, setTeamIds] = useState<string[]>([]);
   const [top, setTop] = useState<Awaited<ReturnType<typeof fetchTopRatings>>>([]);
   const [tab, setTab] = useState<"mastery" | "knock" | "moderator">("mastery");
   const [streak, setStreak] = useState<StreakInfo>({ current: 0, longest: 0, weekDays: Array(7).fill(false) });
@@ -68,6 +78,7 @@ function ProfilePage() {
           });
         } else {
           setMe(data as Rating);
+          setAvatar((data as Rating).avatar_url ?? null);
         }
       });
   }, [user]);
@@ -100,9 +111,7 @@ function ProfilePage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="grid h-14 w-14 place-items-center rounded-full bg-[color:var(--color-ink)] text-lg font-semibold text-white">
-            {name.slice(0, 1).toUpperCase()}
-          </div>
+          <Avatar name={name} url={avatar} size={56} editable userId={user.id} onChange={setAvatar} />
           <div>
             <div className="text-[17px] font-semibold leading-tight">{name}</div>
             <div className="mt-0.5 text-[12.5px] text-muted-foreground">
@@ -143,6 +152,10 @@ function ProfilePage() {
           Тренировка →
         </Link>
       </section>
+
+      <AchievementsCard userId={user.id} teamIds={teamIds} />
+      <TeamHistoryCard userId={user.id} onTeams={setTeamIds} />
+      <BattleHistoryCard userId={user.id} />
 
 
       {/* Tabs */}
