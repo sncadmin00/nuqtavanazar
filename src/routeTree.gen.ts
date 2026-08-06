@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrainingRouteImport } from './routes/training'
+import { Route as TournamentsRouteImport } from './routes/tournaments'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as SparringRouteImport } from './routes/sparring'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -36,6 +37,11 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 const TrainingRoute = TrainingRouteImport.update({
   id: '/training',
   path: '/training',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TournamentsRoute = TournamentsRouteImport.update({
+  id: '/tournaments',
+  path: '/tournaments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamsRoute = TeamsRouteImport.update({
@@ -165,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sparring': typeof SparringRoute
   '/teams': typeof TeamsRoute
+  '/tournaments': typeof TournamentsRoute
   '/training': typeof TrainingRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
@@ -188,6 +195,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sparring': typeof SparringRoute
   '/teams': typeof TeamsRoute
+  '/tournaments': typeof TournamentsRoute
   '/training': typeof TrainingRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
@@ -214,6 +222,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sparring': typeof SparringRoute
   '/teams': typeof TeamsRoute
+  '/tournaments': typeof TournamentsRoute
   '/training': typeof TrainingRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sparring'
     | '/teams'
+    | '/tournaments'
     | '/training'
     | '/admin'
     | '/learn/$moduleId'
@@ -263,6 +273,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sparring'
     | '/teams'
+    | '/tournaments'
     | '/training'
     | '/admin'
     | '/learn/$moduleId'
@@ -288,6 +299,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/sparring'
     | '/teams'
+    | '/tournaments'
     | '/training'
     | '/_authenticated/admin'
     | '/learn/$moduleId'
@@ -314,6 +326,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SparringRoute: typeof SparringRoute
   TeamsRoute: typeof TeamsRoute
+  TournamentsRoute: typeof TournamentsRoute
   TrainingRoute: typeof TrainingRoute
   WeekWeekIdRoute: typeof WeekWeekIdRoute
 }
@@ -325,6 +338,13 @@ declare module '@tanstack/react-router' {
       path: '/training'
       fullPath: '/training'
       preLoaderRoute: typeof TrainingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournaments': {
+      id: '/tournaments'
+      path: '/tournaments'
+      fullPath: '/tournaments'
+      preLoaderRoute: typeof TournamentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams': {
@@ -536,6 +556,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SparringRoute: SparringRoute,
   TeamsRoute: TeamsRoute,
+  TournamentsRoute: TournamentsRoute,
   TrainingRoute: TrainingRoute,
   WeekWeekIdRoute: WeekWeekIdRoute,
 }
