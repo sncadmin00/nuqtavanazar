@@ -25,23 +25,21 @@ export function MatchesStatus({ matches, revealed }: { matches: MatchesStatusT; 
       </p>
 
       <div className="mt-3 grid grid-cols-2 gap-2.5">
-        <FormatCard label="1 × 1" count={matches.one_v_one} listeners={matches.listeners_one} live={isLive} />
+        <FormatCard label="1 × 1" count={matches.one_v_one} listeners={matches.listeners_one} live={isLive} href="/duel" />
         <FormatCard label="2 × 2" count={matches.two_v_two} listeners={matches.listeners_two} live={isLive} />
       </div>
     </section>
   );
 }
 
-function FormatCard({ label, count, listeners, live }: { label: string; count: number; listeners: number; live: boolean }) {
+function FormatCard({ label, count, listeners, live, href }: { label: string; count: number; listeners: number; live: boolean; href?: "/duel" }) {
   const t = useT();
   const { lang } = useI18n();
   const roomsWord = tPlural(lang, count, "matches.rooms");
   const recordedWord = tPlural(lang, count, "matches.recorded");
-  return (
-    <button
-      onClick={() => toast(live ? t("rt.listenSoon") : t("matches.applySoon"))}
-      className="rounded-[14px] hairline bg-white p-3.5 text-left active:scale-[0.99]"
-    >
+  const cls = "block rounded-[14px] hairline bg-white p-3.5 text-left active:scale-[0.99]";
+  const inner = (
+    <>
       <div className="flex items-center gap-1.5">
         <Swords className="h-4 w-4 text-primary" />
         <span className="text-[12px] font-semibold uppercase tracking-wide text-foreground">{label}</span>
@@ -50,6 +48,19 @@ function FormatCard({ label, count, listeners, live }: { label: string; count: n
       <div className="mt-0.5 text-[11px] text-muted-foreground">
         {live ? `${roomsWord} · ${listeners} ${t("matches.listeners")}` : recordedWord}
       </div>
+    </>
+  );
+  if (href) {
+    return (
+      <Link to={href} className={cls}>
+        {inner}
+      </Link>
+    );
+  }
+  return (
+    <button onClick={() => toast(live ? t("rt.listenSoon") : t("matches.applySoon"))} className={cls}>
+      {inner}
     </button>
   );
 }
+
