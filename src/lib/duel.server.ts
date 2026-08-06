@@ -92,7 +92,13 @@ overall — сумма пяти оценок (0-50). Победитель опр
 const K = 24;
 
 /** Обновляет Elo обоих участников после дуэли. */
-export async function applyDuelElo(winnerId: string, loserId: string, names: Record<string, string>) {
+export async function applyDuelElo(
+  winnerId: string,
+  loserId: string,
+  names: Record<string, string>,
+  k: number = K,
+  countMatch: boolean = true,
+) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const ids = [winnerId, loserId];
   const { data } = await supabaseAdmin
@@ -106,7 +112,8 @@ export async function applyDuelElo(winnerId: string, loserId: string, names: Rec
   const w = get(winnerId);
   const l = get(loserId);
   const expectedW = 1 / (1 + Math.pow(10, (l.mastery - w.mastery) / 400));
-  const delta = Math.round(K * (1 - expectedW));
+  const delta = Math.round(k * (1 - expectedW));
+  const bump = countMatch ? 1 : 0;
 
   await supabaseAdmin.from("player_ratings").upsert(
     [
@@ -114,7 +121,7 @@ export async function applyDuelElo(winnerId: string, loserId: string, names: Rec
         user_id: winnerId,
         mastery: w.mastery + delta,
         mastery_trend_week: (w.mastery_trend_week ?? 0) + delta,
-        matches_played: (w.matches_played ?? 0) + 1,
+        matches_played: (w.matches_played ?? 0) + bump,
         display_name: names[winnerId] ?? null,
         updated_at: new Date().toISOString(),
       },
@@ -122,7 +129,7 @@ export async function applyDuelElo(winnerId: string, loserId: string, names: Rec
         user_id: loserId,
         mastery: Math.max(100, l.mastery - delta),
         mastery_trend_week: (l.mastery_trend_week ?? 0) - delta,
-        matches_played: (l.matches_played ?? 0) + 1,
+        matches_played: (l.matches_played ?? 0) + bump,
         display_name: names[loserId] ?? null,
         updated_at: new Date().toISOString(),
       },
@@ -131,6 +138,45 @@ export async function applyDuelElo(winnerId: string, loserId: string, names: Rec
   );
   return delta;
 }
+
+/** Командный Elo считается отдельно от индивидуального */
+export async function applyTeamElo(winnerTeamId: string, loserTeamId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("team_ratings")
+    .select("team_id, elo, matches_played, wins")
+    .in("team_id", [winnerTeamId, loserTeamId]);
+  const rows = data ?? [];
+  const get = (id: string) =>
+    rows.find((r) => r.team_id === id) ?? { team_id: id, elo: 1000, matches_played: 0, wins: 0 };
+
+  const w = get(winnerTeamId);
+  const l = get(loserTeamId);
+  const expectedW = 1 / (1 + Math.pow(10, (l.elo - w.elo) / 400));
+  const delta = Math.round(K * (1 - expectedW));
+
+  await supabaseAdmin.from("team_ratings").upsert(
+    [
+      {
+        team_id: winnerTeamId,
+        elo: w.elo + delta,
+        matches_played: (w.matches_played ?? 0) + 1,
+        wins: (w.wins ?? 0) + 1,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        team_id: loserTeamId,
+        elo: Math.max(100, l.elo - delta),
+        matches_played: (l.matches_played ?? 0) + 1,
+        wins: l.wins ?? 0,
+        updated_at: new Date().toISOString(),
+      },
+    ],
+    { onConflict: "team_id" },
+  );
+  return delta;
+}
+
 
 const STT_URL = "https://ai.gateway.lovable.dev/v1/audio/transcriptions";
 const STT_MODEL = "openai/gpt-4o-mini-transcribe";
