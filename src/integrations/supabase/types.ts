@@ -330,6 +330,7 @@ export type Database = {
           recording_url: string | null
           room_name: string | null
           status: string
+          tournament_match_id: string | null
           turn_ends_at: string | null
           turn_index: number
           turn_user_id: string | null
@@ -357,6 +358,7 @@ export type Database = {
           recording_url?: string | null
           room_name?: string | null
           status?: string
+          tournament_match_id?: string | null
           turn_ends_at?: string | null
           turn_index?: number
           turn_user_id?: string | null
@@ -384,6 +386,7 @@ export type Database = {
           recording_url?: string | null
           room_name?: string | null
           status?: string
+          tournament_match_id?: string | null
           turn_ends_at?: string | null
           turn_index?: number
           turn_user_id?: string | null
@@ -405,6 +408,13 @@ export type Database = {
             columns: ["pro_team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duels_tournament_match_id_fkey"
+            columns: ["tournament_match_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_matches"
             referencedColumns: ["id"]
           },
           {
@@ -939,6 +949,212 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      tournament_entrants: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          kind: string
+          seed: number | null
+          status: string
+          team_id: string | null
+          tournament_id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          id?: string
+          kind: string
+          seed?: number | null
+          status?: string
+          team_id?: string | null
+          tournament_id: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          kind?: string
+          seed?: number | null
+          status?: string
+          team_id?: string | null
+          tournament_id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_entrants_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_entrants_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournament_matches: {
+        Row: {
+          a_entrant_id: string | null
+          a_points: number
+          b_entrant_id: string | null
+          b_points: number
+          created_at: string
+          duel_id: string | null
+          id: string
+          round_no: number
+          scheduled_at: string | null
+          slot: number
+          stage: string
+          status: string
+          tournament_id: string
+          updated_at: string
+          winner_entrant_id: string | null
+        }
+        Insert: {
+          a_entrant_id?: string | null
+          a_points?: number
+          b_entrant_id?: string | null
+          b_points?: number
+          created_at?: string
+          duel_id?: string | null
+          id?: string
+          round_no?: number
+          scheduled_at?: string | null
+          slot?: number
+          stage: string
+          status?: string
+          tournament_id: string
+          updated_at?: string
+          winner_entrant_id?: string | null
+        }
+        Update: {
+          a_entrant_id?: string | null
+          a_points?: number
+          b_entrant_id?: string | null
+          b_points?: number
+          created_at?: string
+          duel_id?: string | null
+          id?: string
+          round_no?: number
+          scheduled_at?: string | null
+          slot?: number
+          stage?: string
+          status?: string
+          tournament_id?: string
+          updated_at?: string
+          winner_entrant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_matches_a_entrant_id_fkey"
+            columns: ["a_entrant_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_entrants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_matches_b_entrant_id_fkey"
+            columns: ["b_entrant_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_entrants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_matches_duel_id_fkey"
+            columns: ["duel_id"]
+            isOneToOne: false
+            referencedRelation: "duels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_matches_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_matches_winner_entrant_id_fkey"
+            columns: ["winner_entrant_id"]
+            isOneToOne: false
+            referencedRelation: "tournament_entrants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          day1_at: string
+          day1_topic: string | null
+          day2_at: string
+          day2_topic: string | null
+          description: string | null
+          format: string
+          id: string
+          max_entrants: number
+          slot_minutes: number
+          status: string
+          title: string
+          updated_at: string
+          week_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          day1_at: string
+          day1_topic?: string | null
+          day2_at: string
+          day2_topic?: string | null
+          description?: string | null
+          format?: string
+          id?: string
+          max_entrants?: number
+          slot_minutes?: number
+          status?: string
+          title: string
+          updated_at?: string
+          week_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          day1_at?: string
+          day1_topic?: string | null
+          day2_at?: string
+          day2_topic?: string | null
+          description?: string | null
+          format?: string
+          id?: string
+          max_entrants?: number
+          slot_minutes?: number
+          status?: string
+          title?: string
+          updated_at?: string
+          week_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournaments_week_id_fkey"
+            columns: ["week_id"]
+            isOneToOne: false
+            referencedRelation: "debate_weeks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
