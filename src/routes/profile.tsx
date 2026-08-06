@@ -38,11 +38,14 @@ type Rating = {
   matches_played: number;
   league: string;
   display_name: string | null;
+  avatar_url?: string | null;
 };
 
 function ProfilePage() {
   const { user, signOut, loading } = useAuth();
   const [me, setMe] = useState<Rating | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [teamIds, setTeamIds] = useState<string[]>([]);
   const [top, setTop] = useState<Awaited<ReturnType<typeof fetchTopRatings>>>([]);
   const [tab, setTab] = useState<"mastery" | "knock" | "moderator">("mastery");
   const [streak, setStreak] = useState<StreakInfo>({ current: 0, longest: 0, weekDays: Array(7).fill(false) });
