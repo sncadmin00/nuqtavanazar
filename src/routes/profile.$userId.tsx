@@ -6,6 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { getDuelWindow } from "@/lib/duel.functions";
 import { resolveMyName, sendChallenge } from "@/lib/challenges";
+import {
+  Avatar,
+  AchievementsCard,
+  BattleHistoryCard,
+  TeamHistoryCard,
+} from "@/components/profile/ProfileSections";
 
 export const Route = createFileRoute("/profile/$userId")({
   head: () => ({
