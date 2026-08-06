@@ -133,8 +133,8 @@ function Splash() {
   const [gone, setGone] = useState(false);
   const [fade, setFade] = useState(false);
   useEffect(() => {
-    const f = setTimeout(() => setFade(true), 700);
-    const g = setTimeout(() => setGone(true), 1100);
+    const f = setTimeout(() => setFade(true), 1750);
+    const g = setTimeout(() => setGone(true), 2150);
     return () => {
       clearTimeout(f);
       clearTimeout(g);
