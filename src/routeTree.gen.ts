@@ -18,6 +18,7 @@ import { Route as FreeTalkRouteImport } from './routes/free-talk'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DebateDayRouteImport } from './routes/debate-day'
 import { Route as CaseBuilderRouteImport } from './routes/case-builder'
+import { Route as BrainstormRouteImport } from './routes/brainstorm'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as AboutRouteImport } from './routes/about'
@@ -72,6 +73,11 @@ const DebateDayRoute = DebateDayRouteImport.update({
 const CaseBuilderRoute = CaseBuilderRouteImport.update({
   id: '/case-builder',
   path: '/case-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrainstormRoute = BrainstormRouteImport.update({
+  id: '/brainstorm',
+  path: '/brainstorm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
+  '/brainstorm': typeof BrainstormRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
+  '/brainstorm': typeof BrainstormRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
@@ -170,6 +178,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/archive': typeof ArchiveRoute
   '/auth': typeof AuthRoute
+  '/brainstorm': typeof BrainstormRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
   '/events': typeof EventsRoute
@@ -192,6 +201,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/archive'
     | '/auth'
+    | '/brainstorm'
     | '/case-builder'
     | '/debate-day'
     | '/events'
@@ -212,6 +222,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/archive'
     | '/auth'
+    | '/brainstorm'
     | '/case-builder'
     | '/debate-day'
     | '/events'
@@ -232,6 +243,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/archive'
     | '/auth'
+    | '/brainstorm'
     | '/case-builder'
     | '/debate-day'
     | '/events'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ArchiveRoute: typeof ArchiveRoute
   AuthRoute: typeof AuthRoute
+  BrainstormRoute: typeof BrainstormRoute
   CaseBuilderRoute: typeof CaseBuilderRoute
   DebateDayRoute: typeof DebateDayRoute
   EventsRoute: typeof EventsRoute
@@ -329,6 +342,13 @@ declare module '@tanstack/react-router' {
       path: '/case-builder'
       fullPath: '/case-builder'
       preLoaderRoute: typeof CaseBuilderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brainstorm': {
+      id: '/brainstorm'
+      path: '/brainstorm'
+      fullPath: '/brainstorm'
+      preLoaderRoute: typeof BrainstormRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -444,6 +464,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ArchiveRoute: ArchiveRoute,
   AuthRoute: AuthRoute,
+  BrainstormRoute: BrainstormRoute,
   CaseBuilderRoute: CaseBuilderRoute,
   DebateDayRoute: DebateDayRoute,
   EventsRoute: EventsRoute,
@@ -458,13 +479,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

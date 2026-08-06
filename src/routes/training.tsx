@@ -232,42 +232,7 @@ function TrainingPage() {
         </div>
       </section>
 
-      {/* 3. Level selector */}
-      <div className="rounded-[16px] hairline bg-white p-4">
-        <div className="flex items-center justify-between">
-          <div className="formula-motif !text-foreground/70">Длительность</div>
-          <div className="text-[11px] text-muted-foreground">
-            {progress.attempts[level]}/{UNLOCK_AT} до следующего
-          </div>
-        </div>
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {LEVELS.map((l) => {
-            const active = l === level;
-            const locked = !progress.unlocked[l];
-            return (
-              <button
-                key={l}
-                onClick={() => chooseLevel(l)}
-                className={
-                  "rounded-full px-3 py-2 text-[13px] font-semibold transition " +
-                  (active
-                    ? "bg-[color:var(--color-ink)] text-white"
-                    : locked
-                      ? "bg-muted text-muted-foreground hover:bg-muted/80"
-                      : "bg-accent text-foreground hover:bg-accent/80")
-                }
-              >
-                <span className="inline-flex items-center gap-1.5">
-                  {locked && <Lock className="h-3 w-3" />}
-                  {l} сек
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* 4. Твой путь сегодня — timeline stepper */}
+      {/* CARD 1 — Тренировка по секундам (уровни + путь) */}
       {(() => {
         const step1Done = dice.status === "ready";
         const step2Done = caseStarted;
@@ -297,14 +262,54 @@ function TrainingPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AnimatedLogo size={22} mode="pulse" trigger={activeIdx} />
-                <div className="formula-motif !text-foreground/70">Твой путь сегодня</div>
+                <div>
+                  <div className="text-[14px] font-semibold leading-tight">
+                    1 · Тренировка по секундам
+                  </div>
+                  <div className="text-[11.5px] text-muted-foreground">
+                    Тема → кейс → запись
+                  </div>
+                </div>
               </div>
-              <div className="text-[11px] text-muted-foreground">
-                {activeIdx + 1}/3
-              </div>
+              <div className="text-[11px] text-muted-foreground">{activeIdx + 1}/3</div>
             </div>
 
-            <ol className="relative mt-3 space-y-3">
+            {/* Уровни */}
+            <div className="mt-4 flex items-center justify-between">
+              <div className="formula-motif !text-foreground/70">Длительность</div>
+              <div className="text-[11px] text-muted-foreground">
+                {progress.attempts[level]}/{UNLOCK_AT} до следующего
+              </div>
+            </div>
+            <div className="mt-2 grid grid-cols-3 gap-2">
+              {LEVELS.map((l) => {
+                const active = l === level;
+                const locked = !progress.unlocked[l];
+                return (
+                  <button
+                    key={l}
+                    onClick={() => chooseLevel(l)}
+                    className={
+                      "rounded-full px-3 py-2 text-[13px] font-semibold transition " +
+                      (active
+                        ? "bg-[color:var(--color-ink)] text-white"
+                        : locked
+                          ? "bg-muted text-muted-foreground hover:bg-muted/80"
+                          : "bg-accent text-foreground hover:bg-accent/80")
+                    }
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      {locked && <Lock className="h-3 w-3" />}
+                      {l} сек
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="my-4 h-px bg-border" />
+
+            <ol className="relative space-y-3">
               <span
                 aria-hidden
                 className="absolute left-[13px] top-4 bottom-4 w-px bg-border"
@@ -402,6 +407,7 @@ function TrainingPage() {
           </div>
         );
       })()}
+
 
       {/* Dice result */}
       {dice.status === "ready" && (
