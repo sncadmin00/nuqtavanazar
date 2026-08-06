@@ -142,12 +142,18 @@ function DuelPage() {
     if (!duel || duel.status !== "judging" || judgingRef.current) return;
     judgingRef.current = true;
     finishDuel({ data: { duel_id: duel.id } })
-      .then(() => load(duel.id))
+      .then(async () => {
+        if (duel.tournament_match_id) {
+          await syncTournamentMatch({ data: { match_id: duel.tournament_match_id } }).catch(() => {});
+        }
+        await load(duel.id);
+      })
       .catch((e: any) => toast.error(e?.message ?? "Судья недоступен"))
       .finally(() => {
         judgingRef.current = false;
       });
   }, [duel, load]);
+
 
   const enter = async () => {
     setBusy(true);
