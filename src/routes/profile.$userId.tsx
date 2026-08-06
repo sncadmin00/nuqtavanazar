@@ -59,12 +59,39 @@ function PublicProfilePage() {
           </div>
         </div>
         <button
-          onClick={() => toast("Challenge отправится, когда матчинг откроется")}
-          className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground"
+          disabled={!user || !weekId || !revealed || sending || sent}
+          onClick={async () => {
+            if (!user || !weekId) return;
+            setSending(true);
+            try {
+              const myName = await resolveMyName(user.id, user.email);
+              await sendChallenge({
+                weekId,
+                fromUserId: user.id,
+                fromName: myName,
+                toUserId: userId,
+                toName: name,
+              });
+              setSent(true);
+              toast.success("Вызов отправлен");
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : "Не получилось");
+            } finally {
+              setSending(false);
+            }
+          }}
+          className="flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-[13px] font-semibold text-primary-foreground disabled:opacity-40"
         >
-          <Swords className="h-4 w-4" /> Challenge
+          <Swords className="h-4 w-4" /> {sent ? "Вызов отправлен" : "Challenge"}
         </button>
       </div>
+
+      {!revealed && (
+        <p className="text-[12px] text-muted-foreground">
+          Вызов можно бросить после объявления темы недели.
+        </p>
+      )}
+
 
       <div className="grid grid-cols-3 gap-2">
         <Stat label="Мастерство" value={p.mastery} accent />
