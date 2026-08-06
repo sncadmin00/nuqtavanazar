@@ -147,3 +147,15 @@
   background: #e8562d;
   animation: pulse-live 1.4s ease-in-out infinite;
 }
+
+@utility gradient-ink {
+  background: linear-gradient(135deg, var(--color-ink) 0%, #2a2740 100%);
+}
+
+@utility shadow-card {
+  box-shadow: 0 2px 12px -4px color-mix(in oklab, var(--color-ink) 12%, transparent);
+}
+
+@utility shadow-glow {
+  box-shadow: 0 8px 24px -8px color-mix(in oklab, var(--color-primary) 35%, transparent);
+}
