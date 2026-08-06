@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
   Dice5,
+  Swords,
+  Brain,
+
   Mic,
   Lock,
   ListChecks,
