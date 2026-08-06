@@ -69,9 +69,7 @@ function PublicProfilePage() {
 
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="grid h-14 w-14 place-items-center rounded-full bg-[color:var(--color-ink)] text-lg font-semibold text-white">
-            {name.slice(0, 1).toUpperCase()}
-          </div>
+          <Avatar name={name} url={p.avatar_url} size={56} />
           <div>
             <div className="text-[17px] font-semibold leading-tight">{name}</div>
             <div className="mt-0.5 text-[12.5px] text-muted-foreground">
