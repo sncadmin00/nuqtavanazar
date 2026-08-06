@@ -117,15 +117,19 @@ export const enterDuel = createServerFn({ method: "POST" })
     // уже в активной дуэли?
     const { data: mine } = await supabase
       .from("duels")
-      .select("id, pro_user_id, status")
+      .select("id, pro_user_id, pro_user2_id, status")
       .in("status", ["waiting", "live", "judging"])
-      .or(`pro_user_id.eq.${userId},con_user_id.eq.${userId}`)
+      .or(
+        `pro_user_id.eq.${userId},con_user_id.eq.${userId},pro_user2_id.eq.${userId},con_user2_id.eq.${userId}`,
+      )
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
     if (mine) {
-      return { duel_id: mine.id, role: mine.pro_user_id === userId ? "pro" : "con", matched: mine.status !== "waiting" };
+      const isPro = mine.pro_user_id === userId || mine.pro_user2_id === userId;
+      return { duel_id: mine.id, role: isPro ? "pro" : "con", matched: mine.status !== "waiting" };
     }
+
 
     // ищем ожидающего соперника по теме этой недели
     const { data: open } = await supabase
