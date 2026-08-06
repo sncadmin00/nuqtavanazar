@@ -205,7 +205,7 @@ function TrainingPage() {
       {/* 1. Header row */}
       <div className="flex items-center justify-between">
         <div className="text-[18px] font-semibold tracking-tight">
-          Ме<span className="text-primary">з</span>он
+          nuqta va na<span className="text-primary">z</span>ar
         </div>
         <div
           className={
