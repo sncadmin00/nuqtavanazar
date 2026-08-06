@@ -176,7 +176,7 @@ export const finishDuel = createServerFn({ method: "POST" })
       .from("duels")
       .update({
         status: "finished",
-        verdict: verdict as unknown as Record<string, unknown>,
+        verdict: JSON.parse(JSON.stringify(verdict)),
         winner_user_id: winnerId,
         updated_at: new Date().toISOString(),
       })
