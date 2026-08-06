@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { DuelWindow } from "@/lib/duel.functions";
 
 function isNewSupabaseApiKey(v: string) {
   return v.startsWith("sb_publishable_") || v.startsWith("sb_secret_");
