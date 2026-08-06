@@ -78,6 +78,7 @@ function ProfilePage() {
           });
         } else {
           setMe(data as Rating);
+          setAvatar((data as Rating).avatar_url ?? null);
         }
       });
   }, [user]);
