@@ -167,6 +167,13 @@ const ru: Dict = {
   "rt.playerSoon": "Плеер скоро откроется",
   "rt.recordUnavailable": "Запись пока недоступна",
 
+  // Events
+  "events.title": "События и турниры",
+  "events.subtitle": "Расписание встреч, мастер-классов и турниров Nuqta va Nazar.",
+  "events.empty": "Ближайших событий пока нет — следите за обновлениями.",
+  "events.contact.title": "Хотите провести турнир или воркшоп?",
+  "events.contact.body": "Напишите нам — организуем совместное событие в вашем городе или университете.",
+
   "common.dash": "—",
 };
 
@@ -310,6 +317,13 @@ const uz: Dict = {
   "rt.playerSoon": "Pleyer tez orada ochiladi",
   "rt.recordUnavailable": "Yozuv hozircha mavjud emas",
 
+  // Events
+  "events.title": "Tadbirlar va turnirlar",
+  "events.subtitle": "Nuqta va Nazar uchrashuvlari, master-klasslari va turnirlar jadvali.",
+  "events.empty": "Yaqinda tadbirlar yoʻq — yangilanishlarni kuzatib boring.",
+  "events.contact.title": "Turnir yoki vorkshop oʻtkazmoqchimisiz?",
+  "events.contact.body": "Bizga yozing — sizning shahringiz yoki universitetingizda hamkorlik tadbirini tashkil qilamiz.",
+
   "common.dash": "—",
 };
 
@@ -452,6 +466,13 @@ const en: Dict = {
   "rt.listen": "Listen",
   "rt.playerSoon": "Player opens soon",
   "rt.recordUnavailable": "Recording not available yet",
+
+  // Events
+  "events.title": "Events & tournaments",
+  "events.subtitle": "Schedule of Nuqta va Nazar meetups, workshops and tournaments.",
+  "events.empty": "No upcoming events yet — stay tuned.",
+  "events.contact.title": "Want to host a tournament or workshop?",
+  "events.contact.body": "Email us and we’ll co-organize an event in your city or university.",
 
   "common.dash": "—",
 };
