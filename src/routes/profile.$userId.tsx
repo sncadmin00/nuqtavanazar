@@ -123,6 +123,10 @@ function PublicProfilePage() {
       <div className="rounded-[16px] hairline bg-white p-4 text-[13px] text-muted-foreground">
         Матчей сыграно: <span className="font-mono tabular-nums text-foreground">{p.matches_played}</span>
       </div>
+
+      <AchievementsCard userId={userId} teamIds={teamIds} />
+      <TeamHistoryCard userId={userId} onTeams={setTeamIds} />
+      <BattleHistoryCard userId={userId} />
     </div>
   );
 }
