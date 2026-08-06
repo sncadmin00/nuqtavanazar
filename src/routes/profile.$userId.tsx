@@ -30,6 +30,8 @@ function PublicProfilePage() {
   const [revealed, setRevealed] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [teamIds, setTeamIds] = useState<string[]>([]);
+
 
   useEffect(() => {
     supabase
