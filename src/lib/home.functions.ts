@@ -130,6 +130,15 @@ type PastRT = {
 
 export type RetroPollStats = { pro: number; con: number; total: number };
 
+export type ActiveTournament = {
+  id: string;
+  title: string;
+  status: string;
+  format: string;
+  day1_at: string;
+  day2_at: string;
+};
+
 export type HomeState = {
   phase: HomePhase;
   now: string;
@@ -137,6 +146,9 @@ export type HomeState = {
   previous_week: WeekPublic | null;
   matches: MatchesStatus;
   roundtable: RoundtableCardState;
+  duel_window: DuelWindow;
+  waiting_duels: number;
+  active_tournaments: ActiveTournament[];
   discussion?: {
     arguments_pro: IdeaArgument[];
     arguments_con: IdeaArgument[];
