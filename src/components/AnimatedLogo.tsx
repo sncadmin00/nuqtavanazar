@@ -42,7 +42,7 @@ function buildStates(mode: "dark" | "light"): Dot[][] {
 }
 
 const EASE = "cubic-bezier(.65,0,.35,1)";
-const DUR = 900;
+const DUR = 520;
 
 export type AnimatedLogoProps = {
   size?: number;
