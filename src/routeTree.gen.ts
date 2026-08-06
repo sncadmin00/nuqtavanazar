@@ -30,6 +30,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LearnIndexRouteImport } from './routes/learn.index'
 import { Route as WeekWeekIdRouteImport } from './routes/week.$weekId'
+import { Route as TournamentTidRouteImport } from './routes/tournament.$tid'
 import { Route as ProfileUserIdRouteImport } from './routes/profile.$userId'
 import { Route as LearnModuleIdRouteImport } from './routes/learn.$moduleId'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -138,6 +139,11 @@ const WeekWeekIdRoute = WeekWeekIdRouteImport.update({
   path: '/week/$weekId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TournamentTidRoute = TournamentTidRouteImport.update({
+  id: '/tournament/$tid',
+  path: '/tournament/$tid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileUserIdRoute = ProfileUserIdRouteImport.update({
   id: '/$userId',
   path: '/$userId',
@@ -176,6 +182,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
+  '/tournament/$tid': typeof TournamentTidRoute
   '/week/$weekId': typeof WeekWeekIdRoute
   '/learn/': typeof LearnIndexRoute
 }
@@ -200,6 +207,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
+  '/tournament/$tid': typeof TournamentTidRoute
   '/week/$weekId': typeof WeekWeekIdRoute
   '/learn': typeof LearnIndexRoute
 }
@@ -227,6 +235,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/learn/$moduleId': typeof LearnModuleIdRoute
   '/profile/$userId': typeof ProfileUserIdRoute
+  '/tournament/$tid': typeof TournamentTidRoute
   '/week/$weekId': typeof WeekWeekIdRoute
   '/learn/': typeof LearnIndexRoute
 }
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/learn/$moduleId'
     | '/profile/$userId'
+    | '/tournament/$tid'
     | '/week/$weekId'
     | '/learn/'
   fileRoutesByTo: FileRoutesByTo
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/learn/$moduleId'
     | '/profile/$userId'
+    | '/tournament/$tid'
     | '/week/$weekId'
     | '/learn'
   id:
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/learn/$moduleId'
     | '/profile/$userId'
+    | '/tournament/$tid'
     | '/week/$weekId'
     | '/learn/'
   fileRoutesById: FileRoutesById
@@ -328,6 +340,7 @@ export interface RootRouteChildren {
   TeamsRoute: typeof TeamsRoute
   TournamentsRoute: typeof TournamentsRoute
   TrainingRoute: typeof TrainingRoute
+  TournamentTidRoute: typeof TournamentTidRoute
   WeekWeekIdRoute: typeof WeekWeekIdRoute
 }
 
@@ -480,6 +493,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WeekWeekIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tournament/$tid': {
+      id: '/tournament/$tid'
+      path: '/tournament/$tid'
+      fullPath: '/tournament/$tid'
+      preLoaderRoute: typeof TournamentTidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile/$userId': {
       id: '/profile/$userId'
       path: '/$userId'
@@ -558,6 +578,7 @@ const rootRouteChildren: RootRouteChildren = {
   TeamsRoute: TeamsRoute,
   TournamentsRoute: TournamentsRoute,
   TrainingRoute: TrainingRoute,
+  TournamentTidRoute: TournamentTidRoute,
   WeekWeekIdRoute: WeekWeekIdRoute,
 }
 export const routeTree = rootRouteImport
