@@ -102,7 +102,7 @@ function TournamentPage() {
     if (!user || !t) return;
     setBusy(true);
     try {
-      const name = await resolveMyName(user);
+      const name = await resolveMyName(user.id, user.email);
       await registerForTournament(t, user.id, name);
       toast.success("Заявка принята");
       await load();
