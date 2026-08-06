@@ -4,6 +4,8 @@ import { Swords, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
+import { getDuelWindow } from "@/lib/duel.functions";
+import { resolveMyName, sendChallenge } from "@/lib/challenges";
 
 export const Route = createFileRoute("/profile/$userId")({
   head: () => ({
@@ -18,6 +20,10 @@ function PublicProfilePage() {
   const { userId } = useParams({ from: "/profile/$userId" });
   const { user } = useAuth();
   const [p, setP] = useState<any>(null);
+  const [weekId, setWeekId] = useState<string | null>(null);
+  const [revealed, setRevealed] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
   useEffect(() => {
     supabase
@@ -26,7 +32,14 @@ function PublicProfilePage() {
       .eq("user_id", userId)
       .maybeSingle()
       .then(({ data }) => setP(data));
+    getDuelWindow()
+      .then((w) => {
+        setWeekId(w.week_id);
+        setRevealed(!!w.topic);
+      })
+      .catch(() => {});
   }, [userId]);
+
 
   if (user?.id === userId) {
     return (
