@@ -1163,6 +1163,7 @@ export type Database = {
         Args: { _visitor_id: string; _voice_note_id: string }
         Returns: number
       }
+      leave_team: { Args: { _team_id: string }; Returns: boolean }
       start_challenge_duel: { Args: { _challenge_id: string }; Returns: string }
     }
     Enums: {
