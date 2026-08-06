@@ -161,3 +161,102 @@ async function advanceBracket(admin: any, tournamentId: string, stage: string, s
     });
   }
 }
+
+/** Генерирует круговой этап: пары по методу круга + расписание по турам. */
+export async function generateRoundRobin(admin: any, tournamentId: string) {
+  const { data: t } = await admin
+    .from("tournaments")
+    .select("id, day1_at, slot_minutes")
+    .eq("id", tournamentId)
+    .maybeSingle();
+  if (!t) throw new Error("Турнир не найден");
+
+  const { data: ents } = await admin
+    .from("tournament_entrants")
+    .select("id")
+    .eq("tournament_id", tournamentId)
+    .eq("status", "registered")
+    .order("created_at", { ascending: true });
+  const ids = (ents ?? []).map((e: { id: string }) => e.id);
+  if (ids.length < 3) throw new Error("Нужно минимум 3 участника");
+
+  const { roundRobinPairs } = await import("@/lib/tournament-utils");
+  const rounds = roundRobinPairs(ids);
+
+  await admin.from("tournament_matches").delete().eq("tournament_id", tournamentId).eq("stage", "rr");
+
+  const start = new Date(t.day1_at).getTime();
+  const step = (t.slot_minutes ?? 45) * 60_000;
+  const rows = rounds.flatMap((pairs: [string, string][], r: number) =>
+    pairs.map(([a, b], i) => ({
+      tournament_id: tournamentId,
+      stage: "rr",
+      round_no: r + 1,
+      slot: i + 1,
+      a_entrant_id: a,
+      b_entrant_id: b,
+      scheduled_at: new Date(start + r * step).toISOString(),
+      status: "pending",
+    })),
+  );
+  const { error } = await admin.from("tournament_matches").insert(rows);
+  if (error) throw new Error(error.message);
+  return rows.length;
+}
+
+/** Формирует сетку плей-офф из топ-8 кругового этапа. */
+export async function seedPlayoff(admin: any, tournamentId: string) {
+  const { data: t } = await admin
+    .from("tournaments")
+    .select("id, day2_at, slot_minutes")
+    .eq("id", tournamentId)
+    .maybeSingle();
+  if (!t) throw new Error("Турнир не найден");
+
+  const [{ data: ents }, { data: matches }] = await Promise.all([
+    admin.from("tournament_entrants").select("*").eq("tournament_id", tournamentId).eq("status", "registered"),
+    admin.from("tournament_matches").select("*").eq("tournament_id", tournamentId),
+  ]);
+
+  const rr = (matches ?? []).filter((m: { stage: string }) => m.stage === "rr");
+  if (!rr.length) throw new Error("Круговой этап ещё не сыгран");
+  if (rr.some((m: { status: string }) => m.status !== "finished")) {
+    throw new Error("Не все матчи кругового этапа завершены");
+  }
+
+  const { computeStandings, QF_SEEDS } = await import("@/lib/tournament-utils");
+  const table = computeStandings(ents ?? [], matches ?? []);
+  const top = table.slice(0, 8);
+  if (top.length < 8) throw new Error("Для плей-офф нужно минимум 8 участников");
+
+  for (const [i, row] of top.entries()) {
+    await admin.from("tournament_entrants").update({ seed: i + 1 }).eq("id", row.entrant_id);
+  }
+
+  await admin.from("tournament_matches").delete().eq("tournament_id", tournamentId).neq("stage", "rr");
+
+  const start = new Date(t.day2_at).getTime();
+  const step = (t.slot_minutes ?? 45) * 60_000;
+  const rows = QF_SEEDS.map(([s1, s2], i) => ({
+    tournament_id: tournamentId,
+    stage: "qf",
+    round_no: 1,
+    slot: i + 1,
+    a_entrant_id: top[s1 - 1]!.entrant_id,
+    b_entrant_id: top[s2 - 1]!.entrant_id,
+    scheduled_at: new Date(start + i * step).toISOString(),
+    status: "pending",
+  }));
+  const { error } = await admin.from("tournament_matches").insert(rows);
+  if (error) throw new Error(error.message);
+
+  const sfAt = new Date(start + 4 * step).toISOString();
+  await admin.from("tournament_matches").insert([
+    { tournament_id: tournamentId, stage: "sf", round_no: 1, slot: 1, scheduled_at: sfAt, status: "pending" },
+    { tournament_id: tournamentId, stage: "sf", round_no: 1, slot: 2, scheduled_at: new Date(start + 5 * step).toISOString(), status: "pending" },
+    { tournament_id: tournamentId, stage: "final", round_no: 1, slot: 1, scheduled_at: new Date(start + 6 * step).toISOString(), status: "pending" },
+  ]);
+
+  await admin.from("tournaments").update({ status: "day2" }).eq("id", tournamentId);
+  return top.length;
+}
