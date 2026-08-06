@@ -16,6 +16,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as FreeTalkRouteImport } from './routes/free-talk'
 import { Route as EventsRouteImport } from './routes/events'
+import { Route as DuelRouteImport } from './routes/duel'
 import { Route as DebateDayRouteImport } from './routes/debate-day'
 import { Route as CaseBuilderRouteImport } from './routes/case-builder'
 import { Route as BrainstormRouteImport } from './routes/brainstorm'
@@ -63,6 +64,11 @@ const FreeTalkRoute = FreeTalkRouteImport.update({
 const EventsRoute = EventsRouteImport.update({
   id: '/events',
   path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DuelRoute = DuelRouteImport.update({
+  id: '/duel',
+  path: '/duel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DebateDayRoute = DebateDayRouteImport.update({
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/brainstorm': typeof BrainstormRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
+  '/duel': typeof DuelRoute
   '/events': typeof EventsRoute
   '/free-talk': typeof FreeTalkRoute
   '/learn': typeof LearnRouteWithChildren
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/brainstorm': typeof BrainstormRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
+  '/duel': typeof DuelRoute
   '/events': typeof EventsRoute
   '/free-talk': typeof FreeTalkRoute
   '/profile': typeof ProfileRouteWithChildren
@@ -181,6 +189,7 @@ export interface FileRoutesById {
   '/brainstorm': typeof BrainstormRoute
   '/case-builder': typeof CaseBuilderRoute
   '/debate-day': typeof DebateDayRoute
+  '/duel': typeof DuelRoute
   '/events': typeof EventsRoute
   '/free-talk': typeof FreeTalkRoute
   '/learn': typeof LearnRouteWithChildren
@@ -204,6 +213,7 @@ export interface FileRouteTypes {
     | '/brainstorm'
     | '/case-builder'
     | '/debate-day'
+    | '/duel'
     | '/events'
     | '/free-talk'
     | '/learn'
@@ -225,6 +235,7 @@ export interface FileRouteTypes {
     | '/brainstorm'
     | '/case-builder'
     | '/debate-day'
+    | '/duel'
     | '/events'
     | '/free-talk'
     | '/profile'
@@ -246,6 +257,7 @@ export interface FileRouteTypes {
     | '/brainstorm'
     | '/case-builder'
     | '/debate-day'
+    | '/duel'
     | '/events'
     | '/free-talk'
     | '/learn'
@@ -269,6 +281,7 @@ export interface RootRouteChildren {
   BrainstormRoute: typeof BrainstormRoute
   CaseBuilderRoute: typeof CaseBuilderRoute
   DebateDayRoute: typeof DebateDayRoute
+  DuelRoute: typeof DuelRoute
   EventsRoute: typeof EventsRoute
   FreeTalkRoute: typeof FreeTalkRoute
   LearnRoute: typeof LearnRouteWithChildren
@@ -328,6 +341,13 @@ declare module '@tanstack/react-router' {
       path: '/events'
       fullPath: '/events'
       preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/duel': {
+      id: '/duel'
+      path: '/duel'
+      fullPath: '/duel'
+      preLoaderRoute: typeof DuelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/debate-day': {
@@ -467,6 +487,7 @@ const rootRouteChildren: RootRouteChildren = {
   BrainstormRoute: BrainstormRoute,
   CaseBuilderRoute: CaseBuilderRoute,
   DebateDayRoute: DebateDayRoute,
+  DuelRoute: DuelRoute,
   EventsRoute: EventsRoute,
   FreeTalkRoute: FreeTalkRoute,
   LearnRoute: LearnRouteWithChildren,

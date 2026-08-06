@@ -130,6 +130,95 @@ export type Database = {
         }
         Relationships: []
       }
+      duel_turns: {
+        Row: {
+          created_at: string
+          duel_id: string
+          id: string
+          idx: number
+          side: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duel_id: string
+          id?: string
+          idx: number
+          side: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duel_id?: string
+          id?: string
+          idx?: number
+          side?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duel_turns_duel_id_fkey"
+            columns: ["duel_id"]
+            isOneToOne: false
+            referencedRelation: "duels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      duels: {
+        Row: {
+          con_name: string | null
+          con_user_id: string | null
+          created_at: string
+          id: string
+          motion: string
+          pro_name: string
+          pro_user_id: string
+          status: string
+          turn_ends_at: string | null
+          turn_index: number
+          turn_user_id: string | null
+          updated_at: string
+          verdict: Json | null
+          winner_user_id: string | null
+        }
+        Insert: {
+          con_name?: string | null
+          con_user_id?: string | null
+          created_at?: string
+          id?: string
+          motion: string
+          pro_name?: string
+          pro_user_id: string
+          status?: string
+          turn_ends_at?: string | null
+          turn_index?: number
+          turn_user_id?: string | null
+          updated_at?: string
+          verdict?: Json | null
+          winner_user_id?: string | null
+        }
+        Update: {
+          con_name?: string | null
+          con_user_id?: string | null
+          created_at?: string
+          id?: string
+          motion?: string
+          pro_name?: string
+          pro_user_id?: string
+          status?: string
+          turn_ends_at?: string | null
+          turn_index?: number
+          turn_user_id?: string | null
+          updated_at?: string
+          verdict?: Json | null
+          winner_user_id?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string
