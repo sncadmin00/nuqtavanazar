@@ -496,31 +496,74 @@ function TrainingPage() {
         </div>
       )}
 
-      {/* "или" divider */}
-      <div className="py-1 text-center text-[12px] uppercase tracking-[0.18em] text-muted-foreground">
-        или
-      </div>
+      {/* CARD 2 — Батл с AI */}
+      <Link
+        to="/sparring"
+        search={{ topic: dice.status === "ready" ? dice.motion : undefined }}
+        className="block rounded-[18px] bg-[color:var(--color-ink)] p-5 text-white active:scale-[0.99] transition"
+      >
+        <div className="flex items-start gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/20">
+            <Swords className="h-5 w-5 text-primary" />
+          </span>
+          <span className="flex-1 min-w-0">
+            <span className="flex items-center gap-2">
+              <span className="text-[15px] font-semibold">2 · Батл с AI</span>
+              <span className="shrink-0 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                AI-судья
+              </span>
+            </span>
+            <span className="mt-1 block text-[12.5px] text-white/70">
+              Давай подебатируем: AI держит противоположную сторону, а в конце раунда даёт
+              дополнительные оценки по пяти критериям.
+            </span>
+          </span>
+        </div>
+      </Link>
 
-      {/* Free-talk — visually distinct parallel mode */}
+      {/* CARD 3 — AI-тьютор (брейншторм) */}
+      <Link
+        to="/brainstorm"
+        search={{ topic: dice.status === "ready" ? dice.motion : undefined }}
+        className="flex items-start gap-3 rounded-[18px] hairline bg-white p-4 text-left active:scale-[0.99] transition hover:bg-accent/40"
+      >
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10">
+          <Brain className="h-5 w-5 text-primary" />
+        </span>
+        <span className="flex-1 min-w-0">
+          <span className="flex items-center gap-2">
+            <span className="text-[15px] font-semibold">3 · AI-тьютор</span>
+            <span className="shrink-0 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground/70">
+              Брейншторм
+            </span>
+          </span>
+          <span className="mt-1 block text-[12.5px] text-foreground/60">
+            Обмен критериями, идеями и аргументами. Никаких текстов и речей — только твоя мысль.
+          </span>
+        </span>
+      </Link>
+
+      {/* CARD 4 — Свободные мысли */}
       <Link
         to="/free-talk"
-        className="flex items-start gap-3 rounded-[16px] p-4 text-left active:scale-[0.99] bg-[#EEEDFE] hover:bg-[#E6E4FB] transition"
+        className="flex items-start gap-3 rounded-[18px] p-4 text-left active:scale-[0.99] bg-[#EEEDFE] hover:bg-[#E6E4FB] transition"
       >
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/70">
           <Waves className="h-5 w-5 text-foreground" />
         </span>
         <span className="flex-1 min-w-0">
           <span className="flex items-center gap-2">
-            <span className="truncate text-[14px] font-semibold">Свободные мысли</span>
+            <span className="text-[15px] font-semibold">4 · Свободные мысли</span>
             <span className="shrink-0 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
               Приватно
             </span>
           </span>
-          <span className="mt-0.5 block truncate text-[12px] text-foreground/60">
-            Без темы, без таймера, без оценки
+          <span className="mt-1 block text-[12.5px] text-foreground/60">
+            Без темы, без таймера, без AI и без оценки
           </span>
         </span>
       </Link>
+
 
       {/* Quiet link to Learn */}
       <div className="pt-1 text-center">
