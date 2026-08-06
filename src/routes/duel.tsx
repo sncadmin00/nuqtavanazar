@@ -14,6 +14,8 @@ import {
   getDuelRoomToken,
 } from "@/lib/duel.functions";
 import { startWavRecording, type WavRecorder } from "@/lib/audioRecorder";
+import { ChallengeHub } from "@/components/challenge/ChallengeHub";
+
 import {
   TOTAL_TURNS,
   PREP_SECONDS,
