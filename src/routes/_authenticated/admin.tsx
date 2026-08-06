@@ -124,6 +124,7 @@ function AdminPage() {
           {tab === "cadence" && <CadenceTab />}
           {tab === "content" && <ContentTab />}
           {tab === "roundtables" && <RoundtablesTab />}
+          {tab === "awards" && <AchievementsTab />}
           {tab === "stats" && <StatsTab />}
         </div>
       </div>
