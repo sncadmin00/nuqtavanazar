@@ -6,6 +6,7 @@ import { PrimaryActions } from "@/components/home/PrimaryActions";
 import { MyRatingCard } from "@/components/home/MyRatingCard";
 import { MatchesStatus } from "@/components/home/MatchesStatus";
 import { RoundtableCard } from "@/components/home/RoundtableCard";
+import { GameDayCards } from "@/components/home/GameDayCards";
 import { PrevWeekResultCard } from "@/components/home/discussion/PrevWeekResultCard";
 import { IdeaClash } from "@/components/home/discussion/IdeaClash";
 import { TopQuotesCarousel } from "@/components/home/discussion/TopQuotesCarousel";
