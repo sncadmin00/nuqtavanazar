@@ -15,6 +15,7 @@ import {
 } from "@/lib/duel.functions";
 import { startWavRecording, type WavRecorder } from "@/lib/audioRecorder";
 import { ChallengeHub } from "@/components/challenge/ChallengeHub";
+import { syncTournamentMatch } from "@/lib/tournaments.functions";
 
 import {
   TOTAL_TURNS,
@@ -61,6 +62,7 @@ type Duel = {
   prep_ends_at: string | null;
   verdict: any;
   winner_user_id: string | null;
+  tournament_match_id: string | null;
 };
 
 type Turn = { id: string; idx: number; side: string; text: string; user_id: string; duration_sec: number | null };
