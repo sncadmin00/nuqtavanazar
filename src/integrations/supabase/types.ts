@@ -136,12 +136,14 @@ export type Database = {
           duel_id: string | null
           expires_at: string | null
           from_name: string
+          from_team_id: string | null
           from_user_id: string
           id: string
           kind: string
           responded_at: string | null
           status: string
           to_name: string
+          to_team_id: string | null
           to_user_id: string
           updated_at: string
           week_id: string
@@ -151,12 +153,14 @@ export type Database = {
           duel_id?: string | null
           expires_at?: string | null
           from_name?: string
+          from_team_id?: string | null
           from_user_id: string
           id?: string
           kind?: string
           responded_at?: string | null
           status?: string
           to_name?: string
+          to_team_id?: string | null
           to_user_id: string
           updated_at?: string
           week_id: string
@@ -166,12 +170,14 @@ export type Database = {
           duel_id?: string | null
           expires_at?: string | null
           from_name?: string
+          from_team_id?: string | null
           from_user_id?: string
           id?: string
           kind?: string
           responded_at?: string | null
           status?: string
           to_name?: string
+          to_team_id?: string | null
           to_user_id?: string
           updated_at?: string
           week_id?: string
@@ -182,6 +188,20 @@ export type Database = {
             columns: ["duel_id"]
             isOneToOne: false
             referencedRelation: "duels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duel_challenges_from_team_id_fkey"
+            columns: ["from_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duel_challenges_to_team_id_fkey"
+            columns: ["to_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
@@ -201,6 +221,7 @@ export type Database = {
           duration_sec: number
           id: string
           idx: number
+          kind: string
           side: string
           text: string
           user_id: string
@@ -212,6 +233,7 @@ export type Database = {
           duration_sec?: number
           id?: string
           idx: number
+          kind?: string
           side: string
           text?: string
           user_id: string
@@ -223,6 +245,7 @@ export type Database = {
           duration_sec?: number
           id?: string
           idx?: number
+          kind?: string
           side?: string
           text?: string
           user_id?: string
@@ -240,13 +263,20 @@ export type Database = {
       duels: {
         Row: {
           con_name: string | null
+          con_name2: string | null
+          con_team_id: string | null
           con_user_id: string | null
+          con_user2_id: string | null
           created_at: string
+          format: string
           id: string
           motion: string
           prep_ends_at: string | null
           pro_name: string
+          pro_name2: string | null
+          pro_team_id: string | null
           pro_user_id: string
+          pro_user2_id: string | null
           recording_url: string | null
           room_name: string | null
           status: string
@@ -260,13 +290,20 @@ export type Database = {
         }
         Insert: {
           con_name?: string | null
+          con_name2?: string | null
+          con_team_id?: string | null
           con_user_id?: string | null
+          con_user2_id?: string | null
           created_at?: string
+          format?: string
           id?: string
           motion: string
           prep_ends_at?: string | null
           pro_name?: string
+          pro_name2?: string | null
+          pro_team_id?: string | null
           pro_user_id: string
+          pro_user2_id?: string | null
           recording_url?: string | null
           room_name?: string | null
           status?: string
@@ -280,13 +317,20 @@ export type Database = {
         }
         Update: {
           con_name?: string | null
+          con_name2?: string | null
+          con_team_id?: string | null
           con_user_id?: string | null
+          con_user2_id?: string | null
           created_at?: string
+          format?: string
           id?: string
           motion?: string
           prep_ends_at?: string | null
           pro_name?: string
+          pro_name2?: string | null
+          pro_team_id?: string | null
           pro_user_id?: string
+          pro_user2_id?: string | null
           recording_url?: string | null
           room_name?: string | null
           status?: string
@@ -299,6 +343,20 @@ export type Database = {
           winner_user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "duels_con_team_id_fkey"
+            columns: ["con_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duels_pro_team_id_fkey"
+            columns: ["pro_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "duels_week_id_fkey"
             columns: ["week_id"]
@@ -667,6 +725,127 @@ export type Database = {
         }
         Relationships: []
       }
+      team_invites: {
+        Row: {
+          created_at: string
+          from_name: string
+          from_user_id: string
+          id: string
+          responded_at: string | null
+          status: string
+          team_id: string
+          team_name: string
+          to_name: string
+          to_user_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          from_name: string
+          from_user_id: string
+          id?: string
+          responded_at?: string | null
+          status?: string
+          team_id: string
+          team_name: string
+          to_name: string
+          to_user_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          from_name?: string
+          from_user_id?: string
+          id?: string
+          responded_at?: string | null
+          status?: string
+          team_id?: string
+          team_name?: string
+          to_name?: string
+          to_user_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_invites_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_ratings: {
+        Row: {
+          elo: number
+          matches_played: number
+          team_id: string
+          updated_at: string
+          wins: number
+        }
+        Insert: {
+          elo?: number
+          matches_played?: number
+          team_id: string
+          updated_at?: string
+          wins?: number
+        }
+        Update: {
+          elo?: number
+          matches_played?: number
+          team_id?: string
+          updated_at?: string
+          wins?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_ratings_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: true
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          looking_for_partner: boolean
+          name: string
+          owner_id: string
+          owner_name: string | null
+          partner_id: string | null
+          partner_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          looking_for_partner?: boolean
+          name: string
+          owner_id: string
+          owner_name?: string | null
+          partner_id?: string | null
+          partner_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          looking_for_partner?: boolean
+          name?: string
+          owner_id?: string
+          owner_name?: string | null
+          partner_id?: string | null
+          partner_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -956,6 +1135,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_team_invite: { Args: { _invite_id: string }; Returns: string }
       cast_retro_vote: {
         Args: { _side: string; _visitor_id: string; _week_id: string }
         Returns: {
@@ -983,6 +1163,7 @@ export type Database = {
         Args: { _visitor_id: string; _voice_note_id: string }
         Returns: number
       }
+      leave_team: { Args: { _team_id: string }; Returns: boolean }
       start_challenge_duel: { Args: { _challenge_id: string }; Returns: string }
     }
     Enums: {

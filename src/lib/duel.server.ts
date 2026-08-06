@@ -1,4 +1,4 @@
-import { TURN_LABELS_RU } from "./duel-config";
+import { turnSpec } from "./duel-config";
 
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const JUDGE_MODEL = "google/gemini-2.5-pro";
@@ -19,16 +19,21 @@ export async function judgeDuelTranscript(
   proName: string,
   conName: string,
   turns: DuelTurnRow[],
+  format: string = "1v1",
 ): Promise<DuelVerdict> {
   const key = process.env["LOVABLE_API_KEY"];
   if (!key) throw new Error("LOVABLE_API_KEY missing");
 
   const transcript = turns
     .sort((a, b) => a.idx - b.idx)
-    .map((t) => `[${TURN_LABELS_RU[t.idx - 1] ?? `Ход ${t.idx}`} — ${t.side === "pro" ? proName : conName}]\n${t.text}`)
+    .map(
+      (t) =>
+        `[${turnSpec(format, t.idx).label} — ${t.side === "pro" ? proName : conName}]\n${t.text}`,
+    )
     .join("\n\n");
 
-  const prompt = `Ты — судья живого раунда Nuqta va Nazar 1×1. Оцени полную стенограмму дуэли и вынеси решение.
+  const prompt = `Ты — судья живого раунда Nuqta va Nazar (${format === "2v2" ? "командный формат 2×2, парламентские правила" : "формат 1×1"}). Оцени полную стенограмму и вынеси решение.
+Учитывай перекрёстные вопросы: качество вопросов и ответов влияет на оценку опровержения.
 
 ТЕМА: "${motion}"
 СТОРОНА «ЗА»: ${proName}
@@ -38,6 +43,8 @@ export async function judgeDuelTranscript(
 """
 ${transcript}
 """
+
+${format === "2v2" ? "Оценки pro/con — это оценки команды целиком." : ""}
 
 Оцени каждого спикера по 5 критериям (0-10): structure, argumentation, evidence, rebuttal, delivery.
 Верни СТРОГО валидный JSON без markdown:
@@ -85,7 +92,13 @@ overall — сумма пяти оценок (0-50). Победитель опр
 const K = 24;
 
 /** Обновляет Elo обоих участников после дуэли. */
-export async function applyDuelElo(winnerId: string, loserId: string, names: Record<string, string>) {
+export async function applyDuelElo(
+  winnerId: string,
+  loserId: string,
+  names: Record<string, string>,
+  k: number = K,
+  countMatch: boolean = true,
+) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const ids = [winnerId, loserId];
   const { data } = await supabaseAdmin
@@ -99,7 +112,8 @@ export async function applyDuelElo(winnerId: string, loserId: string, names: Rec
   const w = get(winnerId);
   const l = get(loserId);
   const expectedW = 1 / (1 + Math.pow(10, (l.mastery - w.mastery) / 400));
-  const delta = Math.round(K * (1 - expectedW));
+  const delta = Math.round(k * (1 - expectedW));
+  const bump = countMatch ? 1 : 0;
 
   await supabaseAdmin.from("player_ratings").upsert(
     [
@@ -107,7 +121,7 @@ export async function applyDuelElo(winnerId: string, loserId: string, names: Rec
         user_id: winnerId,
         mastery: w.mastery + delta,
         mastery_trend_week: (w.mastery_trend_week ?? 0) + delta,
-        matches_played: (w.matches_played ?? 0) + 1,
+        matches_played: (w.matches_played ?? 0) + bump,
         display_name: names[winnerId] ?? null,
         updated_at: new Date().toISOString(),
       },
@@ -115,7 +129,7 @@ export async function applyDuelElo(winnerId: string, loserId: string, names: Rec
         user_id: loserId,
         mastery: Math.max(100, l.mastery - delta),
         mastery_trend_week: (l.mastery_trend_week ?? 0) - delta,
-        matches_played: (l.matches_played ?? 0) + 1,
+        matches_played: (l.matches_played ?? 0) + bump,
         display_name: names[loserId] ?? null,
         updated_at: new Date().toISOString(),
       },
@@ -124,6 +138,45 @@ export async function applyDuelElo(winnerId: string, loserId: string, names: Rec
   );
   return delta;
 }
+
+/** Командный Elo считается отдельно от индивидуального */
+export async function applyTeamElo(winnerTeamId: string, loserTeamId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin
+    .from("team_ratings")
+    .select("team_id, elo, matches_played, wins")
+    .in("team_id", [winnerTeamId, loserTeamId]);
+  const rows = data ?? [];
+  const get = (id: string) =>
+    rows.find((r) => r.team_id === id) ?? { team_id: id, elo: 1000, matches_played: 0, wins: 0 };
+
+  const w = get(winnerTeamId);
+  const l = get(loserTeamId);
+  const expectedW = 1 / (1 + Math.pow(10, (l.elo - w.elo) / 400));
+  const delta = Math.round(K * (1 - expectedW));
+
+  await supabaseAdmin.from("team_ratings").upsert(
+    [
+      {
+        team_id: winnerTeamId,
+        elo: w.elo + delta,
+        matches_played: (w.matches_played ?? 0) + 1,
+        wins: (w.wins ?? 0) + 1,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        team_id: loserTeamId,
+        elo: Math.max(100, l.elo - delta),
+        matches_played: (l.matches_played ?? 0) + 1,
+        wins: l.wins ?? 0,
+        updated_at: new Date().toISOString(),
+      },
+    ],
+    { onConflict: "team_id" },
+  );
+  return delta;
+}
+
 
 const STT_URL = "https://ai.gateway.lovable.dev/v1/audio/transcriptions";
 const STT_MODEL = "openai/gpt-4o-mini-transcribe";

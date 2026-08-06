@@ -1,13 +1,28 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
-  TOTAL_TURNS,
   PREP_SECONDS,
   MIN_TURN_CHARS,
   MAX_TURN_CHARS,
-  secondsForTurn,
-  sideForTurn,
+  totalTurns,
+  turnSpec,
+  type TurnSpec,
 } from "@/lib/duel-config";
+
+type DuelSeats = {
+  format: string;
+  pro_user_id: string;
+  con_user_id: string | null;
+  pro_user2_id: string | null;
+  con_user2_id: string | null;
+};
+
+/** Кто держит слово на этом ходу */
+function userForSpec(duel: DuelSeats, spec: TurnSpec): string | null {
+  if (spec.side === "pro") return spec.seat === 2 ? (duel.pro_user2_id ?? duel.pro_user_id) : duel.pro_user_id;
+  return spec.seat === 2 ? (duel.con_user2_id ?? duel.con_user_id) : duel.con_user_id;
+}
+
 
 export type DuelWindow = {
   open: boolean;
@@ -102,21 +117,26 @@ export const enterDuel = createServerFn({ method: "POST" })
     // уже в активной дуэли?
     const { data: mine } = await supabase
       .from("duels")
-      .select("id, pro_user_id, status")
+      .select("id, pro_user_id, pro_user2_id, status")
       .in("status", ["waiting", "live", "judging"])
-      .or(`pro_user_id.eq.${userId},con_user_id.eq.${userId}`)
+      .or(
+        `pro_user_id.eq.${userId},con_user_id.eq.${userId},pro_user2_id.eq.${userId},con_user2_id.eq.${userId}`,
+      )
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
     if (mine) {
-      return { duel_id: mine.id, role: mine.pro_user_id === userId ? "pro" : "con", matched: mine.status !== "waiting" };
+      const isPro = mine.pro_user_id === userId || mine.pro_user2_id === userId;
+      return { duel_id: mine.id, role: isPro ? "pro" : "con", matched: mine.status !== "waiting" };
     }
+
 
     // ищем ожидающего соперника по теме этой недели
     const { data: open } = await supabase
       .from("duels")
       .select("id, pro_user_id, pro_name, room_name")
       .eq("status", "waiting")
+      .eq("format", "1v1")
       .eq("week_id", win.week_id)
       .neq("pro_user_id", userId)
       .order("created_at", { ascending: true })
@@ -127,7 +147,8 @@ export const enterDuel = createServerFn({ method: "POST" })
       // Кубик: кто получает сторону «За»
       const joinerIsPro = Math.random() < 0.5;
       const prepEnds = new Date(Date.now() + PREP_SECONDS * 1000);
-      const firstTurnEnds = new Date(prepEnds.getTime() + secondsForTurn(1) * 1000);
+      const firstTurnEnds = new Date(prepEnds.getTime() + turnSpec("1v1", 1).seconds * 1000);
+
 
       const proId = joinerIsPro ? userId : open.pro_user_id;
       const proName = joinerIsPro ? myName : (open.pro_name ?? "Спикер");
@@ -214,7 +235,9 @@ export const submitDuelTurn = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: duel, error } = await supabase
       .from("duels")
-      .select("id, status, turn_index, turn_user_id, pro_user_id, con_user_id, prep_ends_at")
+      .select(
+        "id, status, format, turn_index, turn_user_id, pro_user_id, con_user_id, pro_user2_id, con_user2_id, prep_ends_at",
+      )
       .eq("id", data.duel_id)
       .maybeSingle();
     if (error || !duel) throw new Error("Дуэль не найдена");
@@ -222,22 +245,25 @@ export const submitDuelTurn = createServerFn({ method: "POST" })
     if (duel.turn_user_id !== userId) throw new Error("Сейчас не ваш ход");
     if (duel.prep_ends_at && new Date(duel.prep_ends_at) > new Date()) throw new Error("Идёт подготовка");
 
+    const fmt = duel.format ?? "1v1";
     const idx = duel.turn_index;
-    const side = sideForTurn(idx);
+    const spec = turnSpec(fmt, idx);
     const { error: insErr } = await supabase.from("duel_turns").insert({
       duel_id: duel.id,
       idx,
       user_id: userId,
-      side,
+      side: spec.side,
+      kind: spec.kind,
       text: data.text,
       audio_path: data.audio_path,
       duration_sec: data.duration_sec,
     });
     if (insErr) throw new Error(insErr.message);
 
-    const isLast = idx >= TOTAL_TURNS;
+    const isLast = idx >= totalTurns(fmt);
     const nextIdx = idx + 1;
-    const nextUser = sideForTurn(nextIdx) === "pro" ? duel.pro_user_id : duel.con_user_id;
+    const nextSpec = isLast ? null : turnSpec(fmt, nextIdx);
+    const nextUser = nextSpec ? userForSpec(duel as DuelSeats, nextSpec) : null;
     await supabase
       .from("duels")
       .update(
@@ -246,11 +272,12 @@ export const submitDuelTurn = createServerFn({ method: "POST" })
           : {
               turn_index: nextIdx,
               turn_user_id: nextUser,
-              turn_ends_at: new Date(Date.now() + secondsForTurn(nextIdx) * 1000).toISOString(),
+              turn_ends_at: new Date(Date.now() + (nextSpec?.seconds ?? 60) * 1000).toISOString(),
               updated_at: new Date().toISOString(),
             },
       )
       .eq("id", duel.id);
+
 
     return { ok: true, finished: isLast };
   });
@@ -280,11 +307,16 @@ export const finishDuel = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: duel } = await supabase
       .from("duels")
-      .select("id, motion, status, pro_user_id, con_user_id, pro_name, con_name, verdict")
+      .select(
+        "id, motion, status, format, pro_user_id, con_user_id, pro_user2_id, con_user2_id, pro_name, con_name, pro_name2, con_name2, pro_team_id, con_team_id, verdict",
+      )
       .eq("id", data.duel_id)
       .maybeSingle();
     if (!duel) throw new Error("Дуэль не найдена");
-    if (duel.pro_user_id !== userId && duel.con_user_id !== userId) throw new Error("Вы не участник дуэли");
+    const roster = [duel.pro_user_id, duel.con_user_id, duel.pro_user2_id, duel.con_user2_id].filter(
+      Boolean,
+    ) as string[];
+    if (!roster.includes(userId)) throw new Error("Вы не участник дуэли");
     if (duel.status === "finished") return { ok: true, already: true };
     if (duel.status !== "judging") throw new Error("Раунд ещё не завершён");
 
@@ -294,12 +326,21 @@ export const finishDuel = createServerFn({ method: "POST" })
       .eq("duel_id", duel.id)
       .order("idx", { ascending: true });
 
-    const { judgeDuelTranscript, applyDuelElo } = await import("@/lib/duel.server");
+    const { judgeDuelTranscript, applyDuelElo, applyTeamElo } = await import("@/lib/duel.server");
+    const fmt = duel.format ?? "1v1";
+    const proLabel =
+      fmt === "2v2" ? `${duel.pro_name ?? "За"} и ${duel.pro_name2 ?? "второй спикер"}` : (duel.pro_name ?? "За");
+    const conLabel =
+      fmt === "2v2"
+        ? `${duel.con_name ?? "Против"} и ${duel.con_name2 ?? "второй спикер"}`
+        : (duel.con_name ?? "Против");
+
     const verdict = await judgeDuelTranscript(
       duel.motion,
-      duel.pro_name ?? "За",
-      duel.con_name ?? "Против",
+      proLabel,
+      conLabel,
       (turns ?? []) as { idx: number; side: string; text: string }[],
+      fmt,
     );
 
     const winnerId = verdict.winner === "pro" ? duel.pro_user_id : duel.con_user_id;
@@ -315,14 +356,229 @@ export const finishDuel = createServerFn({ method: "POST" })
       })
       .eq("id", duel.id);
 
-    if (winnerId && loserId) {
-      await applyDuelElo(winnerId, loserId, {
-        [duel.pro_user_id]: duel.pro_name ?? "Спикер",
-        ...(duel.con_user_id ? { [duel.con_user_id]: duel.con_name ?? "Спикер" } : {}),
-      });
+    const names: Record<string, string> = {};
+    if (duel.pro_user_id) names[duel.pro_user_id] = duel.pro_name ?? "Спикер";
+    if (duel.con_user_id) names[duel.con_user_id] = duel.con_name ?? "Спикер";
+    if (duel.pro_user2_id) names[duel.pro_user2_id] = duel.pro_name2 ?? "Спикер";
+    if (duel.con_user2_id) names[duel.con_user2_id] = duel.con_name2 ?? "Спикер";
+
+    if (fmt === "2v2") {
+      const winners = (
+        verdict.winner === "pro" ? [duel.pro_user_id, duel.pro_user2_id] : [duel.con_user_id, duel.con_user2_id]
+      ).filter(Boolean) as string[];
+      const losers = (
+        verdict.winner === "pro" ? [duel.con_user_id, duel.con_user2_id] : [duel.pro_user_id, duel.pro_user2_id]
+      ).filter(Boolean) as string[];
+      for (const w of winners) {
+        for (const [j, l] of losers.entries()) {
+          // индивидуальный Elo каждого спикера против каждого соперника (половинный вес)
+          await applyDuelElo(w, l, names, 12, j === 0);
+        }
+      }
+
+      const winTeam = verdict.winner === "pro" ? duel.pro_team_id : duel.con_team_id;
+      const loseTeam = verdict.winner === "pro" ? duel.con_team_id : duel.pro_team_id;
+      if (winTeam && loseTeam) await applyTeamElo(winTeam, loseTeam);
+    } else if (winnerId && loserId) {
+      await applyDuelElo(winnerId, loserId, names);
     }
     return { ok: true, already: false };
   });
+
+/** Вход в командный батл 2×2: нужна активная команда */
+export const enterTeamDuel = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ duel_id: string; role: "pro" | "con"; matched: boolean }> => {
+    const { supabase, userId } = context;
+
+    const win = await resolveWindow(supabase);
+    if (!win.open || !win.week_id || !win.topic) {
+      throw new Error(
+        win.reason === "before"
+          ? "Батлы откроются в день дебатов"
+          : win.reason === "after"
+            ? "День дебатов уже завершён"
+            : "Тема дня ещё не объявлена",
+      );
+    }
+
+    const { data: team } = await supabase
+      .from("teams")
+      .select("id, name, owner_id, owner_name, partner_id, partner_name, is_active")
+      .or(`owner_id.eq.${userId},partner_id.eq.${userId}`)
+      .limit(1)
+      .maybeSingle();
+    if (!team) throw new Error("Сначала создайте команду или примите приглашение");
+    if (!team.is_active || !team.partner_id) throw new Error("Команда не активна: нет второго спикера");
+
+    // уже в батле?
+    const { data: mine } = await supabase
+      .from("duels")
+      .select("id, pro_user_id, pro_user2_id, status")
+      .in("status", ["waiting", "live", "judging"])
+      .or(
+        `pro_user_id.eq.${userId},con_user_id.eq.${userId},pro_user2_id.eq.${userId},con_user2_id.eq.${userId}`,
+      )
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (mine) {
+      const isPro = mine.pro_user_id === userId || mine.pro_user2_id === userId;
+      return { duel_id: mine.id, role: isPro ? "pro" : "con", matched: mine.status !== "waiting" };
+    }
+
+    const { data: open } = await supabase
+      .from("duels")
+      .select("id, pro_team_id, pro_user_id, pro_user2_id, pro_name, pro_name2")
+      .eq("status", "waiting")
+      .eq("format", "2v2")
+      .eq("week_id", win.week_id)
+      .neq("pro_team_id", team.id)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    const myFirst = { id: team.owner_id, name: team.owner_name ?? "Спикер" };
+    const mySecond = { id: team.partner_id, name: team.partner_name ?? "Спикер" };
+
+    if (open) {
+      const joinerIsPro = Math.random() < 0.5;
+      const prepEnds = new Date(Date.now() + PREP_SECONDS * 1000);
+      const firstSpec = turnSpec("2v2", 1);
+      const firstTurnEnds = new Date(prepEnds.getTime() + firstSpec.seconds * 1000);
+
+      const waiting = {
+        team: open.pro_team_id,
+        first: { id: open.pro_user_id, name: open.pro_name ?? "Спикер" },
+        second: { id: open.pro_user2_id, name: open.pro_name2 ?? "Спикер" },
+      };
+      const pro = joinerIsPro ? { team: team.id, first: myFirst, second: mySecond } : waiting;
+      const con = joinerIsPro ? waiting : { team: team.id, first: myFirst, second: mySecond };
+
+      const { data: joined, error } = await supabase
+        .from("duels")
+        .update({
+          pro_team_id: pro.team,
+          pro_user_id: pro.first.id,
+          pro_name: pro.first.name,
+          pro_user2_id: pro.second.id,
+          pro_name2: pro.second.name,
+          con_team_id: con.team,
+          con_user_id: con.first.id,
+          con_name: con.first.name,
+          con_user2_id: con.second.id,
+          con_name2: con.second.name,
+          status: "live",
+          turn_index: 1,
+          turn_user_id: pro.first.id,
+          prep_ends_at: prepEnds.toISOString(),
+          turn_ends_at: firstTurnEnds.toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", open.id)
+        .eq("status", "waiting")
+        .select("id")
+        .maybeSingle();
+      if (!error && joined) {
+        return { duel_id: joined.id, role: joinerIsPro ? "pro" : "con", matched: true };
+      }
+    }
+
+    const { data: created, error: createErr } = await supabase
+      .from("duels")
+      .insert({
+        motion: win.topic,
+        week_id: win.week_id,
+        format: "2v2",
+        pro_team_id: team.id,
+        pro_user_id: myFirst.id,
+        pro_name: myFirst.name,
+        pro_user2_id: mySecond.id,
+        pro_name2: mySecond.name,
+        status: "waiting",
+      })
+      .select("id")
+      .single();
+    if (createErr) throw new Error(createErr.message);
+
+    await supabase.from("duels").update({ room_name: `duel-${created.id}` }).eq("id", created.id);
+    return { duel_id: created.id, role: "pro", matched: false };
+  });
+
+/** Старт батла 2×2 по принятому командному вызову */
+export const startTeamChallengeDuel = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => {
+    const i = (input ?? {}) as { challenge_id?: string };
+    if (!i.challenge_id) throw new Error("challenge_id обязателен");
+    return { challenge_id: i.challenge_id };
+  })
+  .handler(async ({ data, context }): Promise<{ duel_id: string }> => {
+    const { supabase, userId } = context;
+    const { data: ch } = await supabase
+      .from("duel_challenges")
+      .select("*")
+      .eq("id", data.challenge_id)
+      .maybeSingle();
+    if (!ch) throw new Error("Вызов не найден");
+    if (ch.duel_id && ch.status === "started") return { duel_id: ch.duel_id };
+    if (ch.status !== "accepted") throw new Error("Вызов ещё не принят");
+    if (!ch.from_team_id || !ch.to_team_id) throw new Error("Это не командный вызов");
+
+    const win = await resolveWindow(supabase);
+    if (!win.open || !win.week_id || !win.topic) throw new Error("Батлы сейчас закрыты");
+
+    const { data: teams } = await supabase
+      .from("teams")
+      .select("id, name, owner_id, owner_name, partner_id, partner_name, is_active")
+      .in("id", [ch.from_team_id, ch.to_team_id]);
+    const a = (teams ?? []).find((t) => t.id === ch.from_team_id);
+    const b = (teams ?? []).find((t) => t.id === ch.to_team_id);
+    if (!a || !b) throw new Error("Команда не найдена");
+    if (!a.is_active || !b.is_active) throw new Error("Одна из команд не активна");
+    const roster = [a.owner_id, a.partner_id, b.owner_id, b.partner_id];
+    if (!roster.includes(userId)) throw new Error("Вы не участник вызова");
+
+    const aIsPro = Math.random() < 0.5;
+    const pro = aIsPro ? a : b;
+    const con = aIsPro ? b : a;
+    const prepEnds = new Date(Date.now() + PREP_SECONDS * 1000);
+    const firstTurnEnds = new Date(prepEnds.getTime() + turnSpec("2v2", 1).seconds * 1000);
+
+    const { data: created, error } = await supabase
+      .from("duels")
+      .insert({
+        motion: win.topic,
+        week_id: win.week_id,
+        format: "2v2",
+        status: "live",
+        pro_team_id: pro.id,
+        pro_user_id: pro.owner_id,
+        pro_name: pro.owner_name ?? "Спикер",
+        pro_user2_id: pro.partner_id,
+        pro_name2: pro.partner_name ?? "Спикер",
+        con_team_id: con.id,
+        con_user_id: con.owner_id,
+        con_name: con.owner_name ?? "Спикер",
+        con_user2_id: con.partner_id,
+        con_name2: con.partner_name ?? "Спикер",
+        turn_index: 1,
+        turn_user_id: pro.owner_id,
+        prep_ends_at: prepEnds.toISOString(),
+        turn_ends_at: firstTurnEnds.toISOString(),
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+
+    await supabase.from("duels").update({ room_name: `duel-${created.id}` }).eq("id", created.id);
+    await supabase
+      .from("duel_challenges")
+      .update({ status: "started", duel_id: created.id })
+      .eq("id", ch.id);
+    return { duel_id: created.id };
+  });
+
 
 /** Токен для аудио-комнаты LiveKit */
 export const getDuelRoomToken = createServerFn({ method: "POST" })
@@ -336,17 +592,25 @@ export const getDuelRoomToken = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: duel } = await supabase
       .from("duels")
-      .select("id, room_name, pro_user_id, con_user_id, pro_name, con_name")
+      .select(
+        "id, room_name, pro_user_id, con_user_id, pro_user2_id, con_user2_id, pro_name, con_name, pro_name2, con_name2",
+      )
       .eq("id", data.duel_id)
       .maybeSingle();
     if (!duel) throw new Error("Дуэль не найдена");
-    if (duel.pro_user_id !== userId && duel.con_user_id !== userId) throw new Error("Вы не участник дуэли");
+    const seats: Record<string, string> = {};
+    if (duel.pro_user_id) seats[duel.pro_user_id] = duel.pro_name ?? "За";
+    if (duel.con_user_id) seats[duel.con_user_id] = duel.con_name ?? "Против";
+    if (duel.pro_user2_id) seats[duel.pro_user2_id] = duel.pro_name2 ?? "За 2";
+    if (duel.con_user2_id) seats[duel.con_user2_id] = duel.con_name2 ?? "Против 2";
+    if (!seats[userId]) throw new Error("Вы не участник дуэли");
 
     const { createRoomToken, livekitConfigured, livekitUrl } = await import("@/lib/livekit.server");
     if (!livekitConfigured()) return { unavailable: true };
 
     const room = duel.room_name ?? `duel-${duel.id}`;
-    const name = duel.pro_user_id === userId ? (duel.pro_name ?? "За") : (duel.con_name ?? "Против");
+    const name = seats[userId];
     const token = await createRoomToken(room, userId, name);
+
     return { url: livekitUrl(), token, room };
   });
