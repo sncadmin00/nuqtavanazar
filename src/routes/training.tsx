@@ -145,7 +145,7 @@ function TrainingPage() {
   const rollDice = async () => {
     setDice({ status: "loading" });
     try {
-      const motion = await generateMotion({ data: { category: "любая", difficulty: "medium" } });
+      const motion = await generateMotion({ data: { category: "Узбекистан и мировые тренды", difficulty: "medium" } });
       setDice({
         status: "ready",
         motion: motion.motion,
@@ -334,11 +334,10 @@ function TrainingPage() {
                       Умный кубик
                     </button>
                     <Link
-                      to="/case-builder"
-                      search={{ side: undefined, topic: undefined }}
+                      to="/motions"
                       className="text-[11.5px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
                     >
-                      или впиши свою тему
+                      или выбери из банка тем
                     </Link>
                   </div>
                 </div>
