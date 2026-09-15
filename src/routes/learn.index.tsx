@@ -3,7 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import { LESSONS, type LessonCategory } from "@/lib/lessons";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Clock, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, Clock, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/learn/")({
   head: () => ({
@@ -46,6 +46,22 @@ function LearnIndex() {
     <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 md:py-16">
       <h1 className="font-display text-4xl md:text-5xl font-bold">{t("learn.title")}</h1>
       <p className="mt-3 text-lg text-muted-foreground max-w-2xl">{t("learn.subtitle")}</p>
+
+      <Link
+        to="/motions"
+        className="mt-7 flex items-center justify-between gap-4 rounded-lg border border-border bg-card px-5 py-4 transition-colors hover:border-primary/50"
+      >
+        <span className="flex items-center gap-3">
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary">
+            <BookOpen className="h-5 w-5" />
+          </span>
+          <span>
+            <span className="block text-[17px] font-semibold">Банк тем</span>
+            <span className="block text-sm text-muted-foreground">Узбекистан: история, общество и современные тренды</span>
+          </span>
+        </span>
+        <ArrowRight className="h-5 w-5 shrink-0 text-primary" />
+      </Link>
 
       {categories.map((cat) => {
         const lessons = LESSONS.filter((l) => l.category === cat);

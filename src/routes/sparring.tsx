@@ -67,7 +67,7 @@ function SparringPage() {
   const roll = async () => {
     setRolling(true);
     try {
-      const m = await generateMotion({ data: { category: "любая", difficulty: "medium" } });
+      const m = await generateMotion({ data: { category: "Узбекистан и мировые тренды", difficulty: "medium" } });
       setMotion(m.motion);
     } catch (e) {
       toast(e instanceof Error ? e.message : "Не удалось получить тему");

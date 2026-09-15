@@ -16,6 +16,7 @@ import { Route as SparringRouteImport } from './routes/sparring'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RatingsRouteImport } from './routes/ratings'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as MotionsRouteImport } from './routes/motions'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as FreeTalkRouteImport } from './routes/free-talk'
 import { Route as EventsRouteImport } from './routes/events'
@@ -68,6 +69,11 @@ const RatingsRoute = RatingsRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotionsRoute = MotionsRouteImport.update({
+  id: '/motions',
+  path: '/motions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearnRoute = LearnRouteImport.update({
@@ -172,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/free-talk': typeof FreeTalkRoute
   '/learn': typeof LearnRouteWithChildren
+  '/motions': typeof MotionsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/ratings': typeof RatingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByTo {
   '/duel': typeof DuelRoute
   '/events': typeof EventsRoute
   '/free-talk': typeof FreeTalkRoute
+  '/motions': typeof MotionsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/ratings': typeof RatingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -225,6 +233,7 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/free-talk': typeof FreeTalkRoute
   '/learn': typeof LearnRouteWithChildren
+  '/motions': typeof MotionsRoute
   '/profile': typeof ProfileRouteWithChildren
   '/ratings': typeof RatingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -253,6 +262,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/free-talk'
     | '/learn'
+    | '/motions'
     | '/profile'
     | '/ratings'
     | '/sitemap.xml'
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/duel'
     | '/events'
     | '/free-talk'
+    | '/motions'
     | '/profile'
     | '/ratings'
     | '/sitemap.xml'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/free-talk'
     | '/learn'
+    | '/motions'
     | '/profile'
     | '/ratings'
     | '/sitemap.xml'
@@ -333,6 +345,7 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   FreeTalkRoute: typeof FreeTalkRoute
   LearnRoute: typeof LearnRouteWithChildren
+  MotionsRoute: typeof MotionsRoute
   ProfileRoute: typeof ProfileRouteWithChildren
   RatingsRoute: typeof RatingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -393,6 +406,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/motions': {
+      id: '/motions'
+      path: '/motions'
+      fullPath: '/motions'
+      preLoaderRoute: typeof MotionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learn': {
@@ -571,6 +591,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   FreeTalkRoute: FreeTalkRoute,
   LearnRoute: LearnRouteWithChildren,
+  MotionsRoute: MotionsRoute,
   ProfileRoute: ProfileRouteWithChildren,
   RatingsRoute: RatingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
