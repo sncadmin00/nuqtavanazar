@@ -554,27 +554,33 @@ export type Database = {
           category: string
           created_at: string
           created_by: string | null
+          difficulty: string
           format: string
           id: string
           language: string
+          scope: string
           title: string
         }
         Insert: {
           category: string
           created_at?: string
           created_by?: string | null
+          difficulty?: string
           format: string
           id?: string
           language?: string
+          scope?: string
           title: string
         }
         Update: {
           category?: string
           created_at?: string
           created_by?: string | null
+          difficulty?: string
           format?: string
           id?: string
           language?: string
+          scope?: string
           title?: string
         }
         Relationships: []
